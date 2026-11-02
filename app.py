@@ -6,8 +6,17 @@ import datetime
 import urllib.parse
 import os
 from pathlib import Path
-from pptx import Presentation
-from pptx.util import Inches, Pt
+
+# Streamlit platform par python-pptx module load karne ka dynamic automatic handle
+try:
+    from pptx import Presentation
+    from pptx.util import Inches, Pt
+except ImportError:
+    import subprocess
+    import sys
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "python-pptx"])
+    from pptx import Presentation
+    from pptx.util import Inches, Pt
 
 # 1. Page Configuration & Theme Setup
 st.set_page_config(page_title="Brahma Education V100", page_icon="🎓", layout="wide")
@@ -149,21 +158,15 @@ def make_ppt(course):
     prs.slide_width = Inches(13.33)
     prs.slide_height = Inches(7.5)
     
-    # FIXED PPT LAYOUT BUG: Safely extracting dynamic slide structure
-    try:
-        layout = prs.slide_layouts[6]
-    except Exception:
-        try:
-            layout = prs.slide_layouts[0]
-        except Exception:
-            layout = None
-            
     for n in range(1, 41):
-        if layout is not None:
-            slide = prs.slides.add_slide(layout)
-        else:
-            # Fallback template if presentation template initialization fails completely
-            slide = prs.slides.add_slide(prs.slide_layouts[0])
+        # Index layout validation mechanism for cloud templates
+        try:
+            slide = prs.slides.add_slide(prs.slide_layouts[6])
+        except Exception:
+            try:
+                slide = prs.slides.add_slide(prs.slide_layouts[0])
+            except Exception:
+                slide = prs.slides.add_slide(prs.slide_layouts)
         
         # Title Box
         title_box = slide.shapes.add_textbox(Inches(0.3), Inches(0.2), Inches(12.7), Inches(0.9))
@@ -214,8 +217,3 @@ if "admin_logged" not in st.session_state:
 
 # Initialize data reactive pipelines
 courses = initialize_courses()
-purchases = load_json_data(PURCHASE_FILE, [])
-marketing = load_json_data(MARKETING_FILE, [])
-api_keys = load_json_data(API_FILE, {})
-
-# Sidebar Navigation System
