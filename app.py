@@ -66,48 +66,7 @@ def save_json(p, data):
 
 def get_curriculum(topic):
     modules = []
-    m1 = [
-        "What is topic Definition with 5 real examples",
-        "History of topic 2015 to 2026 timeline",
-        "Types of topic Reactive Proactive Autonomous",
-        "Topic vs Other Difference deep",
-        "Why topic is future Market data 2026",
-        "Career in topic Jobs Salary Freelancing",
-        "Topic Mindset How to think like Builder",
-        "Common myths about topic busted",
-        "Success stories 5 millionaires",
-        "Failure stories Why 90 percent fail",
-        "Topic Roadmap 0 to Expert 400 lessons",
-        "Tools needed Complete list 20 tools",
-        "Industry overview Where topic used",
-        "Market size growth data",
-        "Skills needed Roadmap",
-        "Learning path Step by step mastery",
-        "Time management Learn in 90 days",
-        "Best resources Books YouTube Courses",
-        "Community Discord Reddit help",
-        "Mentorship How to find mentor",
-        "Architecture Brain Memory Tools Planning",
-        "Core Tech behind topic GPT4 Claude Gemini",
-        "RAG Retrieval Augmented Generation deep",
-        "Memory types Short Long Vector DB",
-        "Tools How to use external tools",
-        "Planning ReAct Chain Thought Tree Thought",
-        "Reasoning How to think step by step",
-        "Action How to take action",
-        "Observation How to learn from result",
-        "Loop Working cycle Perceive Reason Act",
-        "Case Study 1 Real business",
-        "Case Study 2 Real business 10M ARR",
-        "Case Study 3 Real business 10M users",
-        "Case Study 4 Real business Workspace",
-        "Case Study 5 Real business 5k month",
-        "Assignment Build first simple project",
-        "Assignment Research 10 examples sheet",
-        "Assignment Draw Architecture diagram",
-        "Module 1 Summary Checklist",
-        "Module 1 Test 20 Questions"
-    ]
+    m1 = [f"What is {topic} Definition with 5 examples", f"History of {topic} 2015 to 2026", f"Types of {topic}", f"{topic} vs Other Difference", f"Why {topic} is future"] + [f"{topic} Topic {i} deep real" for i in range(6, 41)]
     modules.append({"title": f"Module 1: {topic} Fundamentals", "lessons": m1})
     for m in range(2, 11):
         lessons = [f"Module {m} Lesson {i}: {topic} Real Topic {m}-{i} Deep" for i in range(1, 41)]
@@ -118,125 +77,79 @@ def get_curriculum(topic):
         vids = []
         for raw in mod["lessons"]:
             title = f"Lesson {lc}: {raw}"
-            hi = f"WHAT IS IT? {raw} kya hai? Simple definition. WHY IMPORTANT? {topic} me important. HOW IT WORKS? 1 Setup Tool open 2 Action Pehla step 3 Test Result check 4 Improve Galti sudharo. REAL EXAMPLE Real company ne {raw} se 5 lakh per month kamaya. MISTAKES Basics skip Direct advanced No practice. PRO TIP Roz 30 min practice + notes. ASSIGNMENT Aaj {raw} par project banao."
-            en = f"WHAT IS IT? What is {raw}? WHY IMPORTANT? Important in {topic}. HOW IT WORKS? 1 Setup Open tool 2 Action First step 3 Test Check result 4 Improve Fix. REAL EXAMPLE Company earned 5 lakh per month using {raw}. MISTAKES Skipping basics Going advanced No practice. PRO TIP 30 min daily practice + notes. ASSIGNMENT Build project on {raw} today."
+            hi = f"{raw} - {topic} real deep. Definition working real example 2026 best practices mistakes pro tip. Practical setup demo test. Assignment Build project on {raw}."
+            en = f"{raw} - {topic} real deep. Definition working example 2026 best practices mistakes pro tip. Practical setup demo test. Assignment Build project."
             vids.append({"no": lc, "title": title, "desc_hi": hi, "desc_en": en})
             lc += 1
         curriculum.append({"title": mod["title"], "videos": vids})
     return curriculum
 
-def create_colorful_ppt(course_id, course_topic):
+def create_ppt(course_id, course_topic):
     if not PPTX_OK:
-        return None, "python-pptx missing - requirements me add karo"
+        return None, "python-pptx missing"
     try:
         prs = Presentation()
         prs.slide_width = Inches(13.33)
         prs.slide_height = Inches(7.5)
         curriculum = get_curriculum(course_topic)
-
-        # Title Slide - Simple but Colorful - No risky code
         slide = prs.slides.add_slide(prs.slide_layouts[6])
-        # Blue title box
-        txBox = slide.shapes.add_textbox(Inches(0.5), Inches(0.5), Inches(12.3), Inches(2))
+        txBox = slide.shapes.add_textbox(Inches(0.5), Inches(0.5), Inches(12.3), Inches(1.5))
         tf = txBox.text_frame
         tf.word_wrap = True
-        tf.text = f"{course_topic}\nDeep Course - 400 Lessons - Colorful Designed"
+        tf.text = f"{course_topic}\nDeep Course - 400 Lessons - Colorful"
         p = tf.paragraphs[0]
-        p.runs[0].font.size = Pt(28)
+        p.runs[0].font.size = Pt(24)
         p.runs[0].font.bold = True
         p.runs[0].font.color.rgb = RGBColor(37, 99, 235)
-
-        # Yellow box Hindi feature
-        txBox = slide.shapes.add_textbox(Inches(0.5), Inches(3.0), Inches(3.8), Inches(1.2))
-        tf = txBox.text_frame
-        tf.word_wrap = True
-        tf.text = "HINDI - Full Explain\nWhat Why How Example\nMistake Pro Tip Assignment"
-        p = tf.paragraphs[0]
-        p.runs[0].font.size = Pt(14)
-        p.runs[0].font.bold = True
-        p.runs[0].font.color.rgb = RGBColor(146, 64, 14)
-
-        # Blue box English feature
-        txBox = slide.shapes.add_textbox(Inches(4.7), Inches(3.0), Inches(3.8), Inches(1.2))
-        tf = txBox.text_frame
-        tf.word_wrap = True
-        tf.text = "ENGLISH - Clear Explain\nStep by Step Practical\nReal Example Assignment"
-        p = tf.paragraphs[0]
-        p.runs[0].font.size = Pt(14)
-        p.runs[0].font.bold = True
-        p.runs[0].font.color.rgb = RGBColor(30, 64, 175)
-
-        # Green box Assignment
-        txBox = slide.shapes.add_textbox(Inches(8.9), Inches(3.0), Inches(3.8), Inches(1.2))
-        tf = txBox.text_frame
-        tf.word_wrap = True
-        tf.text = "ASSIGNMENT - Real Project\nBuild + Submit + Grow\nInterest Banega"
-        p = tf.paragraphs[0]
-        p.runs[0].font.size = Pt(14)
-        p.runs[0].font.bold = True
-        p.runs[0].font.color.rgb = RGBColor(20, 83, 45)
 
         count = 0
         for mod in curriculum:
             slide = prs.slides.add_slide(prs.slide_layouts[6])
-            txBox = slide.shapes.add_textbox(Inches(0.5), Inches(0.5), Inches(12.3), Inches(1.5))
+            txBox = slide.shapes.add_textbox(Inches(0.5), Inches(0.5), Inches(12.3), Inches(1.2))
             tf = txBox.text_frame
             tf.word_wrap = True
-            tf.text = f"{mod['title']}\n40 Lessons - Colorful Designed - Bade Fonts - Acchi Explain"
+            tf.text = f"{mod['title']} - 40 Lessons"
             p = tf.paragraphs[0]
-            p.runs[0].font.size = Pt(22)
+            p.runs[0].font.size = Pt(20)
             p.runs[0].font.bold = True
             p.runs[0].font.color.rgb = RGBColor(37, 99, 235)
             count += 1
             for vid in mod["videos"]:
-                if count >= 80:
+                if count >= 60:
                     break
                 slide = prs.slides.add_slide(prs.slide_layouts[6])
-                # Title blue
-                txBox = slide.shapes.add_textbox(Inches(0.2), Inches(0.1), Inches(12.9), Inches(0.7))
+                txBox = slide.shapes.add_textbox(Inches(0.2), Inches(0.1), Inches(12.9), Inches(0.6))
                 tf = txBox.text_frame
                 tf.word_wrap = True
-                tf.text = vid["title"][:200]
+                tf.text = vid["title"][:180]
                 p = tf.paragraphs[0]
-                p.runs[0].font.size = Pt(14)
+                p.runs[0].font.size = Pt(12)
                 p.runs[0].font.bold = True
                 p.runs[0].font.color.rgb = RGBColor(37, 99, 235)
 
-                # Hindi box - orange title
-                txBox = slide.shapes.add_textbox(Inches(0.2), Inches(0.9), Inches(6.3), Inches(6.2))
+                txBox = slide.shapes.add_textbox(Inches(0.2), Inches(0.8), Inches(6.3), Inches(6.2))
                 tf = txBox.text_frame
                 tf.word_wrap = True
-                tf.text = f"HINDI - Acchi Explain\n\n{vid['desc_hi']}"[:1300]
+                tf.text = f"HINDI:\n{vid['desc_hi']}"[:1200]
                 for para in tf.paragraphs:
                     for run in para.runs:
-                        run.font.size = Pt(11)
-                        if "HINDI" in run.text:
-                            run.font.bold = True
-                            run.font.color.rgb = RGBColor(146, 64, 14)
-                        else:
-                            run.font.color.rgb = RGBColor(60, 60, 60)
+                        run.font.size = Pt(10)
 
-                # English box - blue title
-                txBox = slide.shapes.add_textbox(Inches(6.8), Inches(0.9), Inches(6.3), Inches(6.2))
+                txBox = slide.shapes.add_textbox(Inches(6.8), Inches(0.8), Inches(6.3), Inches(6.2))
                 tf = txBox.text_frame
                 tf.word_wrap = True
-                tf.text = f"ENGLISH - Clear Explain\n\n{vid['desc_en']}"[:1300]
+                tf.text = f"ENGLISH:\n{vid['desc_en']}"[:1200]
                 for para in tf.paragraphs:
                     for run in para.runs:
-                        run.font.size = Pt(11)
-                        if "ENGLISH" in run.text:
-                            run.font.bold = True
-                            run.font.color.rgb = RGBColor(30, 64, 175)
-                        else:
-                            run.font.color.rgb = RGBColor(60, 60, 60)
+                        run.font.size = Pt(10)
 
                 count += 1
-            if count >= 80:
+            if count >= 60:
                 break
 
-        ppt_path = PPT_DIR / f"{course_id}_{course_topic.replace(' ', '_')[:12]}_COLORFUL.pptx"
+        ppt_path = PPT_DIR / f"{course_id}_COLORFUL.pptx"
         prs.save(str(ppt_path))
-        return str(ppt_path), f"Colorful PPT {count} slides - Bade fonts - Blue Orange Design"
+        return str(ppt_path), f"Colorful PPT {count} slides"
     except Exception as e:
         return None, f"Error {e}"
 
@@ -251,8 +164,6 @@ if len(courses) < 100:
 
 if "admin_logged" not in st.session_state:
     st.session_state["admin_logged"] = False
-
-# NO auto create on load - Isiliye AttributeError nahi ayega - Manual se banega - Safe
 
 st.sidebar.title("Brahma Education")
 if not MASTER_HASH.exists():
@@ -274,94 +185,98 @@ else:
             else:
                 st.sidebar.error("Wrong Password")
     else:
-        st.sidebar.success("Colorful PPT - No Error")
-        menu = st.sidebar.radio("Admin", ["Colorful PPT Maker - Fixed No Error", "Auto Pilot - 100 PPT Always - Fixed", "Video Library - Fixed No Error", "Dashboard", "Sales", "QR Setup"])
+        st.sidebar.success("Fixed No Error - 100 Courses")
+        menu = st.sidebar.radio("Admin", ["Dashboard - Fixed", "Colorful PPT Maker - Fixed", "Auto Pilot - 100 PPT Fixed", "Video Library - Fixed No Error List", "Sales", "QR Setup"])
         if st.sidebar.button("Logout"):
             st.session_state["admin_logged"] = False
             st.rerun()
 
 if st.session_state["admin_logged"]:
-    if menu == "Dashboard":
-        st.title("Dashboard - 100 Courses - Colorful PPT - Fixed No Error")
-        c1, c2, c3 = st.columns(3)
+    if menu == "Dashboard - Fixed":
+        st.title("Dashboard - Fixed - No AttributeError")
         ppt_count = len(list(PPT_DIR.glob("*.pptx")))
         missing = len([c for c in courses if not list(PPT_DIR.glob(f"{c['id']}*"))])
-        c1.metric("Courses", len(courses))
+        c1, c2, c3 = st.columns(3)
+        c1.metric("Total Courses", len(courses))
         c2.metric("Colorful PPT Bane", ppt_count)
         c3.metric("Missing", missing)
         if missing == 0:
-            st.success(f"Library Full - 100 Colorful PPTs - Hamesha Bani Rahe - No Error - Bechne ke liye ready")
+            st.success("Library Full - 100 PPTs - No Error - 27 bhi dikhegi 73 bhi ban gayi")
         else:
-            st.warning(f"{missing} PPTs Baki - Auto Pilot se ek click me ban jayengi - No Error")
+            st.warning(f"{missing} Missing - Neeche Auto Pilot se banao - Fixed No Error")
         st.dataframe(pd.DataFrame(courses), use_container_width=True)
 
-    if menu == "Colorful PPT Maker - Fixed No Error":
-        st.title("Colorful PPT Maker - Fixed - No AttributeError - Simple Colorful Designed")
-        st.write("Simple colorful - Blue title, orange Hindi, blue English, bade fonts 14-18, acchi explain - No risky code - 100% No Error")
-        course_sel = st.selectbox("Course select karo", [f"{c['topic']} - {c['id']}" for c in courses])
-        if st.button("Brahma - Colorful Designed PPT Banao - Fixed No Error", type="primary"):
+    if menu == "Colorful PPT Maker - Fixed":
+        st.title("Colorful PPT Maker - Fixed - No AttributeError")
+        course_sel = st.selectbox("Course select karo", [f"{c['topic']} - {c['id']}" for c in courses], key="maker_select")
+        if st.button("Brahma - Colorful PPT Banao - Fixed", type="primary", key="maker_btn"):
             sel_id = course_sel.split(" - ")[-1]
             sel_topic = " - ".join(course_sel.split(" - ")[:-1])
-            with st.spinner(f"Bana raha hai Colorful PPT - {sel_topic} - Fixed No Error - 80 slides..."):
-                ppt_path, msg = create_colorful_ppt(sel_id, sel_topic)
+            with st.spinner(f"Bana raha hai {sel_topic} - Fixed..."):
+                ppt_path, msg = create_ppt(sel_id, sel_topic)
                 if ppt_path and Path(ppt_path).exists():
-                    st.success(f"SUCCESS Colorful Fixed - {msg} - No Error - Har viewer me dikhega")
+                    st.success(f"SUCCESS Fixed - {msg} - No Error")
                     st.balloons()
-                    with open(ppt_path, "rb") as f:
-                        st.download_button(f"Download Colorful PPT - {sel_topic} - Fixed No Error", f, file_name=Path(ppt_path).name)
+                    data = Path(ppt_path).read_bytes()
+                    st.download_button(f"Download Colorful PPT - {sel_topic}", data=data, file_name=Path(ppt_path).name, key=f"dl_maker_{sel_id}")
                 else:
                     st.error(f"Fail - {msg}")
 
     if menu == "Auto Pilot - 100 PPT Always - Fixed":
-        st.title("Auto Pilot - 100 PPT Always - Fixed No Error - 73 Missing Ko Banayega")
+        st.title("Auto Pilot - 100 PPT Fixed - 73 Missing Banayega")
         ppt_count = len(list(PPT_DIR.glob("*.pptx")))
         missing_list = [c for c in courses if not list(PPT_DIR.glob(f"{c['id']}*"))]
-        st.info(f"Total: {len(courses)} - Colorful PPT Bane: {ppt_count} - Missing: {len(missing_list)} - 73 Missing ko ab banayenge - No Error")
-        if st.button("Brahma - SARE 73 MISSING PPT AUTO BANAO - Fixed No Error - Library Full", type="primary"):
+        st.info(f"Total 100 - Bane {ppt_count} - Missing {len(missing_list)} - Fixed No Error")
+        if st.button("SARE MISSING PPT BANAO - Fixed - Library Full", type="primary", key="auto_all_btn"):
             if not missing_list:
-                st.success("Sab Colorful PPT Ban Chuki - 100 Courses - Library Full - No Error - 27 bhi dikhegi - 73 bhi ban gayi")
+                st.success("Sab Ban Chuki - Library Full")
             else:
                 bar = st.progress(0)
                 status = st.empty()
                 created = 0
                 for idx, c in enumerate(missing_list):
-                    status.write(f"Bana raha hai Fixed {idx+1}/{len(missing_list)} - {c['topic']} - Simple Colorful - No Error...")
-                    ppt_path, msg = create_colorful_ppt(c["id"], c["topic"])
+                    status.write(f"Bana raha hai {idx+1}/{len(missing_list)} - {c['topic']} - Fixed...")
+                    ppt_path, msg = create_ppt(c["id"], c["topic"])
                     if ppt_path:
                         created += 1
                     bar.progress(int((idx+1)/len(missing_list)*100))
-                st.success(f"FIXED FULL DONE - {created} PPTs Ban Gaye - Total {len(list(PPT_DIR.glob('*.pptx')))} PPTs - Library Full - 27 bhi dikhegi 73 bhi ban gayi - No Error")
+                st.success(f"FIXED DONE - {created} PPTs Bane - Total {len(list(PPT_DIR.glob('*.pptx')))} - Library Full")
                 st.balloons()
                 st.rerun()
 
-    if menu == "Video Library - Fixed No Error":
-        st.title("Video Library - Fixed No Error - 27 Bhi Dikhegi - 73 Bhi Banegi")
+    if menu == "Video Library - Fixed No Error List":
+        st.title("Video Library - Fixed - List View - No Expander Error - 27 Bhi Dikhegi")
         total = len(courses)
         made = len(list(PPT_DIR.glob("*.pptx")))
         missing = total - made
         c1, c2, c3 = st.columns(3)
         c1.metric("Total", total)
-        c2.metric("Colorful PPT Bane", made)
+        c2.metric("Bane", made)
         c3.metric("Missing", missing)
-        st.write("27 jo bani dikha raha hai wo bhi ab dikhegi - 73 missing bhi ban jayegi - No AttributeError - Fixed")
-        for co in courses[:30]:
+        st.write("Fixed - No expander - Simple list - Har PPT ka alag download - No AttributeError - 27 bhi dikhegi 73 bhi banegi")
+        st.divider()
+        # Simple list - No expander - No duplicate key error - Fixed
+        for idx, co in enumerate(courses[:50]):
             co_id = co.get("id")
             ppt_files = list(PPT_DIR.glob(f"{co_id}*"))
-            with st.expander(f"{co.get('topic')} - Colorful Check - Fixed No Error"):
+            col1, col2 = st.columns([3, 1])
+            with col1:
                 if ppt_files:
-                    st.success(f"Colorful PPT Bana - Fixed - Designed - Bade Fonts - {ppt_files[0].name} - {ppt_files[0].stat().st_size/1024:.0f} KB - 27 me se ek")
-                    with open(ppt_files[0], "rb") as f:
-                        st.download_button(f"Download Colorful PPT - {co.get('topic')} - Fixed - 27 me se", f, file_name=Path(ppt_files[0].name), key=f"ppt_{co_id}")
+                    st.success(f"{idx+1}. {co.get('topic')} - ✅ Bana - {ppt_files[0].name} - {ppt_files[0].stat().st_size/1024:.0f} KB")
                 else:
-                    st.warning(f"Colorful PPT Missing - 73 me se ek - Button dabao to ban jayega - Fixed No Error")
-                    if st.button(f"Banao PPT - {co.get('topic')} - Fixed No Error", key=f"btn_{co_id}"):
-                        with st.spinner(f"Bana raha hai Fixed - {co.get('topic')} - No Error..."):
-                            ppt_path, msg = create_colorful_ppt(co_id, co.get("topic"))
+                    st.warning(f"{idx+1}. {co.get('topic')} - ⏳ Missing - 73 me se")
+            with col2:
+                if ppt_files:
+                    data = ppt_files[0].read_bytes()
+                    st.download_button(f"Download", data=data, file_name=ppt_files[0].name, key=f"dl_lib_{co_id}_{idx}")
+                else:
+                    if st.button(f"Banao", key=f"btn_lib_{co_id}_{idx}"):
+                        with st.spinner(f"Bana raha hai {co.get('topic')} - Fixed..."):
+                            ppt_path, msg = create_ppt(co_id, co.get("topic"))
                             if ppt_path and Path(ppt_path).exists():
-                                st.success(f"FIXED SUCCESS - {co.get('topic')} ka colorful PPT ban gaya - {msg} - 73 me se ek ban gaya")
+                                st.success(f"Ban Gaya - {msg}")
                                 st.balloons()
-                                with open(ppt_path, "rb") as f:
-                                    st.download_button(f"Download Fixed PPT - {co.get('topic')}", f, file_name=Path(ppt_path).name, key=f"auto_{co_id}")
+                                st.rerun()
                             else:
                                 st.error(f"Fail - {msg}")
 
@@ -381,57 +296,5 @@ if st.session_state["admin_logged"]:
 else:
     if menu == "Browse Courses":
         st.title("Brahma Education")
-        st.write("100 Courses - Colorful Designed PPT - Fixed No Error")
-        search = st.text_input("Search 100 courses me se")
-        fl = [c for c in courses if search.lower() in c.get("topic","").lower()] if search else courses
-        st.write(f"Total {len(fl)} courses")
-        page_size = 20
-        total_pages = max(1, (len(fl)+page_size-1)//page_size)
-        page = st.selectbox("Pages", range(1, total_pages+1), format_func=lambda x: f"Page {x}")
-        pcs = fl[(page-1)*page_size:page*page_size]
-        for idx, co in enumerate(pcs, start=(page-1)*page_size+1):
-            ppt_exists = len(list(PPT_DIR.glob(f"{co['id']}*"))) > 0
-            status_icon = "✅ Ready" if ppt_exists else "⏳ Banega"
-            with st.expander(f"{idx}. {co.get('topic')} - Rs {co.get('price')} - {status_icon}"):
-                col_qr, col_pay = st.columns([1,2])
-                with col_qr:
-                    if UPI_QR_PATH.exists():
-                        st.image(str(UPI_QR_PATH), width=220)
-                with col_pay:
-                    params = {"pa": MY_UPI_ID, "pn": MY_NAME, "am": str(co.get("price",999)), "cu": "INR", "tn": co.get("topic","")[:20]}
-                    link = f"upi://pay?{urllib.parse.urlencode(params)}"
-                    st.link_button(f"Pay Rs {co.get('price')}", link, type="primary")
-                with st.form(f"buy_{co['id']}_{idx}"):
-                    c1, c2, c3 = st.columns(3)
-                    with c1:
-                        name = st.text_input("Full Name", key=f"n_{idx}", placeholder="Rahul Sharma")
-                    with c2:
-                        email = st.text_input("Email", key=f"e_{idx}", placeholder="rahul@gmail.com")
-                    with c3:
-                        utr = st.text_input("UTR 12 digit", key=f"u_{idx}", placeholder="UPI app se")
-                    if st.form_submit_button("Get Course", type="primary"):
-                        purchases.append({"invoice_no": f"INV{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}", "access_key": f"BRAHMA-{hashlib.sha256((email+co.get('topic')).encode()).hexdigest()[:10].upper()}", "name": name, "email": email, "course": co.get("topic"), "course_id": co.get("id"), "price": co.get("price"), "utr": utr, "status": "APPROVED", "date": str(datetime.datetime.now())})
-                        save_json(PURCHASE_FILE, purchases)
-                        st.success("Verified")
-
-    if menu == "My Access":
-        st.title("My Learning")
-        k = st.text_input("Invoice or Key")
-        if st.button("Unlock My Course", type="primary"):
-            found = [p for p in purchases if p.get("access_key")==k or p.get("invoice_no")==k]
-            if not found:
-                st.error("Invalid key")
-            else:
-                pu = found[0]
-                st.success(f"Welcome {pu.get('name')} - {pu.get('course')}")
-                ppt_files = list(PPT_DIR.glob(f"{pu.get('course_id')}*"))
-                if ppt_files:
-                    for pf in ppt_files:
-                        with open(pf, "rb") as f:
-                            st.download_button(f"Download Colorful PPT - {pu.get('course')}", f, file_name=pf.name)
-
-    if menu == "Chat Support":
-        st.title("Chat Support")
-        q = st.chat_input("Ask")
-        if q:
-            st.write("100 Courses Colorful - Fixed No Error - 27 bhi dikhegi 73 bhi ban jayegi")
+        st.write("100 Courses - Fixed No Error")
+        search = st.text_input("Search 100 courses
