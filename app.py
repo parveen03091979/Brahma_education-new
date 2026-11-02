@@ -185,9 +185,4 @@ if st.session_state.admin:
       save(CF, courses)
       st.success("Done Single " + str(np))
       st.rerun()
-  elif menu == "Add New Course":
-    st.title("Add New Course - Alag Alag - All Decided")
-    st.success("Add New Course Alag Alag - All Decided - 100 Checked")
-    with st.form("add"):
-      nt = st.text_input("New Course Name - Best 25 All Decided")
-      npr =
+  elif menu == "Add
