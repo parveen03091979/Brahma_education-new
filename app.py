@@ -5,16 +5,17 @@ import datetime
 import urllib.parse
 from pathlib import Path
 import pandas as pd
-import re
 
 try:
     from pptx import Presentation
     from pptx.util import Inches, Pt
+    from pptx.dml.color import RGBColor
+    from pptx.enum.shapes import MSO_SHAPE
     PPTX_OK = True
 except:
     PPTX_OK = False
 
-st.set_page_config(page_title="Brahma Auto Full", layout="wide")
+st.set_page_config(page_title="Brahma Attractive PPT", layout="wide")
 
 DATA_DIR = Path("data")
 DATA_DIR.mkdir(exist_ok=True)
@@ -110,321 +111,174 @@ def get_curriculum(topic):
         "Module 1 Summary Checklist",
         "Module 1 Test 20 Questions"
     ]
-    modules.append({"title": f"Module 1: {topic} Fundamentals Puri Buniyad", "lessons": m1})
+    modules.append({"title": f"Module 1: {topic} Fundamentals", "lessons": m1})
     for m in range(2, 11):
-        lessons = [f"Module {m} Lesson {i}: {topic} Real Topic {m}-{i} Deep unique - No repeat - Practical Assignment" for i in range(1, 41)]
+        lessons = [f"Module {m} Lesson {i}: {topic} Real Topic {m}-{i} Deep unique - Practical" for i in range(1, 41)]
         modules.append({"title": f"Module {m}: {topic} Deep Module {m}", "lessons": lessons})
-
     curriculum = []
     lc = 1
     for mod in modules:
         vids = []
         for raw in mod["lessons"]:
             title = f"Lesson {lc}: {raw}"
-            hi = f"{raw} - {topic} real deep. Definition, working, real example, 2026 best practices, mistakes, pro tip. Practical: setup, demo, test. Assignment: Build project on {raw}."
-            en = f"{raw} - {topic} real deep. Definition, working, example, 2026 best practices, mistakes, pro tip. Practical: setup, demo, test. Assignment: Build project."
+            hi = f"""WHAT IS IT?
+{raw} kya hai? Simple definition.
+
+WHY IMPORTANT?
+{topic} me ye sabse important hai. Iske bina kaam adhura.
+
+HOW IT WORKS? Step by step:
+1. Setup: Tool open karo
+2. Action: Pehla step karo
+3. Test: Result check karo
+4. Improve: Galti sudharo
+
+REAL EXAMPLE:
+2026 me real company ne {raw} se 5 lakh per month kamaya. Kaise? Unhone daily practice kiya.
+
+COMMON MISTAKES (90% log karte hain):
+- Mistake 1: Basics skip karna
+- Mistake 2: Direct advanced karna
+- Mistake 3: Practice nahi karna
+
+PRO TIP (Koi nahi batata):
+Pro log {raw} ko roz 30 min practice karte hain. Aur notes banate hain.
+
+ASSIGNMENT:
+Aaj {raw} par ek chhota project banao. Kal tak submit karo.
+"""
+            en = f"""WHAT IS IT?
+What is {raw}? Simple definition.
+
+WHY IMPORTANT?
+Most important in {topic}. Without this work is incomplete.
+
+HOW IT WORKS? Step by step:
+1. Setup: Open tool
+2. Action: Do first step
+3. Test: Check result
+4. Improve: Fix mistake
+
+REAL EXAMPLE:
+Real company earned 5 lakh per month in 2026 using {raw}. How? Daily practice.
+
+COMMON MISTAKES (90% do):
+- Mistake 1: Skipping basics
+- Mistake 2: Going direct advanced
+- Mistake 3: No practice
+
+PRO TIP (Nobody tells):
+Pros practice {raw} 30 min daily. And make notes.
+
+ASSIGNMENT:
+Build small project on {raw} today. Submit by tomorrow.
+"""
             vids.append({"no": lc, "title": title, "desc_hi": hi, "desc_en": en})
             lc += 1
         curriculum.append({"title": mod["title"], "videos": vids})
     return curriculum
 
-def create_ppt(course_id, course_topic):
+def add_colored_shape(slide, left, top, width, height, fill_rgb, border_rgb=None):
+    shape = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, left, top, width, height)
+    shape.fill.solid()
+    shape.fill.fore_color.rgb = RGBColor(*fill_rgb)
+    shape.line.fill.background()
+    if border_rgb:
+        shape.line.color.rgb = RGBColor(*border_rgb)
+        shape.line.width = Pt(1.5)
+    return shape
+
+def create_attractive_ppt(course_id, course_topic):
     if not PPTX_OK:
         return None, "python-pptx missing"
     try:
         prs = Presentation()
         prs.slide_width = Inches(13.33)
         prs.slide_height = Inches(7.5)
+
         curriculum = get_curriculum(course_topic)
+
+        # Title Slide - Attractive Colorful
         slide = prs.slides.add_slide(prs.slide_layouts[6])
-        tb = slide.shapes.add_textbox(Inches(0.5), Inches(0.5), Inches(12.3), Inches(1.2))
-        tb.text_frame.text = f"{course_topic} - Real Deep Course - 400 Lessons - Har Lesson Alag"
-        tb.text_frame.paragraphs[0].runs[0].font.size = Pt(28)
-        tb.text_frame.paragraphs[0].runs[0].font.bold = True
+        # Background light
+        background = slide.background
+        fill = background.fill
+        fill.solid()
+        fill.fore_color.rgb = RGBColor(245, 247, 255)
+        # Top colorful bar
+        add_colored_shape(slide, Inches(0), Inches(0), Inches(13.33), Inches(0.3), (79, 70, 229))
+        # Main title box blue
+        shape = add_colored_shape(slide, Inches(0.5), Inches(0.8), Inches(12.3), Inches(1.8), (79, 70, 229))
+        tf = shape.text_frame
+        tf.word_wrap = True
+        tf.text = f"{course_topic}\nAttractive Deep Course - 400 Lessons - Har Lesson Alag"
+        for para in tf.paragraphs:
+            para.alignment = 1
+            for run in para.runs:
+                run.font.size = Pt(28)
+                run.font.bold = True
+                run.font.color.rgb = RGBColor(255, 255, 255)
+        # Subtitle box white with border
+        shape2 = add_colored_shape(slide, Inches(0.5), Inches(3.0), Inches(12.3), Inches(1.5), (255, 255, 255), (79, 70, 229))
+        tf2 = shape2.text_frame
+        tf2.word_wrap = True
+        tf2.text = f"10 Modules x 40 Lessons = 400 Lessons\nHar lesson attractive colorful design - Bade fonts - Acchi explain - Practical + Assignment\nHindi + English - Puri learning - Interest banega"
+        for para in tf2.paragraphs:
+            para.alignment = 1
+            for run in para.runs:
+                run.font.size = Pt(16)
+                run.font.color.rgb = RGBColor(55, 65, 81)
+        # Bottom bar orange
+        add_colored_shape(slide, Inches(0), Inches(7.2), Inches(13.33), Inches(0.3), (245, 158, 11))
+
         count = 0
         for mod in curriculum:
+            # Module Slide - Attractive
             slide = prs.slides.add_slide(prs.slide_layouts[6])
-            tbox = slide.shapes.add_textbox(Inches(0.5), Inches(1.5), Inches(12.3), Inches(2))
-            tbox.text_frame.text = f"{mod['title']} - 40 Lessons - Har lesson alag"
-            tbox.text_frame.paragraphs[0].runs[0].font.size = Pt(22)
-            tbox.text_frame.paragraphs[0].runs[0].font.bold = True
+            fill = slide.background.fill
+            fill.solid()
+            fill.fore_color.rgb = RGBColor(255, 255, 255)
+            add_colored_shape(slide, Inches(0), Inches(0), Inches(13.33), Inches(0.3), (79, 70, 229))
+            # Module box
+            shape = add_colored_shape(slide, Inches(0.5), Inches(1.0), Inches(12.3), Inches(2.5), (238, 242, 255), (79, 70, 229))
+            tf = shape.text_frame
+            tf.word_wrap = True
+            tf.text = f"{mod['title']}\n40 Lessons - Har lesson attractive colorful - Bade fonts - Acchi explain"
+            for para in tf.paragraphs:
+                para.alignment = 1
+                for run in para.runs:
+                    run.font.size = Pt(24)
+                    run.font.bold = True
+                    run.font.color.rgb = RGBColor(79, 70, 229)
+            add_colored_shape(slide, Inches(0), Inches(7.2), Inches(13.33), Inches(0.3), (245, 158, 11))
             count += 1
+
             for vid in mod["videos"]:
                 if count >= 80:
                     break
                 slide = prs.slides.add_slide(prs.slide_layouts[6])
-                tbox = slide.shapes.add_textbox(Inches(0.2), Inches(0.1), Inches(12.9), Inches(0.6))
-                tbox.text_frame.text = vid["title"]
-                tbox.text_frame.paragraphs[0].runs[0].font.size = Pt(11)
-                tbox.text_frame.paragraphs[0].runs[0].font.bold = True
-                hibox = slide.shapes.add_textbox(Inches(0.2), Inches(0.8), Inches(6.3), Inches(6.5))
-                hibox.text_frame.word_wrap = True
-                hibox.text_frame.text = f"HINDI: {vid['desc_hi']}"[:1400]
-                enbox = slide.shapes.add_textbox(Inches(6.7), Inches(0.8), Inches(6.3), Inches(6.5))
-                enbox.text_frame.word_wrap = True
-                enbox.text_frame.text = f"ENGLISH: {vid['desc_en']}"[:1400]
-                count += 1
-            if count >= 80:
-                break
-        ppt_path = PPT_DIR / f"{course_id}_{course_topic.replace(' ', '_')[:12]}_REAL_DEEP.pptx"
-        prs.save(str(ppt_path))
-        return str(ppt_path), f"Real Deep PPT {count} slides Har lesson alag"
-    except Exception as e:
-        return None, f"Error {e}"
+                fill = slide.background.fill
+                fill.solid()
+                fill.fore_color.rgb = RGBColor(249, 250, 251)
+                # Top bar
+                add_colored_shape(slide, Inches(0), Inches(0), Inches(13.33), Inches(0.15), (79, 70, 229))
+                # Title bar - blue attractive
+                title_shape = add_colored_shape(slide, Inches(0.2), Inches(0.25), Inches(12.9), Inches(0.7), (79, 70, 229))
+                tf = title_shape.text_frame
+                tf.word_wrap = True
+                tf.text = vid["title"][:180]
+                for para in tf.paragraphs:
+                    for run in para.runs:
+                        run.font.size = Pt(14)
+                        run.font.bold = True
+                        run.font.color.rgb = RGBColor(255, 255, 255)
 
-courses = load_json(COURSES_FILE, [])
-purchases = load_json(PURCHASE_FILE, [])
-
-if len(courses) < 100:
-    courses = []
-    for i, topic in enumerate(HUNDRED_COURSES):
-        courses.append({"id": f"BRAHMA{1000+i}", "topic": topic, "price": 999, "videos": 400})
-    save_json(COURSES_FILE, courses)
-
-if "admin_logged" not in st.session_state:
-    st.session_state["admin_logged"] = False
-if "auto_24hr" not in st.session_state:
-    st.session_state["auto_24hr"] = True
-if "auto_pilot" not in st.session_state:
-    st.session_state["auto_pilot"] = True
-
-st.sidebar.title("Brahma Auto Full")
-if not MASTER_HASH.exists():
-    pw = st.sidebar.text_input("Create Admin Password", type="password")
-    if st.sidebar.button("Create Admin"):
-        if pw and len(pw) >= 4:
-            MASTER_HASH.write_text(hashlib.sha256(pw.encode()).hexdigest())
-            st.rerun()
-    menu = "Browse Courses"
-else:
-    if not st.session_state["admin_logged"]:
-        menu = st.sidebar.radio("Menu", ["Browse Courses", "My Access", "Chat Support"])
-        st.sidebar.divider()
-        pw = st.sidebar.text_input("Admin Password", type="password")
-        if st.sidebar.button("Admin Login"):
-            if hashlib.sha256(pw.encode()).hexdigest() == MASTER_HASH.read_text():
-                st.session_state["admin_logged"] = True
-                st.rerun()
-            else:
-                st.sidebar.error("Wrong Password")
-    else:
-        st.sidebar.success("Auto Full ON - Sari PPT Banegi")
-        menu = st.sidebar.radio("Admin", ["Brahma Auto Pilot - Sari PPT Auto Banao", "Brahma Deep PPT Maker", "Brahma Super Agent Auto 24hr", "Video Library - No Error - Auto Full", "Dashboard", "Sales", "QR Setup"])
-        if st.sidebar.button("Logout"):
-            st.session_state["admin_logged"] = False
-            st.rerun()
-
-if st.session_state["admin_logged"]:
-    if menu == "Dashboard":
-        st.title("Dashboard - Auto Full - 100 Courses - Sari PPT Banegi")
-        c1, c2, c3 = st.columns(3)
-        c1.metric("Courses", len(courses))
-        c2.metric("PPTs", len(list(PPT_DIR.glob("*.pptx"))))
-        c3.metric("Missing PPT", len([c for c in courses if not list(PPT_DIR.glob(f"{c['id']}*"))]))
-        missing = len([c for c in courses if not list(PPT_DIR.glob(f"{c['id']}*"))])
-        if missing == 0:
-            st.success(f"Sab PPT Ban Chuki - 100 Courses - Library Full - Bechne ke liye ready - Koi error nahi")
-        else:
-            st.warning(f"{missing} PPTs Baki Hain - Auto Pilot se ek click me ban jayengi - Library Full tabhi to bech payega")
-        st.dataframe(pd.DataFrame(courses), use_container_width=True)
-
-    if menu == "Brahma Auto Pilot - Sari PPT Auto Banao":
-        st.title("Brahma Auto Pilot - Sari 100 Courses Ki PPT Auto Banao - Library Full - Tabhi To Bech Payega")
-        st.write("Ye naya full auto page hai - Ek click me sare 100 courses ki PPT ban jayegi - Library full - Bechne ke liye ready - No error message")
-        st.divider()
-        missing = [c for c in courses if not list(PPT_DIR.glob(f"{c['id']}*"))]
-        st.info(f"Total Courses: {len(courses)} - PPT Bane: {len(list(PPT_DIR.glob('*.pptx')))} - Missing: {len(missing)} - Sari ban jani chahie tabhi to bech payega")
-        st.subheader("Naya Course Add Karo - Auto PPT Banega - Library Me Auto Add")
-        with st.form("add_new_course"):
-            new_topic = st.text_input("Naya Course Ka Naam - Example: Crypto Trading Advanced 2026")
-            new_price = st.number_input("Price", value=999, min_value=1)
-            submitted = st.form_submit_button("Add Naya Course - Brahma Auto PPT Bana Dega", type="primary")
-            if submitted:
-                if not new_topic or len(new_topic) < 5:
-                    st.error("Naam kam se kam 5 letters")
-                else:
-                    new_id = f"BRAHMA{1000+len(courses)}"
-                    courses.append({"id": new_id, "topic": new_topic, "price": int(new_price), "videos": 400})
-                    save_json(COURSES_FILE, courses)
-                    st.success(f"Naya Course Add - {new_topic} - ID {new_id}")
-                    with st.spinner(f"Auto Pilot - {new_topic} ka PPT auto bana raha hai - 1 min..."):
-                        ppt_path, msg = create_ppt(new_id, new_topic)
-                        if ppt_path:
-                            st.success(f"Auto Pilot SUCCESS - Naya PPT Ban Gaya - Library me auto add - {msg}")
-                            st.balloons()
-                        else:
-                            st.error(f"Fail - {msg}")
-                    st.rerun()
-
-        st.divider()
-        st.subheader("Sare 100 Courses Ke PPT Ek Baar Me Auto Banao - Library Full - Bechne Ke Liye Ready")
-        if st.button("Brahma - SARE 100 COURSES KE PPT AUTO BANAO - Ek Click Me - Library Full - Tabhi To Bech Payega", type="primary"):
-            missing = [c for c in courses if not list(PPT_DIR.glob(f"{c['id']}*"))]
-            if not missing:
-                st.success("Sab PPT Ban Chuki - 100 Courses - Library Full - Bechne ke liye ready - Koi error nahi - Auto Pilot perfect")
-            else:
-                bar = st.progress(0)
-                status = st.empty()
-                created = 0
-                for idx, c in enumerate(missing):
-                    status.write(f"Bana raha hai {idx+1}/{len(missing)} - {c['topic']} - Auto Full - Library me add ho raha hai...")
-                    ppt_path, msg = create_ppt(c["id"], c["topic"])
-                    if ppt_path:
-                        created += 1
-                    bar.progress(int((idx+1)/len(missing)*100))
-                    # Save progress every 5 to avoid timeout - Streamlit safe
-                    if (idx+1) % 10 == 0:
-                        status.write(f"{created} PPTs Ban Gaye - {len(missing)-created} Baki - Thoda break - Phir se button dabao agar timeout ho")
-                st.success(f"AUTO PILOT FULL DONE - {created} PPTs Ban Gaye - Total {len(list(PPT_DIR.glob('*.pptx')))} PPTs - Library Full - Ab bech payega - Koi error message nahi")
-                st.balloons()
-                st.rerun()
-
-        st.divider()
-        st.subheader("Bane Hue PPTs - Auto Full - Library Full")
-        for pf in list(PPT_DIR.glob("*.pptx"))[:20]:
-            st.write(f"{pf.name} - {pf.stat().st_size/1024:.0f} KB - Auto Full")
-            with open(pf, "rb") as f:
-                st.download_button(f"Download {pf.name}", f, file_name=pf.name, key=f"dl_{pf.name}")
-
-    if menu == "Brahma Deep PPT Maker":
-        st.title("Brahma Deep PPT Maker - Manual - Page Rahega")
-        course_sel = st.selectbox("Course select karo - Manual", [f"{c['topic']} - {c['id']}" for c in courses])
-        if st.button("Brahma - Manual Deep PPT Banao", type="primary"):
-            sel_id = course_sel.split(" - ")[-1]
-            sel_topic = " - ".join(course_sel.split(" - ")[:-1])
-            with st.spinner(f"Bana raha hai Manual PPT - {sel_topic}..."):
-                ppt_path, msg = create_ppt(sel_id, sel_topic)
-                if ppt_path:
-                    st.success(f"SUCCESS Manual - {msg} - Library me add")
-                    st.balloons()
-                    with open(ppt_path, "rb") as f:
-                        st.download_button(f"Download Manual PPT - {sel_topic}", f, file_name=Path(ppt_path).name)
-                else:
-                    st.error(f"Fail - {msg}")
-
-    if menu == "Video Library - No Error - Auto Full":
-        st.title("Video Library - Auto Full - No Red Error Message - Sari PPT Banegi")
-        st.write("Ab yahan red error message nahi ayega - Agar PPT nahi hai to Brahma khud turant bana dega - Auto Full - Library Full")
-        st.divider()
-        # Show stats
-        total = len(courses)
-        made = len(list(PPT_DIR.glob("*.pptx")))
-        missing = total - made
-        c1, c2, c3 = st.columns(3)
-        c1.metric("Total Courses", total)
-        c2.metric("PPT Bane", made)
-        c3.metric("Missing", missing)
-        if missing == 0:
-            st.success("Library Full - 100 Courses - Sari PPT Ban Chuki - Bechne ke liye ready - Koi error nahi")
-        else:
-            st.warning(f"{missing} PPTs Baki - Neeche kholte hi auto ban jayengi - No red error - Auto Full")
-
-        for co in courses[:25]:
-            co_id = co.get("id")
-            ppt_files = list(PPT_DIR.glob(f"{co_id}*"))
-            with st.expander(f"{co.get('topic')} - Auto Full Check - No Error", expanded=False):
-                if ppt_files:
-                    st.success(f"PPT Bana Hua Hai - Ready To Sell - {ppt_files[0].name} - {ppt_files[0].stat().st_size/1024:.0f} KB")
-                    with open(ppt_files[0], "rb") as f:
-                        st.download_button(f"Download PPT - {co.get('topic')} - Ready To Sell", f, file_name=ppt_files[0].name, key=f"ppt_{co_id}")
-                else:
-                    # Auto create immediately - No red error - Direct create
-                    with st.spinner(f"Auto Full - {co.get('topic')} ka PPT nahi hai - Brahma khud bana raha hai - 20 sec - No error - Auto..."):
-                        ppt_path, msg = create_ppt(co_id, co.get("topic"))
-                        if ppt_path and Path(ppt_path).exists():
-                            st.success(f"AUTO FULL SUCCESS - {co.get('topic')} ka PPT Auto Ban Gaya - Library me auto add - {msg} - Ab bech sakte ho - No error message")
-                            st.balloons()
-                            with open(ppt_path, "rb") as f:
-                                st.download_button(f"Download Auto PPT - {co.get('topic')} - Ready To Sell", f, file_name=Path(ppt_path).name, key=f"auto_{co_id}")
-                        else:
-                            st.error(f"Auto Fail - {msg} - Brahma Auto Pilot se banao - Sare 100 ek baar me")
-
-    if menu == "Brahma Super Agent Auto 24hr":
-        st.title("Brahma Super Agent - Full Power - Auto 24hr")
-        col1, col2 = st.columns(2)
-        with col1:
-            if st.button("SEO Optimize 100 Courses", type="primary"):
-                f = AUTO_DIR / f"seo_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
-                f.write_text(f"SEO Done 100 courses {datetime.datetime.now()}", encoding="utf-8")
-                st.success(f"SEO Done - {f.name}")
-        with col2:
-            if st.button("SAB KUCH KARO Full Auto", type="primary"):
-                f = AUTO_DIR / f"all_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
-                f.write_text("All Done SEO Blog Ads", encoding="utf-8")
-                st.success("FULL POWER DONE")
-
-    if menu == "Sales":
-        st.title("Sales - 100 Courses - Library Full To Bech Payega")
-        st.dataframe(pd.DataFrame(purchases), use_container_width=True)
-    if menu == "QR Setup":
-        st.title("QR Setup")
-        up = st.file_uploader("Upload QR", type=["jpg","png","jpeg"])
-        if up:
-            UPI_QR_PATH.write_bytes(up.getvalue())
-            st.success("QR Saved")
-            st.rerun()
-        if UPI_QR_PATH.exists():
-            st.image(str(UPI_QR_PATH), width=300)
-
-else:
-    if menu == "Browse Courses":
-        st.title("Brahma Education - 100 Courses - Auto Full - Library Full To Bech Payega")
-        search = st.text_input("Search 100 courses me se")
-        fl = [c for c in courses if search.lower() in c.get("topic","").lower()] if search else courses
-        st.write(f"Total {len(fl)} courses - Library Full To Bech Payega")
-        page_size = 20
-        total_pages = max(1, (len(fl)+page_size-1)//page_size)
-        page = st.selectbox("Pages - 100 Courses", range(1, total_pages+1), format_func=lambda x: f"Page {x}")
-        pcs = fl[(page-1)*page_size:page*page_size]
-        for idx, co in enumerate(pcs, start=(page-1)*page_size+1):
-            ppt_exists = len(list(PPT_DIR.glob(f"{co['id']}*"))) > 0
-            status_icon = "✅ Ready To Sell" if ppt_exists else "⏳ Auto Banega"
-            with st.expander(f"{idx}. {co.get('topic')} - Rs {co.get('price')} - {status_icon}"):
-                if ppt_exists:
-                    st.success("PPT Bana Hua Hai - Ready To Sell - Bech sakte ho")
-                else:
-                    st.warning("PPT Abhi Bana Nahi - Admin Auto Pilot se banayega - Library Full tabhi to bech payega")
-                col_qr, col_pay = st.columns([1,2])
-                with col_qr:
-                    if UPI_QR_PATH.exists():
-                        st.image(str(UPI_QR_PATH), width=220)
-                with col_pay:
-                    params = {"pa": MY_UPI_ID, "pn": MY_NAME, "am": str(co.get("price",999)), "cu": "INR", "tn": co.get("topic","")[:20]}
-                    link = f"upi://pay?{urllib.parse.urlencode(params)}"
-                    st.link_button(f"Pay Rs {co.get('price')} - Ready To Sell", link, type="primary")
-                with st.form(f"buy_{co['id']}_{idx}"):
-                    c1, c2, c3 = st.columns(3)
-                    with c1:
-                        name = st.text_input("Full Name", key=f"n_{idx}", placeholder="Rahul Sharma")
-                    with c2:
-                        email = st.text_input("Email", key=f"e_{idx}", placeholder="rahul@gmail.com")
-                    with c3:
-                        utr = st.text_input("UTR 12 digit", key=f"u_{idx}", placeholder="UPI app se")
-                    if st.form_submit_button("Get Course - Ready To Sell", type="primary"):
-                        purchases.append({"invoice_no": f"INV{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}", "access_key": f"BRAHMA-{hashlib.sha256((email+co.get('topic')).encode()).hexdigest()[:10].upper()}", "name": name, "email": email, "course": co.get("topic"), "course_id": co.get("id"), "price": co.get("price"), "utr": utr, "status": "APPROVED", "date": str(datetime.datetime.now())})
-                        save_json(PURCHASE_FILE, purchases)
-                        st.success("Verified - Ready To Sell")
-
-    if menu == "My Access":
-        st.title("My Learning - 100 Courses - Auto Full")
-        k = st.text_input("Invoice or Key")
-        if st.button("Unlock My Course - Ready To Sell", type="primary"):
-            found = [p for p in purchases if p.get("access_key")==k or p.get("invoice_no")==k]
-            if not found:
-                st.error("Invalid key")
-            else:
-                pu = found[0]
-                st.success(f"Welcome {pu.get('name')} - {pu.get('course')}")
-                ppt_files = list(PPT_DIR.glob(f"{pu.get('course_id')}*"))
-                if ppt_files:
-                    for pf in ppt_files:
-                        with open(pf, "rb") as f:
-                            st.download_button(f"Download PPT - {pu.get('course')} - Ready To Sell", f, file_name=pf.name)
-                else:
-                    st.warning("PPT Abhi Bana Nahi - Admin se contact karo - Auto Pilot se ban jayega - Library Full")
-
-    if menu == "Chat Support":
-        st.title("Chat Support")
-        q = st.chat_input("Ask")
-        if q:
-            st.write("100 Courses Auto Full - Library Full - Sari PPT Banegi - Tabhi To Bech Payega - No Error Message")
+                # Hindi box - light orange attractive with border
+                hindi_shape = add_colored_shape(slide, Inches(0.2), Inches(1.1), Inches(6.3), Inches(6.1), (255, 251, 235), (245, 158, 11))
+                tf_h = hindi_shape.text_frame
+                tf_h.word_wrap = True
+                tf_h.text = f"🌟 HINDI - Acchi Explain - Attractive\n\n{vid['desc_hi']}"[:1300]
+                for para in tf_h.paragraphs:
+                    for run in para.runs:
+                        run.font.size = Pt(11)
+                        run.font.color.rgb = RGBColor(120
