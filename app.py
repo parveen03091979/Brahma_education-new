@@ -30,7 +30,7 @@ class MT:
     def ttl(self,t,n):
         return t
     def cnt(self,t,n):
-        return t+' Deep detail master teacher business automation '
+        return t+' Deep detail master teacher '
     def make(self,cid,ctopic):
         from pptx import Presentation
         from pptx.util import Inches, Pt
@@ -47,4 +47,22 @@ class MT:
             tf.paragraphs[0].font.bold=True
             bb=s.shapes.add_textbox(Inches(0.3), Inches(1.2), Inches(12.7), Inches(6.1))
             bf=bb.text_frame
-            bf.word
+            bf.word_wrap=True
+            bf.text=self.cnt(ctopic,i+1)
+            bf.paragraphs[0].font.size=Pt(13)
+        out=PD/(cid+'.pptx')
+        prs.save(str(out))
+        return out
+
+mt=MT()
+courses=load(CF,[])
+if len(courses)<100:
+    courses=[]
+    for i in range(100):
+        courses.append({'id':'BRAHMA'+str(1000+i),'topic':'Course '+str(i+1),'price':99})
+    save(CF,courses)
+else:
+    need=False
+    for c in courses:
+        if c.get('price',999)>200:
+           
