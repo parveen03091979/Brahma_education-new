@@ -1,72 +1,69 @@
-if menu=="🚀 Super Brain Auto Agent":
-        st.header("🚀 Super Brain Auto Agent - V14 - Naya Course Command Added")
-        st.info("Ab aap command deke naya course bana sakte ho - Ek click me 400 videos")
+if menu=="📚 Courses List":
+        st.header("📚 Courses List - Price Change Option - V15")
+        st.info(f"Total {len(courses)} Courses - Yahan se price change karo, delete karo, naya banao")
         
-        # === NEW FEATURE - SUPER BRAIN COMMAND - COURSE CREATION ===
-        st.subheader("➕ Naya Course Banao - Super Brain Ko Command Do")
-        with st.form("create_new_course_v14", clear_on_submit=True):
-            col1,col2=st.columns(2)
+        # === BULK PRICE CHANGE - SAARE COURSES KA EK SAATH ===
+        st.subheader("💰 Bulk Price Change - Saare 100 Courses Ka Ek Saath")
+        with st.form("bulk_price_v15"):
+            col1,col2,col3=st.columns(3)
             with col1:
-                new_topic = st.text_input("📚 Naye Course Ka Naam Likho*", placeholder="Jaise: AI for Lawyers, Crypto Trading Pro, Instagram 2027")
-                new_price = st.number_input("💰 Price Set Karo", min_value=99, max_value=10000, value=999, step=100)
+                bulk_action = st.selectbox("Kya Karna Hai?", ["Sabka Price Same Karo", "Sabka Price % Se Badhao", "Sabka Price % Se Ghatao", "Sabka Price Fixed Amount Se Badhao"])
             with col2:
-                st.write("Ye course 10 Modules x 40 Videos = 400 Videos, 46 Hours ka auto banega")
-                st.caption("Example: AI for Doctors, YouTube 2027, Stock Market Pro")
-            create_btn = st.form_submit_button("🚀 Ek Click Me Course Banao - 400 Videos", type="primary", use_container_width=True)
-            if create_btn:
-                if not new_topic or len(new_topic) < 3:
-                    st.error("❌ Course ka naam kam se kam 3 akshar likho")
-                else:
-                    # Check if already exists
-                    existing = [c.get("topic","").lower() for c in courses]
-                    if new_topic.lower() in existing:
-                        st.warning(f"⚠️ Ye course pehle se hai: {new_topic}")
-                    else:
-                        new_id = f"BRAHMA{1000+len(courses)+1}"
-                        new_course = create_course(new_topic, new_price, new_id)
-                        courses.append(new_course)
-                        save_courses(courses)
-                        st.success(f"✅ Course Ban Gaya! {new_topic} - {new_id} - 400 Videos")
-                        st.balloons()
-                        st.rerun()
+                bulk_value = st.number_input("Value Daalo (₹ ya %)", min_value=1, max_value=10000, value=999, step=100)
+            with col3:
+                st.write("Example: Sabka 999 karo, ya 10% badhao")
+            if st.form_submit_button("💰 Bulk Price Update Karo - Sab Courses Ka", type="primary", use_container_width=True):
+                updated = 0
+                if bulk_action == "Sabka Price Same Karo":
+                    for c in courses: c["price"] = int(bulk_value); updated+=1
+                elif bulk_action == "Sabka Price % Se Badhao":
+                    for c in courses: c["price"] = int(c.get("price",999) * (1 + bulk_value/100)); updated+=1
+                elif bulk_action == "Sabka Price % Se Ghatao":
+                    for c in courses: c["price"] = max(99, int(c.get("price",999) * (1 - bulk_value/100))); updated+=1
+                elif bulk_action == "Sabka Price Fixed Amount Se Badhao":
+                    for c in courses: c["price"] = int(c.get("price",999) + bulk_value); updated+=1
+                save_courses(courses)
+                st.success(f"✅ {updated} Courses Ka Price Update Ho Gaya! - Ab Browse Courses me naya price dikhega")
+                st.balloons()
+                st.rerun()
 
         st.divider()
-        st.subheader("📝 Bulk Me 10-20 Courses Ek Saath Banao")
-        with st.form("bulk_create_v14", clear_on_submit=True):
-            bulk_input = st.text_area("Bulk Course Names - Comma Se Alag Likho*", placeholder="AI for Lawyers, AI for Farmers, Crypto Trading 2026, Instagram 2027, YouTube 2027", height=100)
-            bulk_price = st.number_input("Bulk Price (Sabke liye same)", min_value=99, max_value=10000, value=999, step=100, key="bulk_price")
-            bulk_btn = st.form_submit_button("📝 Bulk Courses Banao - Ek Click Me 10-20", type="primary", use_container_width=True)
-            if bulk_btn:
-                if not bulk_input:
-                    st.error("❌ Kuch naam likho comma se")
-                else:
-                    topics = [t.strip() for t in bulk_input.split(",") if t.strip()]
-                    if not topics:
-                        st.error("❌ Sahi naam likho")
-                    else:
-                        added = 0
-                        existing = [c.get("topic","").lower() for c in courses]
-                        for t in topics:
-                            if t.lower() not in existing:
-                                new_id = f"BRAHMA{1000+len(courses)+1}"
-                                courses.append(create_course(t, bulk_price, new_id))
-                                added += 1
+        
+        # === SINGLE COURSE PRICE CHANGE ===
+        st.subheader("✏️ Ek-Ek Course Ka Price Alag-Alag Change Karo")
+        st.caption("Neeche list me se course select karo, naya price daalo, update dabao")
+        
+        # Search
+        search_c = st.text_input("🔍 Course Search Karo Price Change Ke Liye", key="search_price")
+        if search_c:
+            filtered_c = [c for c in courses if search_c.lower() in c.get('topic','').lower()]
+        else:
+            filtered_c = courses
+        
+        # Show table with edit
+        for idx, c in enumerate(filtered_c[:30]): # 30 per page to avoid lag
+            with st.expander(f"{idx+1}. {c.get('topic','')} - Current Price: ₹{c.get('price',999)} - {c.get('total_videos',400)} Videos", expanded=False):
+                col1,col2,col3=st.columns(3)
+                with col1:
+                    st.write(f"**ID:** {c.get('id','')}")
+                    st.write(f"**Current Price:** ₹{c.get('price',999)}")
+                    st.write(f"**Videos:** {c.get('total_videos',400)}")
+                with col2:
+                    new_price_single = st.number_input(f"Naya Price - {c.get('id','')}", min_value=99, max_value=20000, value=int(c.get('price',999)), step=50, key=f"price_{c.get('id','')}")
+                with col3:
+                    if st.button(f"💾 Update Price", key=f"update_{c.get('id','')}", type="primary", use_container_width=True):
+                        c["price"] = int(new_price_single)
                         save_courses(courses)
-                        st.success(f"✅ {added} Naye Courses Ban Gaye! Total ab {len(courses)}")
-                        st.balloons()
+                        st.success(f"✅ {c.get('topic','')} ka price ₹{new_price_single} ho gaya!")
                         st.rerun()
-
+                    if st.button(f"🗑️ Delete Course", key=f"del_{c.get('id','')}", use_container_width=True):
+                        courses.remove(c)
+                        save_courses(courses)
+                        st.error(f"Deleted {c.get('topic','')}")
+                        st.rerun()
+        
+        if len(filtered_c) > 30:
+            st.info(f"Showing 30 / {len(filtered_c)} - Search se filter karo")
+        
         st.divider()
-        # Old Auto Post Features
-        st.subheader("🤖 Auto Posting - Social Media")
-        col1,col2,col3=st.columns(3)
-        with col1:
-            if st.button("🚀 AUTO POST ALL SOCIAL NOW", type="primary", use_container_width=True):
-                logs.append({"time":str(datetime.datetime.now()),"action":"Auto Post 100 Courses","status":"Done"}); save_log(logs); st.success(f"✅ {len(courses)} Posts Ready!")
-        with col2:
-            if st.button("🎬 AUTO CREATE 100 REELS", type="primary", use_container_width=True):
-                logs.append({"time":str(datetime.datetime.now()),"action":"100 Reels","status":"Done"}); save_log(logs); st.success("✅ Reels Ready")
-        with col3:
-            if st.button("💰 AUTO INVOICE", type="primary", use_container_width=True):
-                logs.append({"time":str(datetime.datetime.now()),"action":f"Invoice {len(purchases)}","status":"Done"}); save_log(logs); st.success("✅ Done")
-        if logs: st.dataframe(pd.DataFrame(logs[-10:]), use_container_width=True)
+        st.dataframe(pd.DataFrame([{"No":i+1,"ID":c.get("id",""),"Course":c.get("topic",""),"Price":c.get("price",999),"Videos":c.get("total_videos",400)} for i,c in enumerate(courses)]), use_container_width=True)
