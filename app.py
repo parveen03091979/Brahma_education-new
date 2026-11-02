@@ -4,28 +4,14 @@ import hashlib
 import secrets
 import datetime
 import urllib.parse
-import os
 from pathlib import Path
-
-# Streamlit platform par python-pptx module load karne ka dynamic automatic handle
-try:
-    from pptx import Presentation
-    from pptx.util import Inches, Pt
-except ImportError:
-    import subprocess
-    import sys
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "python-pptx"])
-    from pptx import Presentation
-    from pptx.util import Inches, Pt
 
 # 1. Page Configuration & Theme Setup
 st.set_page_config(page_title="Brahma Education V100", page_icon="🎓", layout="wide")
 
 # Paths Configuration
 DATA = Path("data")
-PPT_DIR = DATA / "ppts"
 DATA.mkdir(exist_ok=True)
-PPT_DIR.mkdir(exist_ok=True)
 
 COURSES_FILE = DATA / "courses.json"
 PURCHASE_FILE = DATA / "purchases.json"
@@ -131,7 +117,7 @@ def initialize_courses():
     save_json_data(COURSES_FILE, updated_data)
     return updated_data
 
-# Core PPT Maker Logic
+# Core Content Generator Logic
 def module_content(topic, number):
     title = MODULES[number - 1]
     text = f"COURSE TOPIC: {topic}. MODULE: {title}. This lesson introduces the subject and explains its importance in professional and business applications. Understand main concepts, terminology, tools, processes and practical implementation. Start with foundation and move towards professional applications. "
@@ -148,43 +134,6 @@ def module_content(topic, number):
         text += "FINAL PROJECT: Create professional project based on this course. Include problem, solution, workflow, tools, testing, portfolio and final presentation. Submit for evaluation. "
     
     return text + text
-
-def make_ppt(course):
-    cid = course["id"]
-    topic = course["topic"]
-    output = PPT_DIR / f"{cid}_40_MODULES_V100.pptx"
-    
-    prs = Presentation()
-    prs.slide_width = Inches(13.33)
-    prs.slide_height = Inches(7.5)
-    
-    for n in range(1, 41):
-        # Index layout validation mechanism for cloud templates
-        try:
-            slide = prs.slides.add_slide(prs.slide_layouts[6])
-        except Exception:
-            try:
-                slide = prs.slides.add_slide(prs.slide_layouts[0])
-            except Exception:
-                slide = prs.slides.add_slide(prs.slide_layouts)
-        
-        # Title Box
-        title_box = slide.shapes.add_textbox(Inches(0.3), Inches(0.2), Inches(12.7), Inches(0.9))
-        tf = title_box.text_frame
-        tf.word_wrap = True
-        tf.text = f"M{str(n).zfill(2)} {topic} Module {n}"
-        tf.paragraphs[0].font.size = Pt(20)
-        tf.paragraphs[0].font.bold = True
-        
-        # Body Box
-        body_box = slide.shapes.add_textbox(Inches(0.3), Inches(1.2), Inches(12.7), Inches(6.1))
-        bf = body_box.text_frame
-        bf.word_wrap = True
-        bf.text = module_content(topic, n)
-        bf.paragraphs[0].font.size = Pt(13)
-        
-    prs.save(str(output))
-    return output
 
 def make_password_hash(password):
     salt = secrets.token_bytes(16)
@@ -217,3 +166,39 @@ if "admin_logged" not in st.session_state:
 
 # Initialize data reactive pipelines
 courses = initialize_courses()
+purchases = load_json_data(PURCHASE_FILE, [])
+marketing = load_json_data(MARKETING_FILE, [])
+api_keys = load_json_data(API_FILE, {})
+
+# Sidebar Navigation System
+st.sidebar.title("Brahma Education V100")
+
+if not MASTER_HASH.exists():
+    pw = st.sidebar.text_input("Create Admin Password", type="password", key="create_pw_field")
+    if st.sidebar.button("Create Admin Account"):
+        if pw and len(pw) >= 4:
+            MASTER_HASH.write_text(make_password_hash(pw), encoding="utf-8")
+            st.success("Admin Profile Configured!")
+            st.rerun()
+        else:
+            st.sidebar.error("Password must be at least 4 characters long.")
+    menu = "Browse Courses"
+else:
+    if not st.session_state.admin_logged:
+        menu = st.sidebar.radio("Navigation Menu", ["Browse Courses", "My Access"])
+        st.sidebar.divider()
+        pw = st.sidebar.text_input("Enter Admin Password", type="password", key="login_pw_field")
+        if st.sidebar.button("Admin Secure Login"):
+            stored = MASTER_HASH.read_text(encoding="utf-8").strip()
+            if verify_password(pw, stored):
+                if ":" not in stored:
+                    MASTER_HASH.write_text(make_password_hash(pw), encoding="utf-8")
+                expiry = datetime.datetime.now() + datetime.timedelta(days=7)
+                save_json_data(ADMIN_SESSION, {"expiry": expiry.isoformat()})
+                st.session_state.admin_logged = True
+                st.rerun()
+            else:
+                st.sidebar.error("Invalid Credentials Provided.")
+    else:
+        st.sidebar.success("Admin Active: Price 99 Lock")
+        menu = st.sidebar.radio("Admin Control Panel", [
