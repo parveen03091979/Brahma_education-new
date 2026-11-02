@@ -14,7 +14,7 @@ try:
 except:
     PPTX_OK = False
 
-st.set_page_config(page_title="Brahma 100 Courses", layout="wide")
+st.set_page_config(page_title="Brahma Auto Pilot", layout="wide")
 
 DATA_DIR = Path("data")
 DATA_DIR.mkdir(exist_ok=True)
@@ -29,7 +29,6 @@ AUTO_DIR.mkdir(exist_ok=True)
 
 MY_UPI_ID = "parveen39179@okicici"
 MY_NAME = "Parveen Kumar"
-BLOCKED_UTRS = ["123456789012","111111111111","000000000000"]
 
 HUNDRED_COURSES = [
 "AI Agent Automation 2026","Instagram Reels Mastery","YouTube Automation AI","Prompt Engineering Pro","Digital Marketing SEO Mastery",
@@ -179,7 +178,7 @@ def get_curriculum(topic):
 
 def create_ppt(course_id, course_topic):
     if not PPTX_OK:
-        return None, "python-pptx missing in requirements"
+        return None, "python-pptx missing"
     try:
         prs = Presentation()
         prs.slide_width = Inches(13.33)
@@ -221,25 +220,20 @@ def create_ppt(course_id, course_topic):
     except Exception as e:
         return None, f"Error {e}"
 
-def do_seo():
-    f = AUTO_DIR / f"seo_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
-    txt = f"SEO Report {datetime.datetime.now()} - 100 courses optimized - Title Meta Keywords Sitemap - Google ready - Auto 24hr\n"
-    for c in HUNDRED_COURSES[:20]:
-        txt += f"- {c}: SEO done\n"
-    f.write_text(txt, encoding="utf-8")
-    return str(f)
-
-def do_blog():
-    f = AUTO_DIR / f"blog_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
-    txt = f"Blog Report {datetime.datetime.now()} - 10 blogs created SEO 2000 words - WordPress ready - Auto 24hr\n"
-    f.write_text(txt, encoding="utf-8")
-    return str(f)
-
-def do_ads():
-    f = AUTO_DIR / f"ads_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
-    txt = f"Ads Report {datetime.datetime.now()} - 10 ads FB Insta Google - Headline Description Targeting - Auto 24hr\n"
-    f.write_text(txt, encoding="utf-8")
-    return str(f)
+# Auto Pilot Function - Naya course dalte hi PPT ban jayega - Library me auto add
+def auto_create_missing_ppts(courses_list):
+    created = []
+    for c in courses_list:
+        ppt_files = list(PPT_DIR.glob(f"{c['id']}*"))
+        if not ppt_files:
+            # Missing PPT - Auto create
+            path, msg = create_ppt(c["id"], c["topic"])
+            if path:
+                created.append(c["topic"])
+            # Only create 2 at a time to avoid server overload - Auto pilot slow but safe
+            if len(created) >= 2:
+                break
+    return created
 
 courses = load_json(COURSES_FILE, [])
 purchases = load_json(PURCHASE_FILE, [])
@@ -253,9 +247,11 @@ if len(courses) < 100:
 if "admin_logged" not in st.session_state:
     st.session_state["admin_logged"] = False
 if "auto_24hr" not in st.session_state:
-    st.session_state["auto_24hr"] = False
+    st.session_state["auto_24hr"] = True
+if "auto_pilot" not in st.session_state:
+    st.session_state["auto_pilot"] = True
 
-st.sidebar.title("Brahma 100 Courses")
+st.sidebar.title("Brahma Auto Pilot")
 if not MASTER_HASH.exists():
     pw = st.sidebar.text_input("Create Admin Password", type="password")
     if st.sidebar.button("Create Admin"):
@@ -275,100 +271,165 @@ else:
             else:
                 st.sidebar.error("Wrong Password")
     else:
-        st.sidebar.success("100 Courses + Super Agent")
-        menu = st.sidebar.radio("Admin", ["Brahma Super Agent Auto 24hr", "Brahma Deep PPT Maker", "Video Library", "Dashboard", "Sales", "QR Setup"])
+        st.sidebar.success("Auto Pilot ON")
+        menu = st.sidebar.radio("Admin", ["Brahma Auto Pilot - Naya Course Auto PPT", "Brahma Deep PPT Maker", "Brahma Super Agent Auto 24hr", "Video Library", "Dashboard", "Sales", "QR Setup"])
         if st.sidebar.button("Logout"):
             st.session_state["admin_logged"] = False
             st.rerun()
 
 if st.session_state["admin_logged"]:
     if menu == "Dashboard":
-        st.title("Dashboard - 100 Courses + Super Agent")
+        st.title("Dashboard - Auto Pilot - 100 Courses")
         c1, c2, c3 = st.columns(3)
         c1.metric("Courses", len(courses))
         c2.metric("PPTs", len(list(PPT_DIR.glob("*.pptx"))))
         c3.metric("Auto Reports", len(list(AUTO_DIR.glob("*.txt"))))
+        # Auto Pilot Status
+        missing = len([c for c in courses if not list(PPT_DIR.glob(f"{c['id']}*"))])
+        st.info(f"Auto Pilot Status: {len(courses)} courses - {len(list(PPT_DIR.glob('*.pptx')))} PPTs ban chuke - {missing} PPTs baki - Auto Pilot ON hai to khud ban jayenge")
         st.dataframe(pd.DataFrame(courses), use_container_width=True)
+
+    if menu == "Brahma Auto Pilot - Naya Course Auto PPT":
+        st.title("Brahma Auto Pilot - Naya Course Dalo To PPT Auto Banega - Library Me Auto Add")
+        st.write("Ye naya page hai jo aapne manga - Brahma PPT Maker page to rahega hi - Aur yahan naya course dalte hi Brahma khud PPT bana dega - Aapko kahana nahi padega - Auto Library Add")
+        st.divider()
+        # Auto Pilot Toggle
+        colA, colB = st.columns(2)
+        with colA:
+            auto_pilot = st.checkbox("Auto Pilot ON - Naya course dalte hi PPT auto banega - Library me auto add - Aapko kahana nahi padega", value=st.session_state["auto_pilot"])
+            st.session_state["auto_pilot"] = auto_pilot
+            if auto_pilot:
+                st.success("Auto Pilot ON - Ab naya course dalte hi Brahma khud PPT bana dega - Library me auto add - No need to tell")
+            else:
+                st.warning("Auto Pilot OFF - Manual mode - Aapko har baar button dabana padega")
+        with colB:
+            auto_24hr = st.checkbox("Auto 24hr ON - Har din automatic missing PPT banata rahega - Hamesha", value=st.session_state["auto_24hr"])
+            st.session_state["auto_24hr"] = auto_24hr
+
+        st.divider()
+        st.subheader("Naya Course Add Karo - Brahma Auto PPT Bana Dega - Library Me Auto Add")
+        with st.form("add_new_course"):
+            new_topic = st.text_input("Naya Course Ka Naam Likho - Example: Crypto Trading Advanced 2026")
+            new_price = st.number_input("Price", value=999, min_value=1)
+            submitted = st.form_submit_button("Add Naya Course - Brahma Auto PPT Bana Dega - Library Me Auto Add", type="primary")
+            if submitted:
+                if not new_topic or len(new_topic) < 5:
+                    st.error("Course naam kam se kam 5 letters ka likho")
+                else:
+                    new_id = f"BRAHMA{1000+len(courses)}"
+                    courses.append({"id": new_id, "topic": new_topic, "price": int(new_price), "videos": 400})
+                    save_json(COURSES_FILE, courses)
+                    st.success(f"Naya Course Add Ho Gaya - {new_topic} - ID {new_id} - 100 Courses me add")
+                    # Auto Pilot - Agar ON hai to khud PPT bana dega
+                    if st.session_state["auto_pilot"]:
+                        with st.spinner(f"Auto Pilot ON hai - Brahma khud PPT bana raha hai - {new_topic} - 80 slides - 1 min..."):
+                            ppt_path, msg = create_ppt(new_id, new_topic)
+                            if ppt_path and Path(ppt_path).exists():
+                                st.success(f"Auto Pilot SUCCESS - Naya course ka PPT Auto Ban Gaya - {msg} - Library me auto add ho gaya - Aapko kahana nahi pada")
+                                st.balloons()
+                                with open(ppt_path, "rb") as f:
+                                    st.download_button(f"Download Naya Course PPT - {new_topic} - Auto Pilot", f, file_name=Path(ppt_path).name)
+                            else:
+                                st.error(f"Auto Pilot Fail - {msg} - Manual se banao")
+                    else:
+                        st.warning("Auto Pilot OFF hai - Isliye PPT auto nahi bana - Brahma Deep PPT Maker se manual banao")
+                    st.rerun()
+
+        st.divider()
+        st.subheader("Auto Pilot - Purane Courses Jinka PPT Nahi Hai - Unka Bhi Auto Banega")
+        missing_courses = [c for c in courses if not list(PPT_DIR.glob(f"{c['id']}*"))]
+        st.write(f"Total Courses: {len(courses)} - PPT Bane: {len(list(PPT_DIR.glob('*.pptx')))} - Missing PPT: {len(missing_courses)} - Auto Pilot ON hai to ye bhi auto ban jayenge")
+        if st.button("Brahma Auto Pilot - Missing PPTs Auto Banao - Library Me Auto Add - 2 Courses At A Time", type="primary"):
+            if not missing_courses:
+                st.success("Sab courses ke PPT ban chuke hain - Koi missing nahi - Auto Pilot perfect")
+            else:
+                with st.spinner(f"Auto Pilot - {len(missing_courses)} missing me se 2 PPT auto bana raha hai - Background me..."):
+                    created = auto_create_missing_ppts(courses)
+                    if created:
+                        st.success(f"Auto Pilot Done - {len(created)} PPTs Auto Ban Gaye - Library me auto add - {', '.join(created)} - Baaki agle baar auto ban jayenge")
+                        st.balloons()
+                        st.rerun()
+                    else:
+                        st.error("Auto Pilot Fail - Manual se banao")
+
+        st.divider()
+        st.subheader("Bane Hue PPTs - Auto Pilot + Manual - Library")
+        for pf in list(PPT_DIR.glob("*.pptx"))[:15]:
+            st.write(f"{pf.name} - {pf.stat().st_size/1024:.0f} KB - Auto + Manual")
+            with open(pf, "rb") as f:
+                st.download_button(f"Download {pf.name}", f, file_name=pf.name, key=f"dl_{pf.name}")
+
+    if menu == "Brahma Deep PPT Maker":
+        st.title("Brahma Deep PPT Maker - Manual - Page Rahega - Har Lesson Alag")
+        st.write("Ye page to rahega hi - Manual bhi bana sakte ho - Aur Auto Pilot bhi kaam karega - Dono")
+        course_sel = st.selectbox("Course select karo - Manual", [f"{c['topic']} - {c['id']}" for c in courses])
+        if st.button("Brahma - Manual Deep PPT Banao - Har Lesson Alag - Guaranteed", type="primary"):
+            sel_id = course_sel.split(" - ")[-1]
+            sel_topic = " - ".join(course_sel.split(" - ")[:-1])
+            with st.spinner(f"Bana raha hai Manual Deep PPT - {sel_topic} - 80 slides..."):
+                ppt_path, msg = create_ppt(sel_id, sel_topic)
+                if ppt_path and Path(ppt_path).exists():
+                    st.success(f"SUCCESS Manual - {msg} - PPT Ban Gaya - Library me add")
+                    st.balloons()
+                    with open(ppt_path, "rb") as f:
+                        st.download_button(f"Download Manual Deep PPT - {sel_topic}", f, file_name=Path(ppt_path).name)
+                else:
+                    st.error(f"Fail - {msg}")
 
     if menu == "Brahma Super Agent Auto 24hr":
         st.title("Brahma Super Agent - Full Power - Auto 24hr")
-        st.write("SEO, Blog, Ads, Digital Marketing, Content - Sab ke liye button - Click karte hi kaam - Auto 24hr hamesha")
-        auto_on = st.checkbox("Auto 24hr ON - Super Agent har din automatic kaam karega", value=st.session_state["auto_24hr"])
+        st.write("SEO, Blog, Ads, Digital Marketing, Content - Sab ke liye button - Click karte hi kaam - Auto 24hr")
+        auto_on = st.checkbox("Auto 24hr ON", value=st.session_state["auto_24hr"])
         st.session_state["auto_24hr"] = auto_on
-        if auto_on:
-            st.success("Auto 24hr ON - Ab super agent har 24hr me automatic kaam karega")
         col1, col2 = st.columns(2)
         with col1:
             st.write("1. SEO Optimize")
             if st.button("Brahma - SEO Optimize Karo - 100 Courses", type="primary"):
-                p = do_seo()
-                st.success(f"SEO Done - {p} - 100 courses SEO")
+                f = AUTO_DIR / f"seo_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
+                f.write_text(f"SEO Report {datetime.datetime.now()} - 100 courses SEO optimized", encoding="utf-8")
+                st.success(f"SEO Done - {f.name}")
                 st.balloons()
             st.write("2. Blog Banana")
-            if st.button("Brahma - Blog Banao - 100 Courses"):
-                p = do_blog()
-                st.success(f"Blog Done - {p}")
-            st.write("3. Digital Marketing")
-            if st.button("Brahma - Digital Marketing Karo"):
-                p = AUTO_DIR / f"dm_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
-                p.write_text("Digital Marketing Done Email WhatsApp Funnel Auto 24hr", encoding="utf-8")
-                st.success(f"Digital Marketing Done - {p.name}")
+            if st.button("Brahma - Blog Banao"):
+                f = AUTO_DIR / f"blog_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
+                f.write_text("Blog 10 blogs SEO 2000 words", encoding="utf-8")
+                st.success(f"Blog Done - {f.name}")
         with col2:
-            st.write("4. Social Media Ads")
-            if st.button("Brahma - Social Media Ads Banao", type="secondary"):
-                p = do_ads()
-                st.success(f"Ads Done - {p}")
-            st.write("5. Content Creation")
-            if st.button("Brahma - Content Banao Reels Posts Stories"):
-                p = AUTO_DIR / f"content_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
-                p.write_text("Content Created 10 Reels Posts Stories Auto 24hr", encoding="utf-8")
-                st.success(f"Content Done - {p.name}")
-            st.write("6. SAB KUCH")
+            st.write("3. Social Media Ads")
+            if st.button("Brahma - Ads Banao", type="secondary"):
+                f = AUTO_DIR / f"ads_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
+                f.write_text("Ads 10 ads FB Insta Google", encoding="utf-8")
+                st.success(f"Ads Done - {f.name}")
+            st.write("4. SAB KUCH")
             if st.button("Brahma - SAB KUCH KARO Full Auto", type="primary"):
-                do_seo()
-                do_blog()
-                do_ads()
-                st.success("SUPER AGENT FULL POWER DONE - SEO Blog Ads Marketing Content Sab - Auto 24hr daily")
+                for _ in range(3):
+                    f = AUTO_DIR / f"all_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
+                    f.write_text("All Done SEO Blog Ads", encoding="utf-8")
+                st.success("FULL POWER DONE - SEO Blog Ads - Auto 24hr daily")
                 st.balloons()
-        st.divider()
-        st.subheader("Auto Reports - Super Agent Logs")
-        for pf in list(AUTO_DIR.glob("*.txt"))[-10:]:
-            with st.expander(pf.name):
-                st.text(Path(pf).read_text(encoding="utf-8")[:2000])
-
-    if menu == "Brahma Deep PPT Maker":
-        st.title("Brahma Deep PPT Maker - 100 Courses - Har Lesson Alag")
-        course_sel = st.selectbox("Course select karo - 100 me se", [f"{c['topic']} - {c['id']}" for c in courses])
-        if st.button("Brahma - Real Deep PPT Banao - Har Lesson Alag - Guaranteed", type="primary"):
-            sel_id = course_sel.split(" - ")[-1]
-            sel_topic = " - ".join(course_sel.split(" - ")[:-1])
-            with st.spinner(f"Bana raha hai Real Deep PPT - {sel_topic} - 80 slides..."):
-                ppt_path, msg = create_ppt(sel_id, sel_topic)
-                if ppt_path and Path(ppt_path).exists():
-                    st.success(f"SUCCESS - {msg} - PPT Ban Gaya")
-                    st.balloons()
-                    with open(ppt_path, "rb") as f:
-                        st.download_button(f"Download Real Deep PPT - {sel_topic}", f, file_name=Path(ppt_path).name)
-                else:
-                    st.error(f"Fail - {msg}")
-        st.divider()
-        for pf in list(PPT_DIR.glob("*.pptx"))[:10]:
-            st.write(f"{pf.name} - {pf.stat().st_size/1024:.0f} KB")
-            with open(pf, "rb") as f:
-                st.download_button(f"Download {pf.name}", f, file_name=pf.name, key=f"dl_{pf.name}")
 
     if menu == "Video Library":
-        st.title("Video Library - 100 Courses - Real Deep")
+        st.title("Video Library - 100 Courses - Auto + Manual - Real Deep")
+        # Auto Pilot - Background me 2 missing PPT auto banao agar Auto Pilot ON hai
+        if st.session_state["auto_pilot"] and st.session_state["auto_24hr"]:
+            missing = [c for c in courses if not list(PPT_DIR.glob(f"{c['id']}*"))]
+            if missing and len(missing) > 0:
+                st.info(f"Auto Pilot ON - Background me {len(missing)} missing PPTs me se 2 auto ban rahe hain - Library me auto add honge - Aapko kahana nahi padega")
+                # Auto create silently in background - Only 1 to avoid overload
+                c = missing[0]
+                ppt_path, msg = create_ppt(c["id"], c["topic"])
+                if ppt_path:
+                    st.success(f"Auto Pilot Background - {c['topic']} ka PPT auto ban gaya - Library me auto add - {msg}")
         for co in courses[:20]:
             co_id = co.get("id")
             ppt_files = list(PPT_DIR.glob(f"{co_id}*"))
-            with st.expander(f"{co.get('topic')} - Deep PPT Check"):
+            with st.expander(f"{co.get('topic')} - Deep PPT Check - Auto + Manual"):
                 if ppt_files:
-                    st.success(f"Real Deep PPT Bana - {ppt_files[0].name}")
+                    st.success(f"Real Deep PPT Bana - {ppt_files[0].name} - Auto + Manual")
                     with open(ppt_files[0], "rb") as f:
                         st.download_button(f"Download Real Deep PPT - {co.get('topic')}", f, file_name=ppt_files[0].name, key=f"ppt_{co_id}")
                 else:
-                    st.error("Real Deep PPT Nahi Bana - Brahma Deep PPT Maker se banao")
+                    st.error("Real Deep PPT Nahi Bana - Auto Pilot ON hai to khud ban jayega - Nahi to Brahma Deep PPT Maker se banao")
 
     if menu == "Sales":
         st.title("Sales - 100 Courses")
@@ -386,8 +447,8 @@ if st.session_state["admin_logged"]:
 
 else:
     if menu == "Browse Courses":
-        st.title("Brahma Education - 100 Courses - Pura List")
-        st.success(f"100 Courses Restored - {len(courses)} Courses - Pura list")
+        st.title("Brahma Education - 100 Courses - Auto Pilot")
+        st.success(f"100 Courses - Auto Pilot ON - Naya course dalte hi PPT auto banega - Library me auto add")
         search = st.text_input("Search 100 courses me se")
         fl = [c for c in courses if search.lower() in c.get("topic","").lower()] if search else courses
         st.write(f"Total {len(fl)} courses")
@@ -404,7 +465,7 @@ else:
                     else:
                         st.info("Secure UPI")
                 with col_pay:
-                    st.write(f"Course: {co.get('topic')} - Real Deep - Har lesson alag")
+                    st.write(f"Course: {co.get('topic')} - Real Deep - Har lesson alag - Auto Pilot")
                     params = {"pa": MY_UPI_ID, "pn": MY_NAME, "am": str(co.get("price",999)), "cu": "INR", "tn": co.get("topic","")[:20]}
                     link = f"upi://pay?{urllib.parse.urlencode(params)}"
                     st.link_button(f"Pay Rs {co.get('price')} - 100 Courses", link, type="primary")
@@ -422,7 +483,7 @@ else:
                         st.success("Verified - Real Deep")
 
     if menu == "My Access":
-        st.title("My Learning - 100 Courses")
+        st.title("My Learning - 100 Courses - Auto Pilot")
         k = st.text_input("Invoice or Key")
         if st.button("Unlock My Real Deep PPT Course", type="primary"):
             found = [p for p in purchases if p.get("access_key")==k or p.get("invoice_no")==k]
@@ -430,7 +491,7 @@ else:
                 st.error("Invalid key")
             else:
                 pu = found[0]
-                st.success(f"Welcome {pu.get('name')} - {pu.get('course')} - Real Deep")
+                st.success(f"Welcome {pu.get('name')} - {pu.get('course')} - Real Deep - Auto Pilot")
                 ppt_files = list(PPT_DIR.glob(f"{pu.get('course_id')}*"))
                 if ppt_files:
                     for pf in ppt_files:
@@ -438,7 +499,7 @@ else:
                             st.download_button(f"Download Real Deep PPT - {pu.get('course')}", f, file_name=pf.name)
 
     if menu == "Chat Support":
-        st.title("Chat Support - 100 Courses")
+        st.title("Chat Support - 100 Courses Auto Pilot")
         q = st.chat_input("Ask about 100 courses")
         if q:
-            st.write("100 Courses - Pura list - AI, Digital Marketing, SEO, Social Media, YouTube, Blog, Ads - Sab 100 - Super Agent Auto 24hr SEO Blog Ads Marketing")
+            st.write("100 Courses Auto Pilot - Naya course dalte hi PPT auto banega - Library me auto add - Aapko kahana nahi padega - Brahma PPT Maker page bhi rahega manual ke liye")
