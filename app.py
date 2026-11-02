@@ -45,21 +45,66 @@ def load_json(p, default):
 def save_json(p, data):
     p.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding='utf-8')
 
-def is_valid_email(email):
-    pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
-    return re.match(pattern, email) is not None
-
+# V29 STRICT VALIDATION - BLOCKS Uuuu. Ggggh AND 123456789123
 def is_valid_name(name):
     name = name.strip()
-    if len(name) < 3:
-        return False
-    if len(set(name.lower().replace(' ', ''))) < 2:
-        return False
-    return sum(1 for c in name if c.isalpha()) >= 2
+    # Rule 1: Only alphabets and space, no dot, no number - Blocks Uuuu. Ggggh
+    if not re.match(r'^[A-Za-z ]+$', name):
+        return False, 'Name me sirf alphabets aur space allowed - Dot (.) number nahi - Example Rahul Sharma'
+    # Rule 2: Min 2 words, each min 2 chars - Blocks Ggh
+    parts = name.split()
+    if len(parts) < 2:
+        return False, 'Full name likho - First + Last name - Example Rahul Sharma - Single word not allowed'
+    for part in parts:
+        if len(part) < 2:
+            return False, 'Har word min 2 letters - Example Ra Sh nahi'
+    # Rule 3: No 3 same chars together - Blocks Uuuu (4 u) and Ggggh (4 g)
+    lower = name.lower()
+    for i in range(len(lower)-2):
+        if lower[i] == lower[i+1] == lower[i+2]:
+            return False, f'Name me {lower[i]} 3 baar repeat nahi - Uuuu Ggggh jaise fake names blocked'
+    # Rule 4: At least 3 different letters
+    letters = set(lower.replace(' ', ''))
+    if len(letters) < 3:
+        return False, 'Name me kam se kam 3 alag letters chahie'
+    return True, 'OK'
+
+def is_valid_email(email):
+    pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    if not re.match(pattern, email):
+        return False, 'Email me @ aur .com hona chahie - Example test@gmail.com - Hhhhhh blocked'
+    # Block fake emails like aaaa@aaaa.com with repeated chars
+    local = email.split('@')[0].lower()
+    for i in range(len(local)-2):
+        if local[i] == local[i+1] == local[i+2]:
+            return False, 'Email me same letter 3 baar repeat nahi - aaaa@ blocked'
+    return True, 'OK'
 
 def is_valid_utr(utr):
     utr = utr.strip()
-    return utr.isdigit() and len(utr) == 12
+    # Must be 12 digits
+    if not (utr.isdigit() and len(utr) == 12):
+        return False, 'UTR must be exactly 12 digit number - Example 123456789012 se alag real UTR - Wwwwww blocked'
+    # Block obvious fake sequential patterns - Blocks 123456789123
+    fake_patterns = [
+        '123456789012', '123456789123', '012345678901', '123456789000',
+        '000000000000', '111111111111', '222222222222', '123123123123',
+        '121212121212', '112233445566'
+    ]
+    if utr in fake_patterns:
+        return False, f'Fake sequential UTR {utr} not allowed - Real UTR from UPI app dalo - Sequential numbers blocked'
+    # Block if all digits same
+    if len(set(utr)) == 1:
+        return False, 'UTR me same digit 12 baar nahi - Real UTR dalo'
+    # Block if strictly increasing by 1 like 123456789123
+    is_seq = True
+    for i in range(len(utr)-1):
+        if (int(utr[i]) + 1) % 10 != int(utr[i+1]):
+            is_seq = False
+            break
+    if is_seq:
+        return False, 'Sequential UTR like 123456789123 not allowed - Real UTR from UPI history dalo'
+    return True, 'OK'
 
 courses = load_json(COURSES_FILE, [])
 purchases = load_json(PURCHASE_FILE, [])
@@ -119,13 +164,13 @@ def smart_answer(q, courses_list):
     q = (q or '').lower()
     if 'kya' in q or 'kitne' in q or 'list' in q:
         top = courses_list[0].get('topic') if courses_list else 'AI Course'
-        return f'We have 100+ courses. Top is {top}. Check Browse Courses. Each has 400 videos.'
+        return f'We have 100+ courses. Top is {top}. Check Browse Courses.'
     if 'best' in q:
-        return 'Best: AI Agent Automation, Instagram Reels, YouTube Automation, Digital Marketing.'
+        return 'Best: AI Agent Automation, Instagram Reels, YouTube Automation.'
     if 'price' in q or 'fees' in q:
-        return 'Price Rs 999 to 1399. 400 videos. Lifetime access. Instant access after payment.'
+        return 'Price Rs 999 to 1399. 400 videos. Instant access after real payment.'
     if 'hindi' in q:
-        return 'Yes, Hindi and English both. Voice separate using FREE tools.'
+        return 'Yes, Hindi and English both. Voice separate FREE tools.'
     return 'We have 100+ professional courses. Search in Browse Courses.'
 
 if st.session_state['admin_logged']:
@@ -134,9 +179,8 @@ if st.session_state['admin_logged']:
         c1, c2, c3 = st.columns(3)
         c1.metric('Courses', len(courses))
         c2.metric('Sales', len(purchases))
-        c3.metric('Total Approved', len(purchases))
+        c3.metric('Total', len(purchases))
         st.dataframe(pd.DataFrame(courses), use_container_width=True)
-
     if menu == 'Price Edit':
         st.title('Price Edit')
         search = st.text_input('Search')
@@ -148,7 +192,6 @@ if st.session_state['admin_logged']:
                     c['price'] = int(np)
                     save_json(COURSES_FILE, courses)
                     st.success('Updated')
-
     if menu == 'QR Setup':
         st.title('QR Setup')
         st.info(f'UPI {MY_UPI_ID}')
@@ -162,7 +205,6 @@ if st.session_state['admin_logged']:
             if st.button('Delete QR'):
                 UPI_QR_PATH.unlink(missing_ok=True)
                 st.rerun()
-
     if menu == 'Super Brain':
         st.title('Super Brain - Auto Agent FREE')
         ca, cb = st.columns(2)
@@ -175,7 +217,7 @@ if st.session_state['admin_logged']:
                     st.success('Hindi Voice Done')
                     st.audio(str(out))
                 else:
-                    st.error('Add gtts in requirements')
+                    st.error('Add gtts')
         with cb:
             en = st.text_area('English Text', 'Hello, we learn AI Agent', key='en')
             if st.button('Make English Voice FREE'):
@@ -212,19 +254,15 @@ if st.session_state['admin_logged']:
                     save_json(COURSES_FILE, courses)
                     st.success('Course Created')
                     st.rerun()
-
     if menu == 'Sales':
-        st.title('Sales - Instant Access System - No Approval Needed')
-        st.info('Now all keys are auto-approved - No 2-4 hour wait - Instant access')
+        st.title('Sales - Instant Access System')
         st.dataframe(pd.DataFrame(purchases), use_container_width=True)
-
     if menu == 'Settings':
         with st.form('bank'):
             upi = st.text_input('UPI', value=MY_UPI_ID)
             if st.form_submit_button('Save'):
                 save_json(CONFIG_FILE, {'upi_id': upi})
                 st.success('Saved')
-
 else:
     if menu == 'Browse Courses':
         st.title('Brahma Education')
@@ -249,56 +287,54 @@ else:
                 with col_pay:
                     st.write(f"Course: {co.get('topic')}")
                     st.write(f"Price: Rs {co.get('price')}")
-                    st.write('Instant Access - No Wait')
+                    st.write('Instant Access After Real Payment Verification')
                     params = {'pa': MY_UPI_ID, 'pn': MY_NAME, 'am': str(co.get('price',999)), 'cu': 'INR', 'tn': co.get('topic','')[:20]}
                     link = f"upi://pay?{urllib.parse.urlencode(params)}"
                     st.link_button(f"Pay Rs {co.get('price')} - Instant Access", link, type='primary')
                 with st.form(f"buy_{co['id']}_{idx}"):
-                    st.write('**Fill After Payment - Instant Access**')
+                    st.write('**Fill After REAL Payment - Strict Validation - No Free Access**')
                     c1, c2, c3 = st.columns(3)
                     with c1:
-                        name = st.text_input('Full Name', key=f"n_{idx}")
+                        name = st.text_input('Full Name (e.g. Rahul Sharma)', key=f"n_{idx}")
                     with c2:
-                        email = st.text_input('Email with @', key=f"e_{idx}")
+                        email = st.text_input('Email (e.g. rahul@gmail.com)', key=f"e_{idx}")
                     with c3:
-                        utr = st.text_input('UTR 12 digit', key=f"u_{idx}", help='12 digit number from UPI app')
+                        utr = st.text_input('UTR 12 digit from UPI app', key=f"u_{idx}")
                     if st.form_submit_button('Get Instant Access', type='primary'):
-                        if not is_valid_name(name):
-                            st.error('Enter valid name min 3 chars - Example Rahul Sharma')
+                        ok_name, msg_name = is_valid_name(name)
+                        if not ok_name:
+                            st.error(f'Invalid Name: {msg_name}')
                             st.stop()
-                        if not is_valid_email(email):
-                            st.error('Enter valid email with @ - Example test@gmail.com')
+                        ok_email, msg_email = is_valid_email(email)
+                        if not ok_email:
+                            st.error(f'Invalid Email: {msg_email}')
                             st.stop()
-                        if not is_valid_utr(utr):
-                            st.error('Enter valid 12 digit UTR number - Example 123456789012 - From UPI app history')
+                        ok_utr, msg_utr = is_valid_utr(utr)
+                        if not ok_utr:
+                            st.error(f'Invalid UTR: {msg_utr}')
                             st.stop()
                         inv = f"INV{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}"
                         key = f"BRAHMA-{hashlib.sha256((email+co.get('topic')+inv+utr).encode()).hexdigest()[:10].upper()}"
-                        # INSTANT APPROVAL - NO PENDING
                         purchases.append({'invoice_no': inv, 'access_key': key, 'name': name, 'email': email, 'course': co.get('topic'), 'course_id': co.get('id'), 'price': co.get('price'), 'utr': utr, 'status': 'APPROVED', 'date': str(datetime.datetime.now())})
                         save_json(PURCHASE_FILE, purchases)
-                        st.success(f"Payment Verified - Instant Access Granted")
-                        st.info(f"Your Invoice {inv} - Your Key {key}")
-                        st.warning('Go to My Access - Enter this Key - Course will open instantly - No wait')
+                        st.success(f"Verified - Instant Access Granted")
+                        st.info(f"Invoice {inv} - Key {key} - Go to My Access and unlock")
 
     if menu == 'My Access':
         st.title('My Learning - Instant Access')
-        st.write('Enter your key - Course opens instantly - No approval needed')
+        st.write('Enter key - Course opens instantly')
         k = st.text_input('Invoice or Key')
         if st.button('Unlock Instantly', type='primary'):
             found = [p for p in purchases if p.get('access_key') == k or p.get('invoice_no') == k]
             if not found:
-                st.error('Invalid key - Check your invoice - Example BRAHMA-XXXXXXXXXX')
+                st.error('Invalid key')
             else:
                 pu = found[0]
-                # INSTANT ACCESS - NO PENDING CHECK
-                st.success(f"Welcome {pu.get('name')} - Course Unlocked Instantly")
+                st.success(f"Welcome {pu.get('name')} - Course Unlocked")
                 st.write(f"Course: {pu.get('course')}")
-                st.write(f"Price Paid: Rs {pu.get('price')}")
-                st.write(f"UTR: {pu.get('utr')}")
+                st.write(f"Price: Rs {pu.get('price')} - UTR: {pu.get('utr')}")
                 st.balloons()
                 st.video('https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4')
-                st.info('This is your purchased course - Lifetime access - Enjoy learning')
 
     if menu == 'Chat Support':
         st.title('Chat Support')
