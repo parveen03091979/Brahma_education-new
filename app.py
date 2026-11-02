@@ -1,6 +1,6 @@
 import streamlit as st, json, hashlib, secrets, datetime, urllib.parse
 from pathlib import Path
-st.set_page_config(page_title="Brahma V106", layout="wide")
+st.set_page_config(page_title="Brahma V107", layout="wide")
 DATA=Path("data")
 PPT_DIR=DATA/"ppts"
 DATA.mkdir(exist_ok=True)
@@ -37,11 +37,27 @@ def init():
  return data
 courses=init()
 purchases=load(PF,[])
-MODS=[f"M{i}" for i in range(1,41)]
-def english_txt(t,n):
- return f"{t} M{n} ENGLISH\nGOAL Master M{n}\nWHY Important\nSTEP1 Define\nSTEP2 Example\nSTEP3 Tool\nSTEP4 Practice\nSTEP5 Diary"
-def hindi_txt(t,n):
- return f"{t} M{n} HINDI Translation\nLAKSHYA M{n} seekhna\nKYU Zaruri\nKADAM1 Paribhasha\nKADAM2 Udaharan\nKADAM3 Tool\nKADAM4 Abhyas\nKADAM5 Diary"
+MODS=["WHAT IS","WHY IMPORTANT","WHERE USE","WHEN USE","WHO LEARN","HOW WORKS","TOOLS","EARNING","PRACTICAL","RIGHT WAY","FOUNDATION","CORE CONCEPT","ADVANCED","STEP PROCESS","EXAMPLE","CLIENT REQ","REAL STORY","PLANNING","IMPLEMENT","MISTAKES","PRO TIP","EXPERT","COMPARE","FREE PAID","PORTFOLIO","CLIENT FIND","FREELANCING","AGENCY","MODEL","SCALING","SEO","LEAD GEN","SALES","AUTOMATION","OPTIMIZE","CASE STUDY","DAILY PRACTICE","HOMEWORK","REVISION","FINAL PROJECT"]
+def english_txt(t,n,topic):
+ if n==1:
+  return f"{topic} M{n} WHAT IS ENGLISH\nGOAL Explain {topic} to 5 people\nWHY 2026 need 80 percent time save salary 3x\nCONCEPT Perceive Reason Act like WhatsApp check think reply\nSTEP1 Choose task Instagram reply\nSTEP2 ChatGPT prompt friendly\nSTEP3 Make.com trigger action\nSTEP4 Test second account\nSTEP5 Diary"
+ if n==17:
+  return f"{topic} M{n} REAL STORY ENGLISH\nGOAL Learn from Rahul real roadmap\nCONCEPT Village Redmi 8 Jio 1GB no laptop daily 1h\nSTEP1 Month1-2 foundation only\nSTEP2 Portfolio 3 projects\nSTEP3 Upwork 20 proposals 19 reject learn\nSTEP4 1 USA client 15k 5 star\nSTEP5 Month4 5 clients 75k Month6 agency 2L house"
+ if n==20:
+  return f"{topic} M{n} MISTAKES ENGLISH\nGOAL Avoid 5 mistakes 90 percent fail\nM1 Skip foundation Fix M1-M10 twice\nM2 Only watch no practice Fix 15m theory 15m practical\nM3 Money chase Fix 30 days skill only\nM4 No diary Fix night 10m diary 4 points\nM5 No mentor Fix community doubt"
+ if n==40:
+  return f"{topic} M{n} FINAL PROJECT ENGLISH\nGOAL Final portfolio 1Cr roadmap\nSTEP1 Choose business problem {topic}\nSTEP2 Plan tools workflow paper\nSTEP3 Build test 10 times fix bug\nSTEP4 Result screenshot before 2h after 10m\nSTEP5 Portfolio Behance GitHub LinkedIn\nSTEP6 Next freelancing agency SaaS"
+ return f"{topic} M{n} {t} ENGLISH\nGOAL Master {t} in {topic}\nWHY Foundation for next module important\nCONCEPT Core idea of {t} like engine in car\nSTEP1 Write definition own words\nSTEP2 See 2 examples success failure\nSTEP3 Open tool click options\nSTEP4 15m practical task\nSTEP5 Diary what learned"
+def hindi_txt(t,n,topic):
+ if n==1:
+  return f"{topic} M{n} WHAT IS HINDI Translation\nLAKSHYA 5 logo ko {topic} samjhao\nKYU 2026 me 80 percent samay bachega salary 3x\nAVADHARNA Perceive Reason Act jaise WhatsApp dekho socho jawab do\nKADAM1 Kaam chuno Instagram reply\nKADAM2 ChatGPT prompt friendly\nKADAM3 Make.com jodo\nKADAM4 Test dusra account\nKADAM5 Diary"
+ if n==17:
+  return f"{topic} M{n} REAL STORY HINDI Translation\nLAKSHYA Rahul kahani se seekho\nAVADHARNA Gaon Redmi 8 Jio 1GB bina laptop roz 1 ghanta\nKADAM1 Mahina1-2 neenv only\nKADAM2 Portfolio 3 project\nKADAM3 Upwork 20 proposal 19 reject seekho\nKADAM4 1 USA client 15k 5 star\nKADAM5 Mahina4 5 client 75k Mahina6 agency 2L ghar"
+ if n==20:
+  return f"{topic} M{n} MISTAKES HINDI Translation\nLAKSHYA 5 galti se bacho 90 fail\nG1 Neenv skip Upay M1-M10 do baar\nG2 Sirf dekho practice nahi Upay 15m theory 15m practical\nG3 Paisa peeche Upay 30 din skill only\nG4 Diary nahi Upay raat 10m diary 4 points\nG5 Mentor nahi Upay community doubt"
+ if n==40:
+  return f"{topic} M{n} FINAL PROJECT HINDI Translation\nLAKSHYA Antim portfolio 1Cr roadmap\nKADAM1 {topic} me samasya chuno\nKADAM2 Yojana tools workflow kagaj par\nKADAM3 Banao 10 baar test karo bug theek\nKADAM4 Result screenshot pehle 2h baad 10m\nKADAM5 Portfolio Behance GitHub LinkedIn\nKADAM6 Agla freelancing agency SaaS"
+ return f"{topic} M{n} {t} HINDI Translation\nLAKSHYA {t} ko {topic} me seekhna\nKYU Agle module ki neenv zaruri\nAVADHARNA {t} ka mukhya vichar\nKADAM1 Paribhasha apne shabdon me likho\nKADAM2 2 udaharan safalta asafalta dekho\nKADAM3 Tool kholo har option click karo\nKADAM4 15m abhyas karo\nKADAM5 Diary me kya seekha likho"
 def make_bilingual(c):
  from pptx import Presentation
  from pptx.util import Inches, Pt
@@ -53,35 +69,37 @@ def make_bilingual(c):
  prs.slide_width=Inches(13.33)
  prs.slide_height=Inches(7.5)
  for n in range(1,41):
+  t=MODS[n-1]
   s=prs.slides.add_slide(prs.slide_layouts[6])
   tb=s.shapes.add_textbox(Inches(0.3), Inches(0.2), Inches(12.7), Inches(0.9))
   tf=tb.text_frame
   tf.word_wrap=True
-  tf.text=f"M{n} {top} English Step By Step"
-  tf.paragraphs[0].font.size=Pt(14)
+  tf.text=f"M{n} {top} {t} English Step By Step Distinct"
+  tf.paragraphs[0].font.size=Pt(13)
   tf.paragraphs[0].font.bold=True
   bb=s.shapes.add_textbox(Inches(0.3), Inches(1.2), Inches(12.7), Inches(6.1))
   bf=bb.text_frame
   bf.word_wrap=True
-  bf.text=english_txt(top,n)
-  bf.paragraphs[0].font.size=Pt(11)
+  bf.text=english_txt(t,n,top)
+  bf.paragraphs[0].font.size=Pt(10)
  prs.save(str(en_p))
  prs2=Presentation()
  prs2.slide_width=Inches(13.33)
  prs2.slide_height=Inches(7.5)
  for n in range(1,41):
+  t=MODS[n-1]
   s=prs2.slides.add_slide(prs2.slide_layouts[6])
   tb=s.shapes.add_textbox(Inches(0.3), Inches(0.2), Inches(12.7), Inches(0.9))
   tf=tb.text_frame
   tf.word_wrap=True
-  tf.text=f"M{n} {top} Hindi Translation"
-  tf.paragraphs[0].font.size=Pt(14)
+  tf.text=f"M{n} {top} {t} Hindi Translation Distinct"
+  tf.paragraphs[0].font.size=Pt(13)
   tf.paragraphs[0].font.bold=True
   bb=s.shapes.add_textbox(Inches(0.3), Inches(1.2), Inches(12.7), Inches(6.1))
   bf=bb.text_frame
   bf.word_wrap=True
-  bf.text=hindi_txt(top,n)
-  bf.paragraphs[0].font.size=Pt(11)
+  bf.text=hindi_txt(t,n,top)
+  bf.paragraphs[0].font.size=Pt(10)
  prs2.save(str(hi_p))
  return en_p,hi_p
 def make_hash(pw):
@@ -106,7 +124,7 @@ def sess_valid():
   return False
 if "admin_logged" not in st.session_state:
  st.session_state.admin_logged=sess_valid()
-st.sidebar.title("Brahma V106 Fix")
+st.sidebar.title("Brahma V107 Distinct")
 if not MH.exists():
  pw=st.sidebar.text_input("Create Password", type="password")
  if st.sidebar.button("Create Admin"):
@@ -128,149 +146,4 @@ else:
    else:
     st.sidebar.error("Wrong")
  else:
-  st.sidebar.success("Admin OK Bilingual Fixed")
-  menu=st.sidebar.radio("Admin",["Dashboard","Price Manager 99","Deep Maker Bilingual","Course Library Bilingual","UPI QR Setup","Sales"])
-  if st.sidebar.button("Logout"):
-   st.session_state.admin_logged=False
-   AS.unlink(missing_ok=True)
-   st.rerun()
-if st.session_state.admin_logged:
- if menu=="Dashboard":
-  st.title("Dashboard Bilingual Fixed TypeError")
-  st.success("Har Course 2 Files English+Hindi No TypeError Now")
-  total=len(courses)
-  en_c=len(list(PPT_DIR.glob("*ENGLISH*")))
-  hi_c=len(list(PPT_DIR.glob("*HINDI*")))
-  c1,c2,c3=st.columns(3)
-  c1.metric("Total",total)
-  c2.metric("English",en_c)
-  c3.metric("Hindi",hi_c)
-  if st.button("DELETE OLD"):
-   for f in PPT_DIR.glob("*.*"):
-    try:
-     f.unlink()
-    except:
-     pass
-   st.success("Done")
-   st.rerun()
-  if st.button("CREATE 100 BOOKS BILINGUAL", type="primary"):
-   bar=st.progress(0)
-   for idx,c in enumerate(courses):
-    make_bilingual(c)
-    bar.progress(int((idx+1)/len(courses)*100))
-   st.success("Done - 2 Files Per Course Fixed")
-   st.balloons()
-   st.rerun()
- elif menu=="Price Manager 99":
-  st.title("Price Manager")
-  bulk=st.number_input("Set All Price", value=99, min_value=1, max_value=10000, step=1)
-  if st.button("SET ALL BULK", type="primary"):
-   for c in courses:
-    c["price"]=int(bulk)
-   save(CF,courses)
-   st.success("Done")
-   st.rerun()
-  if st.button("SET ALL TO 99", type="primary"):
-   for c in courses:
-    c["price"]=99
-   save(CF,courses)
-   st.success("Done")
-   st.rerun()
- elif menu=="Deep Maker Bilingual":
-  st.title("Deep Maker Bilingual Fixed")
-  with st.form("add_new"):
-   nt=st.text_input("New Course Name English")
-   npr=st.number_input("New Price", value=99, min_value=1, max_value=10000, step=1)
-   sub=st.form_submit_button("ADD COURSE BILINGUAL", type="primary")
-   if sub:
-    if len(nt)<3:
-     st.error("Error")
-    else:
-     nid=f"BRAHMA{1000+len(courses)}"
-     courses.append({"id":nid,"topic":nt,"price":int(npr)})
-     save(CF,courses)
-     make_bilingual({"id":nid,"topic":nt})
-     st.success("Done")
-     st.rerun()
-  sel=st.selectbox("Select For PPT", [c["topic"]+" - "+c["id"] for c in courses])
-  if st.button("Make Bilingual PPT", type="primary"):
-   sid=sel.split(" - ")[-1]
-   stopic=" - ".join(sel.split(" - ")[:-1])
-   en_f,hi_f=make_bilingual({"id":sid,"topic":stopic})
-   st.success("Done - English + Hindi Fixed")
-   st.download_button("Download English", data=en_f.read_bytes(), file_name=en_f.name)
-   st.download_button("Download Hindi", data=hi_f.read_bytes(), file_name=hi_f.name)
- elif menu=="Course Library Bilingual":
-  st.title("Course Library Bilingual Fixed")
-  for idx,co in enumerate(courses[:20]):
-   en_files=list(PPT_DIR.glob(co["id"]+"*ENGLISH*"))
-   hi_files=list(PPT_DIR.glob(co["id"]+"*HINDI*"))
-   if en_files and hi_files:
-    st.success(f"{idx+1}. {co['topic']} - Rs {co.get('price',99)} - 2 Files")
-    col1,col2=st.columns(2)
-    with col1:
-     st.download_button("English", data=en_files[0].read_bytes(), file_name=en_files[0].name, key=f"en{idx}")
-    with col2:
-     st.download_button("Hindi", data=hi_files[0].read_bytes(), file_name=hi_files[0].name, key=f"hi{idx}")
- elif menu=="UPI QR Setup":
-  st.title("UPI QR Setup")
-  st.write("UPI ID: "+UID)
-  up=st.file_uploader("Upload QR", type=["jpg","png","jpeg"])
-  if up:
-   QF.write_bytes(up.getvalue())
-   st.success("Done")
-   st.rerun()
-  if QF.exists():
-   st.image(str(QF), width=300)
- elif menu=="Sales":
-  st.title("Sales")
-  for i,p in enumerate(purchases):
-   with st.expander(str(p.get("invoice_no","Order"))):
-    st.write("Name:", p.get("name"))
-    st.write("Price:", "Rs "+str(p.get("price")))
-    st.write("UTR:", p.get("utr"))
-    st.write("Status:", p.get("status"))
-    if p.get("status")=="PENDING":
-     if st.button("APPROVE", key=f"ap{i}", type="primary"):
-      p["status"]="APPROVED"
-      p["access_key"]="BRAHMA-"+secrets.token_hex(5).upper()
-      save(PF,purchases)
-      st.success("Done")
-      st.rerun()
-else:
- if menu=="Browse Courses":
-  st.title("Brahma Bilingual English+Hindi Fixed")
-  st.success("Har Course 2 Files English+Hindi Price 99 No TypeError")
-  for i,course in enumerate(courses[:15]):
-   with st.expander(course["topic"]+" - Rs "+str(course["price"])+" - English+Hindi"):
-    params={"pa":UID,"pn":OWNER,"am":str(course["price"]),"cu":"INR","tn":course["topic"][:20]}
-    link="upi://pay?"+urllib.parse.urlencode(params)
-    st.link_button(f"PAY Rs {course['price']} Get English+Hindi", link, type="primary")
-    with st.form("buy_"+course["id"]):
-     name=st.text_input("Name", key=f"n{course['id']}")
-     email=st.text_input("Email", key=f"e{course['id']}")
-     utr=st.text_input("UTR", key=f"u{course['id']}")
-     if st.form_submit_button("SUBMIT"):
-      if len(name)<3 or len(email)<5 or len(utr)<5:
-       st.error("Error")
-      else:
-       purchases.append({"invoice_no":"INV"+datetime.datetime.now().strftime("%Y%m%d%H%M%S"),"access_key":"","name":name,"email":email,"course":course["topic"],"course_id":course["id"],"price":int(course["price"]),"utr":utr,"status":"PENDING","date":str(datetime.datetime.now())})
-       save(PF,purchases)
-       st.success("Done")
- elif menu=="My Access":
-  st.title("My Learning Bilingual")
-  k=st.text_input("Invoice or Key")
-  if st.button("UNLOCK BILINGUAL", type="primary"):
-   found=[p for p in purchases if (p.get("invoice_no")==k or p.get("access_key")==k) and p.get("status")=="APPROVED"]
-   if not found:
-    st.error("Error")
-   else:
-    pu=found[0]
-    st.success("Welcome "+pu.get("name","Student"))
-    en_files=list(PPT_DIR.glob(pu.get("course_id","")+"*ENGLISH*"))
-    hi_files=list(PPT_DIR.glob(pu.get("course_id","")+"*HINDI*"))
-    if en_files:
-     st.download_button("DOWNLOAD ENGLISH FILE", data=en_files[0].read_bytes(), file_name=en_files[0].name, type="primary")
-    if hi_files:
-     st.download_button("DOWNLOAD HINDI FILE", data=hi_files[0].read_bytes(), file_name=hi_files[0].name, type="secondary")
-st.caption("Brahma V106 Fix | Bilingual English+Hindi | No TypeError List Not Callable | No Cut | Stable 1.6KB")
+  st.sidebar.success("Admin OK Distinct
