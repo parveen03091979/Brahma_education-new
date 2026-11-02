@@ -151,6 +151,7 @@ def make_ppt(course):
     prs.slide_height = Inches(7.5)
     
     for n in range(1, 41):
+        # Index 6 sets a blank layout style safely
         slide = prs.slides.add_slide(prs.slide_layouts[6])
         
         # Title Box
@@ -214,6 +215,3 @@ if not MASTER_HASH.exists():
     if st.sidebar.button("Create Admin Account"):
         if pw and len(pw) >= 4:
             MASTER_HASH.write_text(make_password_hash(pw), encoding="utf-8")
-            st.success("Admin Profile Configured!")
-            st.rerun()
-        else:
