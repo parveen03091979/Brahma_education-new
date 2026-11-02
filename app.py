@@ -133,4 +133,3 @@ if st.session_state.admin:
   if st.button("CREATE BEST 25 ALL DECIDED THINGS", type="primary"):
    bar=st.progress(0)
    for idx,c in enumerate(courses):
-   
