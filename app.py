@@ -173,16 +173,19 @@ api_keys = load_json_data(API_FILE, {})
 # Sidebar Navigation System
 st.sidebar.title("Brahma Education V100")
 
+# Default active view definition to protect dynamic routes
+menu = "Browse Courses"
+
 if not MASTER_HASH.exists():
     pw = st.sidebar.text_input("Create Admin Password", type="password", key="create_pw_field")
     if st.sidebar.button("Create Admin Account"):
         if pw and len(pw) >= 4:
             MASTER_HASH.write_text(make_password_hash(pw), encoding="utf-8")
             st.success("Admin Profile Configured!")
+            st. those = True
             st.rerun()
         else:
             st.sidebar.error("Password must be at least 4 characters long.")
-    menu = "Browse Courses"
 else:
     if not st.session_state.admin_logged:
         menu = st.sidebar.radio("Navigation Menu", ["Browse Courses", "My Access"])
@@ -201,4 +204,3 @@ else:
                 st.sidebar.error("Invalid Credentials Provided.")
     else:
         st.sidebar.success("Admin Active: Price 99 Lock")
-        # FIXED CRITICAL SYNTAX BUG: All list items correctly bounded and closed
