@@ -183,8 +183,3 @@ st.write("Active Queue Distribution Records: Logged operational tracks verified.
 with open(MARKETING_FILE, "r") as f:
 mk_data = json.load(f)
 st.json(mk_data[:3]) # Display sample distribution manifest snippet configurations for verification
-
-### 📋 `requirements.txt`
-```text
-streamlit
-python-pptx
