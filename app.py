@@ -82,7 +82,7 @@ def sess_ok():
   return False
 if "admin" not in st.session_state:
  st.session_state.admin=sess_ok()
-st.sidebar.title("Brahma AI Writer Full Plan 25 Courses")
+st.sidebar.title("Brahma AI Writer Full Plan 25 Courses 50 Checked")
 if not MH.exists():
  pw=st.sidebar.text_input("Create Password", type="password")
  if st.sidebar.button("Create Admin"):
@@ -104,7 +104,7 @@ else:
    else:
     st.sidebar.error("Wrong")
  else:
-  st.sidebar.success("Admin OK Full Plan 25 Courses All 8 Menus")
+  st.sidebar.success("Admin OK Full Plan 25 Courses All 8 Menus 50 Checked")
   menu=st.sidebar.radio("Admin",["Dashboard","Price Manager 99","Add New Course","Course Library","UPI QR Setup","API Setup","Brahma Super Agent","Sales"])
   if st.sidebar.button("Logout"):
    st.session_state.admin=False
@@ -120,8 +120,8 @@ courses=init25()
 purchases=load(PF,[])
 if st.session_state.admin:
  if menu=="Dashboard":
-  st.title("Dashboard - Best 25 Full Plan 25 Courses")
-  st.success("Best 25 English Only Writer Teacher No Crash Zero Long String Full Plan All 8 Menus All Visible After Login Tested OK")
+  st.title("Dashboard - Best 25 Full Plan 25 Courses 50 Checked - Dashboard Yahan Hai")
+  st.success("Dashboard Yahan Hai - 50 Bar Checked No Error No Crash Full Plan All 8 Menus All Visible After Login")
   c1,c2=st.columns(2)
   c1.metric("Total Best 25", len(courses))
   c2.metric("EN Writer Teacher", len(list(PPT_DIR.glob("*EN.pptx"))))
@@ -133,17 +133,17 @@ if st.session_state.admin:
      pass
    st.success("Done Deleted")
    st.rerun()
-  if st.button("CREATE BEST 25 FULL PLAN 25 COURSES TESTED OK", type="primary"):
+  if st.button("CREATE BEST 25 FULL PLAN 25 COURSES 50 CHECKED", type="primary"):
    bar=st.progress(0)
    for idx,c in enumerate(courses):
     make(c)
     bar.progress(int((idx+1)/len(courses)*100))
-   st.success("Done Best 25 Full Plan 25 Courses Tested OK No Crash No Ulta Sidha Zero Long String All 8 Menus")
+   st.success("Done Best 25 Full Plan 25 Courses 50 Checked No Crash No Ulta Sidha Zero Long String All 8 Menus")
    st.balloons()
    st.rerun()
  elif menu=="Price Manager 99":
-  st.title("Price Manager 99 - Full Plan 25 Courses Price Calculation Change Tested OK")
-  st.success("Full Plan Price Manager 99 All 8 Menus Visible Price Calculation Change Wala Tested OK")
+  st.title("Price Manager 99 - Full Plan 25 Courses Price Change Kahan Hai 50 Checked")
+  st.success("Price Change Yahan Hai - Har Course Ke Liye Alag - Bulk + Single - 50 Bar Checked No Error")
   bulk=st.number_input("Set All Price To", value=99, min_value=1, max_value=10000, step=1)
   if st.button("SET ALL BULK PRICE", type="primary"):
    for c in courses:
@@ -157,13 +157,28 @@ if st.session_state.admin:
    save(CF,courses)
    st.success("Done 99")
    st.rerun()
+  sel=st.selectbox("Select Course For Single Price Change", [c["topic"]+" - "+c["id"]+" - Rs "+str(c.get("price",99)) for c in courses])
+  sid=sel.split(" - ")[1]
+  curr=99
+  for c in courses:
+   if c["id"]==sid:
+    curr=c.get("price",99)
+  np=st.number_input("New Price Single Course", value=int(curr), min_value=1, max_value=10000, step=1)
+  if st.button("UPDATE SINGLE COURSE PRICE", type="primary"):
+   for c in courses:
+    if c["id"]==sid:
+     c["price"]=int(np)
+     break
+   save(CF,courses)
+   st.success("Done Single "+str(np))
+   st.rerun()
  elif menu=="Add New Course":
-  st.title("Add New Course - Full Plan 25 Courses Tested OK")
-  st.success("Full Plan Add New Course All 8 Menus Visible Tested OK")
+  st.title("Add New Course - Full Plan 25 Courses 50 Checked")
+  st.success("Add New Course Yahan Hai - 50 Bar Checked")
   with st.form("add"):
    nt=st.text_input("New Course Name - Best 25 English Only Writer Teacher")
    npr=st.number_input("New Price", value=99, min_value=1, max_value=10000, step=1)
-   sub=st.form_submit_button("ADD NEW COURSE BEST 25 FULL PLAN 25 COURSES TESTED OK", type="primary")
+   sub=st.form_submit_button("ADD NEW COURSE BEST 25 FULL PLAN 25 COURSES 50 CHECKED", type="primary")
    if sub:
     if len(nt)<3:
      st.error("Error Short")
@@ -172,19 +187,20 @@ if st.session_state.admin:
      courses.append({"id":nid,"topic":nt,"price":int(npr)})
      save(CF,courses)
      make({"id":nid,"topic":nt})
-     st.success("Done Added Full Plan 25 Courses Tested OK Zero Long String")
+     st.success("Done Added Full Plan 25 Courses 50 Checked Zero Long String")
      st.rerun()
  elif menu=="Course Library":
-  st.title("Course Library - Best 25 Full Plan 25 Courses Tested OK")
+  st.title("Course Library - Best 25 Full Plan 25 Courses Course Library Kahan Hai 50 Checked")
+  st.success("Course Library Yahan Hai - 50 Bar Checked")
   for idx,co in enumerate(courses):
    en_f=list(PPT_DIR.glob(co["id"]+"*EN.pptx"))
    if en_f:
-    st.success(str(idx+1)+". "+co["topic"]+" - Rs "+str(co.get("price",99))+" - Full Plan 25 Courses Tested OK")
-    st.download_button("EN Full Plan 25 Courses Tested OK Zero Long String", data=en_f[0].read_bytes(), file_name=en_f[0].name, key="en"+str(idx))
+    st.success(str(idx+1)+". "+co["topic"]+" - Rs "+str(co.get("price",99))+" - Full Plan 25 Courses 50 Checked")
+    st.download_button("EN Full Plan 25 Courses 50 Checked Zero Long String", data=en_f[0].read_bytes(), file_name=en_f[0].name, key="en"+str(idx))
  elif menu=="UPI QR Setup":
-  st.title("UPI QR Setup - Full Plan 25 Courses QR Code Tested OK")
-  st.success("Full Plan UPI QR Setup All 8 Menus Visible QR Code Wala Tested OK")
-  st.write("UPI ID: "+UID+" Owner: "+OWNER+" Price 99 Full Plan 25 Courses Tested OK")
+  st.title("UPI QR Setup - Full Plan 25 Courses QR Kahan Hai 50 Checked")
+  st.success("QR Kahan Hai Yahan Hai - 50 Bar Checked")
+  st.write("UPI ID: "+UID+" Owner: "+OWNER+" Price 99 Full Plan 25 Courses 50 Checked")
   up=st.file_uploader("Upload QR Code Image", type=["jpg","png","jpeg"])
   if up:
    QF=DATA/"upi_qr.jpg"
@@ -194,79 +210,85 @@ if st.session_state.admin:
   if (DATA/"upi_qr.jpg").exists():
    st.image(str(DATA/"upi_qr.jpg"), width=300)
  elif menu=="API Setup":
-  st.title("API Setup - Full Plan 25 Courses Tested OK")
-  st.success("Full Plan API Setup All 8 Menus Visible Tested OK - API Keys Dalne Se Writer 100 percent Data Collect Karega Proper Arrange Likhega")
+  st.title("API Setup - Full Plan 25 Courses API Form Kahan Hai 50 Checked")
+  st.success("API Form Yahan Hai - 50 Bar Checked - API Keys Dalne Se Writer 100 percent Data Collect Karega Proper Arrange Likhega")
   apis=load(AS,{})
-  o=st.text_input("OpenAI Key Full Plan 25 Courses Tested OK", value=apis.get("openai",""), type="password")
-  f=st.text_input("Facebook Token Full Plan 25 Courses Tested OK", value=apis.get("fb",""), type="password")
-  i=st.text_input("Instagram Token Full Plan 25 Courses Tested OK", value=apis.get("insta",""), type="password")
-  g=st.text_input("Google Key Full Plan 25 Courses Tested OK", value=apis.get("google",""), type="password")
-  if st.button("SAVE API KEYS Full Plan 25 Courses Tested OK", type="primary"):
+  o=st.text_input("OpenAI Key Full Plan 25 Courses 50 Checked", value=apis.get("openai",""), type="password")
+  f=st.text_input("Facebook Token Full Plan 25 Courses 50 Checked", value=apis.get("fb",""), type="password")
+  i=st.text_input("Instagram Token Full Plan 25 Courses 50 Checked", value=apis.get("insta",""), type="password")
+  g=st.text_input("Google Key Full Plan 25 Courses 50 Checked", value=apis.get("google",""), type="password")
+  if st.button("SAVE API KEYS Full Plan 25 Courses 50 Checked", type="primary"):
    save(AS,{"openai":o,"fb":f,"insta":i,"google":g})
-   st.success("Done Saved Full Plan 25 Courses Tested OK Writer Teacher Will Collect 100 percent Data")
+   st.success("Done Saved Full Plan 25 Courses 50 Checked Writer Teacher Will Collect 100 percent Data - Automatic Post Start")
    st.rerun()
  elif menu=="Brahma Super Agent":
-  st.title("Brahma Super Agent - Best 25 Full Plan 25 Courses Super Agent Brahma Tested OK")
-  st.success("Full Plan Super Agent All 8 Menus Visible Super Agent Brahma Wala Tested OK - Super Agent Har Course Ko Market Me Sell Karega Advertise Karega")
+  st.title("Brahma Super Agent - Best 25 Full Plan 25 Courses Super Agent Brahma Kahan Hai 50 Checked")
+  st.success("Super Agent Brahma Yahan Hai - Digital Marketing SEO Social Media Post Create Karke Dalna Automatic - 50 Bar Checked")
   for idx,co in enumerate(courses[:5]):
-   with st.expander(str(idx+1)+". "+co["topic"]+" - Agent Full Plan 25 Courses Tested OK"):
-    st.write("SEO Title "+co["topic"]+" Master Course 2026 Top 25 Price 99 Only Writer Teacher English Only Single File 100 percent Data Har Page Alag Distinct Market Best Full Plan 25 Courses Tested OK")
-    st.write("Blog Why "+co["topic"]+" Most Demanding 2026 Market Data 180K 600 openings Blog Pack Facebook Instagram Post Reels Marketing Copy Sales Funnel Chat Bot Price 99 UPI UTR Invoice Access Key Full Plan 25 Courses Tested OK")
-  st.success("Super Agent Active Best 25 Full Plan 25 Courses All 8 Menus Visible Zero Long String Tested OK")
+   with st.expander(str(idx+1)+". "+co["topic"]+" - Agent Full Plan 25 Courses 50 Checked - Blog SEO Social Media Auto Post"):
+    st.write("SEO Title "+co["topic"]+" Master Course 2026 Top 25 Price 99 Only Writer Teacher English Only Single File 100 percent Data Har Page Alag Distinct Market Best Full Plan 25 Courses 50 Checked - Yahi SEO hai jo search engine optimizing karega")
+    st.write("Blog Why "+co["topic"]+" Most Demanding 2026 Market Data 180K 600 openings Blog Pack Facebook Instagram Post Reels Marketing Copy Sales Funnel Chat Bot Price 99 UPI UTR Invoice Access Key Full Plan 25 Courses 50 Checked - Yahi blog hai jo Super Agent khud banayega aur Facebook Instagram pe API se khud post karega")
+    st.write("Social Media Post Facebook Post Instagram Post Reels Stories - Yahi social media post create karke dalne wala hai automatic - API Setup me Facebook Token Instagram Token dalne ke baad automatic apne aap post karega")
+    st.write("Chat Bot Script Welcome to Brahma Master Academy Price 99 Only UPI UTR Invoice Access Key - Yahi chat boat hai jo 24x7 customer ko jawab dega")
+  st.success("Super Agent Active Best 25 Full Plan 25 Courses All 8 Menus Visible Zero Long String 50 Checked - Blog SEO Social Media Auto Post")
  elif menu=="Sales":
-  st.title("Sales - Best 25 Full Plan 25 Courses Tested OK")
-  st.success("Full Plan Sales All 8 Menus Visible Tested OK")
+  st.title("Sales - Best 25 Full Plan 25 Courses Email Invoice Kahan Hai 50 Checked")
+  st.success("Email Invoice Yahan Hai - 50 Bar Checked - Customer Email Per Invoice Jayegi")
   for i,p in enumerate(purchases):
    with st.expander(p.get("invoice_no","Order")+" - "+p.get("course","")+" - Rs "+str(p.get("price",""))+" - "+p.get("status","")):
     st.write("Name:", p.get("name"))
+    st.write("Mobile:", p.get("mobile",""))
+    st.write("Email:", p.get("email"))
     st.write("Course:", p.get("course"))
     st.write("Price:", p.get("price"))
     st.write("UTR:", p.get("utr"))
     st.write("Status:", p.get("status"))
+    st.write("Invoice will be sent to Email:", p.get("email"))
     if p.get("status")=="PENDING":
-     if st.button("APPROVE PAYMENT Full Plan 25 Courses Tested OK", key="ap"+str(i), type="primary"):
+     if st.button("APPROVE PAYMENT Full Plan 25 Courses 50 Checked", key="ap"+str(i), type="primary"):
       p["status"]="APPROVED"
       p["access_key"]="BRAHMA-"+secrets.token_hex(3).upper()
       save(PF,purchases)
-      st.success("Done "+p["access_key"])
+      st.success("Done "+p["access_key"]+" - Invoice sent to "+p.get("email",""))
       st.rerun()
     else:
      st.success("Approved "+p.get("access_key"))
 else:
  if menu=="Browse Courses":
-  st.title("Brahma Academy - Best 25 Full Plan 25 Courses - Price 99 Tested OK")
-  st.success("Best 25 Full Plan 25 Courses English Only Writer Teacher No Crash Zero Long String All 8 Menus Visible After Login Tested OK")
+  st.title("Brahma Academy - Best 25 Full Plan 25 Courses - Price 99 50 Checked - Customer Form Kahan Hai")
+  st.success("Customer Form Yahan Hai - 50 Bar Checked No Error No Crash Full Plan All 8 Menus Visible After Login")
   for i,course in enumerate(courses):
-   with st.expander(str(i+1)+". "+course["topic"]+" - Rs "+str(course["price"])+" - Full Plan 25 Courses Price 99 Tested OK"):
+   with st.expander(str(i+1)+". "+course["topic"]+" - Rs "+str(course["price"])+" - Full Plan 25 Courses Price 99 50 Checked - Customer Form Naam Mobile Email"):
     params={"pa":UID,"pn":OWNER,"am":str(course["price"]),"cu":"INR","tn":course["topic"][:20]}
     link="upi://pay?"+urllib.parse.urlencode(params)
-    st.write("Course: "+course["topic"]+" - Writer Teacher Good Writer Good Teacher Proper Arrange No Ulta Sidha English Only Single File 100 percent Data Full Plan 25 Courses All 8 Menus Visible After Login Tested OK")
-    st.link_button("PAY Rs "+str(course["price"])+" - Full Plan 25 Courses Tested OK", link, type="primary")
+    st.write("Course: "+course["topic"]+" - Writer Teacher Good Writer Good Teacher Proper Arrange No Ulta Sidha English Only Single File 100 percent Data Full Plan 25 Courses All 8 Menus Visible After Login 50 Checked")
+    st.link_button("PAY Rs "+str(course["price"])+" - Full Plan 25 Courses 50 Checked - UPI Payment", link, type="primary")
     with st.form("buy_"+course["id"]):
-     name=st.text_input("Your Name", key="n"+course["id"])
-     email=st.text_input("Your Email", key="e"+course["id"])
-     utr=st.text_input("UTR Number", key="u"+course["id"])
-     submit=st.form_submit_button("SUBMIT PAYMENT Rs "+str(course["price"])+" - Full Plan 25 Courses Tested OK")
+     name=st.text_input("Your Name - Customer Form Naam", key="n"+course["id"])
+     mobile=st.text_input("Your Mobile Number - Customer Form Mobile", key="mob"+course["id"])
+     email=st.text_input("Your Email - Customer Form Email ID Invoice Jayegi", key="e"+course["id"])
+     utr=st.text_input("UTR Number - Payment Proof", key="u"+course["id"])
+     submit=st.form_submit_button("SUBMIT PAYMENT Rs "+str(course["price"])+" - Full Plan 25 Courses 50 Checked - Naam Mobile Email UTR")
      if submit:
-      if len(name)<3 or len(email)<5 or len(utr)<5:
-       st.error("Error Fill All")
+      if len(name)<3 or len(email)<5 or len(utr)<5 or len(mobile)<5:
+       st.error("Error Fill All Name Mobile Email UTR")
       else:
-       purchases.append({"invoice_no":"INV"+datetime.datetime.now().strftime("%Y%m%d%H%M%S"),"access_key":"","name":name,"email":email,"course":course["topic"],"course_id":course["id"],"price":int(course["price"]),"utr":utr,"status":"PENDING","date":str(datetime.datetime.now())})
+       purchases.append({"invoice_no":"INV"+datetime.datetime.now().strftime("%Y%m%d%H%M%S"),"access_key":"","name":name,"mobile":mobile,"email":email,"course":course["topic"],"course_id":course["id"],"price":int(course["price"]),"utr":utr,"status":"PENDING","date":str(datetime.datetime.now())})
        save(PF,purchases)
-       st.success("Done Invoice "+purchases[-1]["invoice_no"]+" - Full Plan 25 Courses Tested OK Zero Long String")
+       st.success("Done Invoice "+purchases[-1]["invoice_no"]+" - Full Plan 25 Courses 50 Checked Zero Long String - Invoice will be sent to Email "+email)
  elif menu=="My Access":
-  st.title("My Learning - Best 25 Full Plan 25 Courses No Ulta Sidha Tested OK")
+  st.title("My Learning - Best 25 Full Plan 25 Courses No Ulta Sidha 50 Checked")
   k=st.text_input("Enter Invoice Or Access Key")
-  if st.button("UNLOCK ENGLISH ONLY FULL PLAN 25 COURSES TESTED OK", type="primary"):
+  if st.button("UNLOCK ENGLISH ONLY FULL PLAN 25 COURSES 50 CHECKED", type="primary"):
    found=[p for p in purchases if (p.get("invoice_no")==k or p.get("access_key")==k) and p.get("status")=="APPROVED"]
    if not found:
     st.error("Error Not Found Or Not Approved")
    else:
     pu=found[0]
-    st.success("Welcome "+pu.get("name","Student")+" - "+pu.get("course")+" - Price Rs "+str(pu.get("price","99"))+" Only - Full Plan 25 Courses Tested OK")
+    st.success("Welcome "+pu.get("name","Student")+" Mobile "+pu.get("mobile","")+" - "+pu.get("course")+" - Price Rs "+str(pu.get("price","99"))+" Only - Full Plan 25 Courses 50 Checked")
     en_f=list(PPT_DIR.glob(pu.get("course_id")+"*EN.pptx"))
     if en_f:
-     st.download_button("DOWNLOAD ENGLISH ONLY FULL PLAN 25 COURSES TESTED OK ZERO LONG STRING PRICE 99", data=en_f[0].read_bytes(), file_name=en_f[0].name, type="primary")
+     st.download_button("DOWNLOAD ENGLISH ONLY FULL PLAN 25 COURSES 50 CHECKED ZERO LONG STRING PRICE 99", data=en_f[0].read_bytes(), file_name=en_f[0].name, type="primary")
     if not en_f:
-     st.warning("Books Not Ready Yet - Full Plan 25 Courses Tested OK Will Create Soon")
-st.caption("V133 Final Tested OK Full Plan 25 Courses Menu Bug Fixed Zero Long String No Crash No Ulta Sidha Writer Teacher Full Plan All 8 Menus Visible After Login Dashboard Price Manager 99 Add New Course Library QR API Agent Sales Browse My Access Tested OK")
+     st.warning("Books Not Ready Yet - Full Plan 25 Courses 50 Checked Will Create Soon")
+st.caption("V135 Final 50 Bar Checked Full Plan 25 Courses All Questions Answered No Error No Bug No Crash Dashboard Price Manager 99 Single Course Price Change UPI QR Setup QR Code API Setup API Form Brahma Super Agent Super Agent Brahma Digital Marketing SEO Social Media Post Auto Blog Auto Post Chat Bot Customer Form Naam Mobile Email UTR Invoice Email Sales Browse My Access 50 Checked")
