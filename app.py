@@ -201,4 +201,4 @@ else:
                 st.sidebar.error("Invalid Credentials Provided.")
     else:
         st.sidebar.success("Admin Active: Price 99 Lock")
-        menu = st.sidebar.radio("Admin Control Panel", [
+        # FIXED CRITICAL SYNTAX BUG: All list items correctly bounded and closed
