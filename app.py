@@ -19,9 +19,7 @@ DATA_DIR.mkdir(exist_ok=True)
 MASTER_HASH = DATA_DIR / '.master_hash'
 COURSES_FILE = DATA_DIR / 'courses.json'
 PURCHASE_FILE = DATA_DIR / 'purchases.json'
-CHAT_FILE = DATA_DIR / 'chat_history.json'
 CONFIG_FILE = DATA_DIR / 'config.json'
-LOG_FILE = DATA_DIR / 'log.json'
 UPI_QR_PATH = DATA_DIR / 'upi_qr.jpg'
 VOICE_DIR = DATA_DIR / 'voice'
 VOICE_DIR.mkdir(exist_ok=True)
@@ -48,28 +46,24 @@ def save_json(p, data):
 
 courses = load_json(COURSES_FILE, [])
 purchases = load_json(PURCHASE_FILE, [])
-chats = load_json(CHAT_FILE, [])
 config = load_json(CONFIG_FILE, {})
-logs = load_json(LOG_FILE, [])
 
 if len(courses) == 0:
     for i in range(100):
         t = f'Course {i+1}'
-        if i == 0:
-            t = 'AI Agent Automation 2026'
-        if i == 1:
-            t = 'Instagram Reels Mastery'
-        if i == 2:
-            t = 'YouTube Automation AI'
-        if i == 3:
-            t = 'Prompt Engineering Pro'
-        if i == 4:
-            t = 'Digital Marketing SEO'
+        if i == 0: t = 'AI Agent Automation 2026'
+        if i == 1: t = 'Instagram Reels Mastery'
+        if i == 2: t = 'YouTube Automation AI'
+        if i == 3: t = 'Prompt Engineering Pro'
+        if i == 4: t = 'Digital Marketing SEO'
         courses.append({'id': f'BRAHMA{1000+i}', 'topic': t, 'price': 999, 'videos': 400})
     save_json(COURSES_FILE, courses)
 
 if 'admin_logged' not in st.session_state:
     st.session_state['admin_logged'] = False
+# NEW: Chat is session only, not file
+if 'chat_messages' not in st.session_state:
+    st.session_state['chat_messages'] = []
 
 st.sidebar.title('Brahma Education')
 if not MASTER_HASH.exists():
@@ -98,22 +92,20 @@ else:
             st.rerun()
 
 def make_voice(text, lang, path):
-    if not GTTS_OK:
-        return False
+    if not GTTS_OK: return False
     try:
         tts = gTTS(text=text, lang=lang, slow=False)
         tts.save(str(path))
         return True
-    except:
-        return False
+    except: return False
 
 def smart_answer(q, courses_list):
     q = (q or '').lower()
     if 'kya' in q or 'kitne' in q or 'list' in q:
         top = courses_list[0].get('topic') if courses_list else 'AI Course'
-        return f'We have 100+ courses. Top is {top}. Check Browse Courses for full list. Each has 400 videos.'
+        return f'We have 100+ courses. Top is {top}. Check Browse Courses for full list. Each has 400 videos Hindi English.'
     if 'best' in q:
-        return 'Best courses are AI Agent Automation, Instagram Reels, YouTube Automation, Digital Marketing, Prompt Engineering.'
+        return 'Best courses: AI Agent Automation, Instagram Reels, YouTube Automation, Digital Marketing, Prompt Engineering.'
     if 'price' in q or 'fees' in q:
         return 'Price Rs 999 to 1399. 400 videos. Lifetime access. Secure UPI payment.'
     if 'hindi' in q:
@@ -159,7 +151,7 @@ if st.session_state['admin_logged']:
 
     if menu == 'Super Brain':
         st.title('Super Brain - Auto Agent FREE')
-        st.write('Auto Course - Voice - SEO - Blogs - Posts - Sales - All FREE tools')
+        st.write('Auto Course - Voice - SEO - Blogs - Posts - Sales - All FREE')
         ca, cb = st.columns(2)
         with ca:
             hi = st.text_area('Hindi Text', 'Namaste, AI Agent banana seekhenge', key='hi')
@@ -181,7 +173,6 @@ if st.session_state['admin_logged']:
                     st.audio(str(out))
                 else:
                     st.error('Add gtts')
-        st.divider()
         b1, b2, b3 = st.columns(3)
         with b1:
             if st.button('Make SEO Files'):
@@ -198,7 +189,6 @@ if st.session_state['admin_logged']:
                 for co in courses[:30]:
                     (SOCIAL_DIR / f"{co['id']}_post.txt").write_text(co['topic'], encoding='utf-8')
                 st.success('Posts Done Safe')
-        st.divider()
         with st.form('newc'):
             topic = st.text_input('New Course Topic')
             price = st.number_input('Price', value=999)
@@ -257,12 +247,9 @@ else:
                     st.link_button(f"Pay Rs {co.get('price')}", link, type='primary')
                 with st.form(f"buy_{co['id']}_{idx}"):
                     c1, c2, c3 = st.columns(3)
-                    with c1:
-                        name = st.text_input('Name', key=f"n_{idx}")
-                    with c2:
-                        email = st.text_input('Email', key=f"e_{idx}")
-                    with c3:
-                        utr = st.text_input('UTR', key=f"u_{idx}")
+                    with c1: name = st.text_input('Name', key=f"n_{idx}")
+                    with c2: email = st.text_input('Email', key=f"e_{idx}")
+                    with c3: utr = st.text_input('UTR', key=f"u_{idx}")
                     if st.form_submit_button('Submit for Access', type='primary'):
                         if name and email and utr and len(utr) >= 6:
                             inv = f"INV{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}"
@@ -291,18 +278,26 @@ else:
 
     if menu == 'Chat Support':
         st.title('Chat Support')
-        st.write('Ask about courses, price, language, certificate')
-        if st.button('Clear Chat History'):
-            save_json(CHAT_FILE, [])
-            st.success('Chat cleared')
-            st.rerun()
-        for ch in chats[-10:]:
+        st.write('Ask about courses - Chat will disappear when you close app - No history saved')
+        
+        # NEW: Clear button and info
+        col1, col2 = st.columns([1,2])
+        with col1:
+            if st.button('Clear Chat Now'):
+                st.session_state['chat_messages'] = []
+                st.success('Chat cleared')
+                st.rerun()
+        with col2:
+            st.caption('App band karte hi chat auto gayab - No save - Session only')
+
+        # Show from session only, not file - FIX for your issue
+        for ch in st.session_state['chat_messages']:
             with st.chat_message(ch['role']):
                 st.write(ch['msg'])
-        q = st.chat_input('Ask your question')
+
+        q = st.chat_input('Ask your question - Example: Courses mein kya hai?')
         if q:
-            chats.append({'role': 'user', 'msg': q})
+            st.session_state['chat_messages'].append({'role': 'user', 'msg': q})
             ans = smart_answer(q, courses)
-            chats.append({'role': 'assistant', 'msg': ans})
-            save_json(CHAT_FILE, chats)
+            st.session_state['chat_messages'].append({'role': 'assistant', 'msg': ans})
             st.rerun()
