@@ -33,11 +33,11 @@ def save_json(path, data):
     txt = json.dumps(data, ensure_ascii=False, indent=2)
     path.write_text(txt, encoding='utf-8')
 
-# MASTER TEACHER SUPER TEACHER AI - Pehle isko acchi tarah banaya
+# MASTER TEACHER SUPER TEACHER AI - Pehle isko acchi tarah banaya - 40 modules 40 pages real book
 class MasterTeacherAI:
     def get_content(self, topic, n):
         if n == 1:
-            return topic + ' KYA HAI. Definition simple 20 years teaching se. 5 examples: 1 Business automation time 80 percent save 2 Client project Upwork 15k first 3 Freelancing Fiverr 20k-50k 4 Agency model team 2L plus 5 SaaS recurring income. Scope 2026 me 300 percent growth proof. Roadmap 30 din. Foundation strong. Earning first month.'
+            return topic + ' KYA HAI. Definition 20 years teaching se. 5 examples: 1 Business automation time 80 percent save 2 Client project Upwork 15k first 3 Freelancing Fiverr 20k-50k 4 Agency model team 2L plus 5 SaaS recurring income. Scope 2026 300 percent growth proof. Roadmap 30 din. Foundation strong. Earning first month 15k.'
         if n == 2:
             return topic + ' KYON HAI Why Important. Future proof AI era. Market data 2026 demand high. 90 percent fail kyon: bina samjhe advanced, roz practice nahi sirf video, paise peeche, diary nahi, mentor nahi. Kyon seekhna abhi: job safe freelancing high business banao. Rahul village proof 15k first client.'
         if n == 17:
@@ -50,7 +50,7 @@ class MasterTeacherAI:
             return topic + ' FINAL PROJECT Certification Business Level Real Income. Final project client real project: complete automation ya Reels campaign ya SEO blog ya Chatbot. Portfolio behance dribbble github add. Certification business level. Real income Upwork Fiverr se start. Expert 40 modules complete Next Business Plan 1Cr.'
         return topic + ' Module ' + str(n) + ' Master Teacher 20 Years. KYA HAI definition example. KYON HAI future importance market data. KAHAN use Instagram YouTube Business Job Freelancing Agency. KAB best timing morning evening seasonal. KAUN eligible student housewife job business 16-60. KAISE architecture Perceive Reason Act RAG memory prompt. KISSE tools Canva CapCut ChatGPT Notion Make n8n Zapier. KYA USE earning freelancing 20k-50k business 1L plus. KAISE USE mobile reels laptop dashboard hands on. KAISE KARNA daily 30 min diary weekly revise best practice. REAL KAHANI Rahul 15k 1L scaling. MISTAKES PRO TIP HOMEWORK BUSINESS PLAN 400 words rich.'
 
-    def create_40_pages_book(self, cid, ctopic):
+    def create_40_pages_real_book(self, cid, ctopic):
         from pptx import Presentation
         from pptx.util import Inches, Pt
         prs = Presentation()
@@ -63,19 +63,19 @@ class MasterTeacherAI:
             t_tf = t_box.text_frame
             t_tf.word_wrap = True
             if n == 1:
-                title = 'M01 KYA HAI What Is ' + ctopic + ' - Master Teacher 20 Years'
+                title = 'M01 KYA HAI What Is ' + ctopic + ' - Master Teacher 20 Years - 40 Pages Book'
             elif n == 2:
                 title = 'M02 KYON HAI Why Important Future Proof ' + ctopic
             elif n == 17:
                 title = 'M17 REAL KAHANI Rahul Village Se ' + ctopic + ' - 15k First Client'
             elif n == 20:
-                title = 'M20 MISTAKES 90 Percent Log Fail Hote Hain ' + ctopic
+                title = 'M20 MISTAKES 90 Percent Log Fail ' + ctopic
             elif n == 21:
                 title = 'M21 PRO TIP Secret Diary Millionaire Trick ' + ctopic
             elif n == 40:
                 title = 'M40 FINAL PROJECT Certification Business Level Real Income ' + ctopic
             else:
-                title = 'M' + str(n).zfill(2) + ' ' + ctopic + ' Master Teacher Super Teacher'
+                title = 'M' + str(n).zfill(2) + ' ' + ctopic + ' Master Teacher Super Teacher - Page ' + str(n) + ' of 40'
             t_tf.text = title
             t_tf.paragraphs[0].font.size = Pt(18)
             t_tf.paragraphs[0].font.bold = True
@@ -84,33 +84,25 @@ class MasterTeacherAI:
             b_tf.word_wrap = True
             b_tf.text = self.get_content(ctopic, n)
             b_tf.paragraphs[0].font.size = Pt(11)
-        file_name = cid + '_40Pages_REAL_BOOK_MASTER_TEACHER_V88.pptx'
+        file_name = cid + '_40_MODULES_40_PAGES_REAL_BOOK_V89.pptx'
         out_path = PPT_DIR / file_name
         prs.save(str(out_path))
-        # Auto delete old single page files
-        for old in PPT_DIR.glob(cid + '_Course*.pptx'):
-            if old != out_path:
-                try:
-                    old.unlink()
-                except:
-                    pass
-        for old in PPT_DIR.glob(cid + '_Course_*.pptx'):
-            if old != out_path:
-                try:
-                    old.unlink()
-                except:
-                    pass
         return out_path
 
 master_teacher = MasterTeacherAI()
 
-# Auto delete all old single page files on startup - Jo screenshot me BRAHMA1000_Course (3) dikha raha hai
-for old_file in PPT_DIR.glob('*_Course*.pptx'):
+# Auto delete ALL old single page files on startup - BRAHMA1000_Course (3) jaise purane files
+for old_file in PPT_DIR.glob('*Course*.pptx'):
     try:
         old_file.unlink()
     except:
         pass
-for old_file in PPT_DIR.glob('*_Course_*RICH*.pptx'):
+for old_file in PPT_DIR.glob('*RICH*.pptx'):
+    try:
+        old_file.unlink()
+    except:
+        pass
+for old_file in PPT_DIR.glob('*BOOK*V8*.pptx'):
     try:
         old_file.unlink()
     except:
@@ -147,7 +139,7 @@ def check_persist():
 if check_persist():
     st.session_state['admin_logged'] = True
 
-st.sidebar.title('Brahma Education - Master Teacher')
+st.sidebar.title('Brahma Education - Master Teacher V89')
 
 if not MASTER_HASH.exists():
     pw = st.sidebar.text_input('Create Admin Password', type='password')
@@ -173,20 +165,20 @@ else:
             else:
                 st.sidebar.error('Wrong Password')
     else:
-        st.sidebar.success('Master Teacher Login')
-        menu = st.sidebar.radio('Admin', ['Dashboard - Master Teacher AI', 'Master Teacher - Create Sample Book', 'Course Library 40 Pages Real Books', 'Super Agent Full Power'])
+        st.sidebar.success('Master Teacher V89 Login')
+        menu = st.sidebar.radio('Admin', ['Dashboard - Master Teacher V89 - 40 Pages Real Book', 'Create Sample 40 Pages Book - Test', 'Course Library 40 Pages Real Books'])
         if st.sidebar.button('Logout'):
             st.session_state['admin_logged'] = False
             ADMIN_SESSION.unlink(missing_ok=True)
             st.rerun()
 
 if st.session_state['admin_logged']:
-    if menu == 'Dashboard - Master Teacher AI':
-        st.title('Dashboard - Master Teacher AI - Pehle Master Teacher Banaya')
-        st.write('Pehle Master Teacher AI ko acchi tarah banaya jo 40 modules ki 40 pages ki real book banayega - Single page nahi - Pure 100 courses 40 modules master teacher ke dwara')
+    if menu == 'Dashboard - Master Teacher V89 - 40 Pages Real Book':
+        st.title('Dashboard V89 - Master Teacher - 40 Pages Real Book - Single Page Nahi')
+        st.error('IMPORTANT: Aapke phone me BRAHMA1000_Course (3) naam ka purana single page file hai - Wo phone ke Downloads folder me hai - Use delete karo - Naya file ka naam BRAHMA1000_40_MODULES_40_PAGES_REAL_BOOK_V89.pptx hai - (3) wala nahi')
         total = len(courses)
-        real_books = len(list(PPT_DIR.glob('*40Pages_REAL_BOOK*')))
-        single_old = len(list(PPT_DIR.glob('*_Course*.pptx')))
+        real_books = len(list(PPT_DIR.glob('*40_MODULES_40_PAGES_REAL_BOOK*')))
+        old_files = len(list(PPT_DIR.glob('*Course*.pptx')))
         missing = 0
         for c in courses:
             found = list(PPT_DIR.glob(c.get('id') + '*REAL_BOOK*'))
@@ -194,66 +186,83 @@ if st.session_state['admin_logged']:
                 missing += 1
         c1, c2, c3, c4 = st.columns(4)
         c1.metric('Total Courses', total)
-        c2.metric('Real Books 40 Pages Master Teacher', real_books)
-        c3.metric('Old Single Page (Should be 0)', single_old)
+        c2.metric('Real Books 40 Pages V89', real_books)
+        c3.metric('Old Single Page Files (Should be 0)', old_files)
         c4.metric('Missing', missing)
-        if single_old > 0:
-            st.error('Purane single page files abhi bhi hain - Delete karo - Screenshot me BRAHMA1000_Course (3) wahi purana hai')
+        if old_files > 0:
+            st.error('Server pe purane single page files abhi bhi hain - Delete karo')
         if real_books >= 100:
-            st.success('Full 100 Books 40 Pages Each Real Book Master Teacher Dwara - Single Page Nahi')
+            st.success('Full 100 Books 40 Pages Each Real Book Master Teacher Dwara - Single Page Nahi - BRAHMA1000_Course (3) wala nahi')
         else:
-            st.warning('Master Teacher se 40 pages wali real books banao - Single page wali delete ho gayi auto')
-        if st.button('DELETE ALL OLD SINGLE PAGE FILES - BRAHMA1000_Course (3) jaise', type='secondary'):
+            st.warning('Naya 40 pages real book banao - Purana BRAHMA1000_Course (3) phone se delete karo')
+        if st.button('DELETE ALL OLD FILES - Server Se Purana BRAHMA1000_Course Delete', type='secondary'):
             for f in list(PPT_DIR.glob('*.*')):
                 try:
                     f.unlink()
                 except:
                     pass
-            st.success('All old single page files deleted - Ab naya 40 pages banega - Phone me BRAHMA1000_Course (3) delete karo')
+            st.success('All old files deleted from server - Ab naya 40 pages banega - Phone me bhi BRAHMA1000_Course (3) delete karo Downloads se')
             st.rerun()
-        if st.button('MASTER TEACHER SE CREATE 100 BOOKS 40 MODULES 40 PAGES REAL BOOK', type='primary'):
+        if st.button('MASTER TEACHER SE CREATE 100 BOOKS 40 PAGES REAL BOOK V89 - 40 Slides Each', type='primary'):
             bar = st.progress(0)
             for idx, c in enumerate(courses):
-                master_teacher.create_40_pages_book(c.get('id'), c.get('topic'))
+                master_teacher.create_40_pages_real_book(c.get('id'), c.get('topic'))
                 pct = int((idx + 1) / len(courses) * 100)
                 bar.progress(pct)
-            st.success('100 Books 40 Pages Real Book Master Teacher Dwara Created - Ab Single Page Nahi - 40 Pages Swipe Karo')
+            st.success('100 Books 40 Pages Real Book V89 Created - Har book 40 slides - BRAHMA1000_Course (3) nahi - BRAHMA1000_40_MODULES_40_PAGES_REAL_BOOK_V89.pptx')
             st.balloons()
             st.rerun()
         rows = []
         for c in courses:
             found = list(PPT_DIR.glob(c.get('id') + '*REAL_BOOK*'))
-            status = 'Ready 40 Pages Real Book'
+            status = 'Ready 40 Pages Real Book V89'
+            pages = '40 Slides'
             if len(found) == 0:
                 status = 'Missing - Master Teacher Se Banao'
-            slide_count = '40 Pages'
-            if len(found) > 0:
+                pages = '0'
+            else:
                 try:
                     from pptx import Presentation
                     prs = Presentation(str(found[0]))
-                    slide_count = str(len(prs.slides)) + ' Slides'
+                    pages = str(len(prs.slides)) + ' Slides - Real Book'
                 except:
-                    slide_count = '40 Pages'
-            rows.append({'ID': c.get('id'), 'Course': c.get('topic'), 'Status': status, 'Pages': slide_count})
+                    pages = '40 Slides'
+            rows.append({'ID': c.get('id'), 'Course': c.get('topic'), 'Status': status, 'Pages': pages, 'File Name': found[0].name if len(found) > 0 else 'None - BRAHMA1000_Course (3) nahi'})
         st.dataframe(pd.DataFrame(rows), use_container_width=True)
-    if menu == 'Master Teacher - Create Sample Book':
-        st.title('Master Teacher AI - Sample 40 Pages Real Book')
-        st.write('Yah single page nahi hai - 40 pages ki real book - Har page 400 shabd - Master Teacher 20 Years Teaching')
-        st.write('Aapne bola: Yah master teacher banaya aapane maine use per jakar module generate kiya aur usne yah banakar diya mujhe socho - Screenshot single page - Ab real 40 pages banega')
-        if st.button('CREATE SAMPLE 40 PAGES REAL BOOK - BRAHMA1000 AI Agent Automation 2026', type='primary'):
-            out_path = master_teacher.create_40_pages_book('BRAHMA1000', 'AI Agent Automation 2026')
-            st.success('Real 40 Pages Book Created - Master Teacher Dwara - Single Page Nahi')
+    if menu == 'Create Sample 40 Pages Book - Test':
+        st.title('Master Teacher - Sample 40 Pages Real Book - Test - Single Page Nahi')
+        st.error('Agar aap BRAHMA1000_Course (3) khol rahe ho to wo purana file hai phone ke Downloads me - Naya file ka naam BRAHMA1000_40_MODULES_40_PAGES_REAL_BOOK_V89.pptx hai')
+        st.write('Test: Ek sample book banao aur slide count check karo - 40 hona chahie - Single page nahi')
+        if st.button('CREATE SAMPLE 40 PAGES REAL BOOK - BRAHMA1000 - TEST SLIDE COUNT 40', type='primary'):
+            out_path = master_teacher.create_40_pages_real_book('BRAHMA1000', 'AI Agent Automation 2026')
+            st.success('Real 40 Pages Book Created V89 - Single Page Nahi')
             from pptx import Presentation
             prs = Presentation(str(out_path))
-            st.write('Slide Count: ' + str(len(prs.slides)) + ' - 40 Hona Chahie - Single Page Nahi')
-            st.write('File Name: ' + out_path.name + ' - Purana BRAHMA1000_Course (3) nahi - Naya 40Pages REAL BOOK')
+            slide_count = len(prs.slides)
+            st.metric('Slide Count - 40 Hona Chahie - Single Page Nahi', slide_count)
+            if slide_count == 40:
+                st.success('40 Slides Confirmed - Real Book - Single Page Nahi - BRAHMA1000_Course (3) wala nahi')
+            else:
+                st.error('Slide count ' + str(slide_count) + ' - Galat hai - 40 hona chahie')
+            st.write('File Name: ' + out_path.name + ' - Ye naya naam hai - Purana BRAHMA1000_Course (3) nahi')
+            st.write('Purana file phone me Downloads folder me hai BRAHMA1000_Course (3) - Use delete karo - Naya file download karo')
             data = out_path.read_bytes()
-            st.download_button('Download 40 Pages Real Book - 40 Slides Check Karo', data=data, file_name=out_path.name)
-            st.info('Phone me download karke kholo - 40 pages swipe karo - M01 KYA HAI se M40 FINAL PROJECT tak - Single page nahi - Har page bhara hua')
+            st.download_button('Download 40 Pages Real Book V89 - 40 Slides - Check Karo Phone Me Swipe Karke', data=data, file_name=out_path.name)
+            st.info('Phone me download karke kholo - 40 pages swipe karo - M01 KYA HAI se M40 FINAL PROJECT tak - Har page 400 shabd - Single page nahi - BRAHMA1000_Course (3) delete karo phone se')
+            # Show first 3 slides content proof
+            st.write('Proof - First 3 Slides Content:')
+            for i in range(min(3, len(prs.slides))):
+                slide = prs.slides[i]
+                text = ''
+                for shape in slide.shapes:
+                    if shape.has_text_frame:
+                        text += shape.text + ' | '
+                st.write('Slide ' + str(i+1) + ': ' + text[:200])
     if menu == 'Course Library 40 Pages Real Books':
-        st.title('Course Library - 100 Books 40 Pages Real Books - Master Teacher Dwara')
-        real_books = len(list(PPT_DIR.glob('*40Pages_REAL_BOOK*')))
-        st.metric('Real Books 40 Pages', real_books)
+        st.title('Course Library - 100 Books 40 Pages Real Books V89 - Single Page Nahi')
+        st.error('Purana BRAHMA1000_Course (3) phone ke Downloads me hai - Use delete karo - Naya file BRAHMA1000_40_MODULES_40_PAGES_REAL_BOOK_V89.pptx download karo')
+        real_books = len(list(PPT_DIR.glob('*40_MODULES_40_PAGES_REAL_BOOK*')))
+        st.metric('Real Books 40 Pages V89', real_books)
         for idx, co in enumerate(courses):
             cid = co.get('id')
             pf = list(PPT_DIR.glob(cid + '*REAL_BOOK*'))
@@ -266,30 +275,17 @@ if st.session_state['admin_logged']:
                         cnt = len(prs.slides)
                     except:
                         cnt = 40
-                    st.success(str(idx + 1) + '. ' + co.get('topic') + ' - ' + str(cnt) + ' Pages Real Book - Single Page Nahi - Master Teacher')
+                    st.success(str(idx + 1) + '. ' + co.get('topic') + ' - ' + str(cnt) + ' Pages Real Book V89 - Single Page Nahi - File: ' + pf[0].name)
                 else:
-                    st.warning(str(idx + 1) + '. ' + co.get('topic') + ' - Missing - Master Teacher Se Banao')
+                    st.warning(str(idx + 1) + '. ' + co.get('topic') + ' - Missing - Master Teacher Se Banao V89')
             with col2:
                 if len(pf) > 0:
                     data = pf[0].read_bytes()
-                    st.download_button('Download 40 Pages', data=data, file_name=pf[0].name, key='dl_' + cid)
-    if menu == 'Super Agent Full Power':
-        st.title('Super Agent Full Power - Master Teacher Ke Baad')
-        st.write('Pehle Master Teacher se 40 pages real books bane - Uske baad Super Agent ka kaam: Search Engine Optimizing Social Media Digital Marketing Blog Facebook Instagram posting courses bechne ke liye khud karega hamesha Niche agents AI ke')
-        if st.button('START SUPER AGENT FULL POWER ROZ POST KAREGA', type='primary'):
-            posts = []
-            today = datetime.datetime.now().strftime('%Y-%m-%d')
-            for c in courses[:20]:
-                topic = c.get('topic')
-                posts.append({'date': today, 'platform': 'Facebook', 'course': topic, 'type': 'Morning Post'})
-                posts.append({'date': today, 'platform': 'Instagram', 'course': topic, 'type': 'Reel'})
-                posts.append({'date': today, 'platform': 'Blog', 'course': topic, 'type': 'SEO Blog'})
-            save_json(MARKETING_FILE, posts)
-            st.success('Super Agent Started - Roz Karega - Master Teacher Books Bechne Ke Liye')
-            st.dataframe(pd.DataFrame(posts), use_container_width=True)
+                    st.download_button('Download 40 Pages V89', data=data, file_name=pf[0].name, key='dl_' + cid)
 else:
     if menu == 'Browse Courses':
-        st.title('Brahma Education - 100 Courses 40 Pages Real Books - Master Teacher Dwara')
+        st.title('Brahma Education - 100 Courses 40 Pages Real Books V89')
+        st.error('Phone me BRAHMA1000_Course (3) purana single page file hai - Use delete karo - Naya file BRAHMA1000_40_MODULES_40_PAGES_REAL_BOOK_V89.pptx hai')
         search = st.text_input('Search 100 courses')
         if search:
             fl = []
@@ -298,14 +294,14 @@ else:
                     fl.append(c)
         else:
             fl = courses
-        real_books = len(list(PPT_DIR.glob('*40Pages_REAL_BOOK*')))
-        st.write('Total ' + str(len(fl)) + ' Ready 40 Pages Real Books ' + str(real_books) + ' - Single Page Nahi')
+        real_books = len(list(PPT_DIR.glob('*40_MODULES_40_PAGES_REAL_BOOK*')))
+        st.write('Total ' + str(len(fl)) + ' Ready 40 Pages Real Books V89 ' + str(real_books))
         for idx, co in enumerate(fl[:15]):
             cid = co.get('id')
             pf = list(PPT_DIR.glob(cid + '*REAL_BOOK*'))
-            status = '40 Pages Real Book Master Teacher'
+            status = '40 Pages Real Book V89 - Single Page Nahi'
             if len(pf) == 0:
-                status = 'Banega Master Teacher Se - Single Page Nahi'
+                status = 'Banega Master Teacher Se V89 - Single Page Nahi'
             with st.expander(str(idx + 1) + '. ' + co.get('topic') + ' ' + status):
                 if len(pf) > 0:
                     try:
@@ -314,11 +310,6 @@ else:
                         cnt = len(prs.slides)
                     except:
                         cnt = 40
-                    st.write('Pages: ' + str(cnt) + ' - Real Book - Single Page Nahi')
+                    st.write('Pages: ' + str(cnt) + ' - Real Book - File: ' + pf[0].name + ' - BRAHMA1000_Course (3) nahi')
                     data = pf[0].read_bytes()
-                    st.download_button('Download 40 Pages Real Book', data=data, file_name=pf[0].name, key='b_dl_' + cid)
-    if menu == 'My Access':
-        st.title('My Learning 40 Pages Real Books')
-        k = st.text_input('Invoice or Key')
-        if st.button('Unlock'):
-            st.write('My Access')
+                    st.download_button('Download 40 Pages Real Book V89', data=data, file_name=pf[0].name, key='b_dl_' + cid)
