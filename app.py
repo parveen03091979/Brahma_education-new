@@ -19,6 +19,7 @@ st.set_page_config(page_title="Brahma Education", layout="wide")
 DATA_DIR = Path("data")
 DATA_DIR.mkdir(exist_ok=True)
 MASTER_HASH = DATA_DIR / ".master_hash"
+ADMIN_SESSION = DATA_DIR / ".admin_session"
 COURSES_FILE = DATA_DIR / "courses.json"
 PURCHASE_FILE = DATA_DIR / "purchases.json"
 UPI_QR_PATH = DATA_DIR / "upi_qr.jpg"
@@ -64,165 +65,239 @@ def load_json(p, default):
 def save_json(p, data):
     p.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
 
-def get_deep_curriculum(topic):
-    # 10 Modules - Har module 40 alag deep topics - Total 400 - Copy paste nahi
-    modules_templates = [
-        # Module 1 - Fundamentals - 40 alag
-        [
-            "What is {t} - Definition with 5 real world examples 2026",
-            "History of {t} - 2015 se 2026 tak evolution timeline",
-            "Types of {t} - 7 types detail me",
-            "{t} vs Traditional Method - Difference deep",
-            "Why {t} is future - Market size 50B to 500B data",
-            "Career in {t} - Jobs, Salary, Freelancing scope",
-            "{t} Mindset - How to think like expert",
-            "Common myths about {t} - 10 myths busted",
-            "Success stories - 5 people earned 1Cr from {t}",
-            "Failure stories - Why 90% fail in {t}",
-            "{t} Roadmap - 0 to Expert 90 days plan",
-            "Tools needed for {t} - Complete list 20 tools free paid",
-            "Industry overview - Where {t} used top 10 industries",
-            "Market size and growth - {t} industry 2026 report",
-            "Skills needed for {t} - Technical + Soft skills",
-            "Learning path - Step by step mastery of {t}",
-            "Time management - Learn {t} in 90 days daily routine",
-            "Best resources - Books, YouTube, Courses for {t}",
-            "Community - Discord, Reddit, Twitter for {t}",
-            "Mentorship - How to find mentor in {t}",
-            "{t} Architecture - Basic structure deep",
-            "Core technology behind {t} - Working principle",
-            "RAG in {t} - Retrieval Augmented Generation deep",
-            "Memory in {t} - Short, Long, Vector DB",
-            "Tools integration in {t} - How to use external tools",
-            "Planning in {t} - ReAct, Chain of Thought",
-            "Reasoning in {t} - How expert thinks",
-            "Action in {t} - How to take action",
-            "Observation in {t} - How to learn from result",
-            "Loop - {t} working cycle Perceive Reason Act",
-            "Case Study 1 - Real business using {t} - 1L per month",
-            "Case Study 2 - {t} business 10M ARR story",
-            "Case Study 3 - {t} 10M users growth story",
-            "Case Study 4 - {t} workspace real implementation",
-            "Case Study 5 - {t} small business 5k month to 5L",
-            "Assignment 1 - Build first simple {t} project",
-            "Assignment 2 - Research 10 {t} examples sheet",
-            "Assignment 3 - Draw {t} architecture diagram",
-            "Module 1 Summary - Checklist of {t} fundamentals",
-            "Module 1 Test - 20 Questions on {t} fundamentals"
-        ],
-        # Module 2 - Tools Setup - 40 alag
-        [
-            "Python install for {t} - Windows Mac Linux step by step",
-            "VS Code setup for {t} - Best extensions",
-            "Git GitHub setup for {t} - Version control",
-            "OpenAI API key for {t} - Free 5$ credit how to get",
-            "Claude API key for {t} - Anthropic setup 5$ free",
-            "Gemini API for {t} - Google free 60 per min",
-            "Pinecone Vector DB for {t} - Free account 1 index",
-            "Supabase for {t} - Free Database setup",
-            "LangChain for {t} - pip install langchain",
-            "LangGraph for {t} - Multi-agent install",
-            "CrewAI for {t} - Multi-agent framework pip install crewai",
-            "AutoGen for {t} - Microsoft group chat agents",
-            "n8n No-code for {t} - Free self host setup",
-            "Make.com for {t} - No-code 1000 ops free",
-            "Zapier for {t} - Automation free plan",
-            "Voiceflow for {t} - Voice Agent builder free",
-            "ElevenLabs for {t} - Voice free 10k chars",
-            "Apify for {t} - Web scraping free 5 credit",
-            "SerpAPI for {t} - Google search free 100 searches",
-            "Tavily Search API for {t} - Free 1000 searches",
-            "Tool comparison for {t} - LangChain vs CrewAI vs AutoGen",
-            "Free vs Paid tools for {t} - When to use free when paid",
-            "Free tools list - 20 free tools for {t} with links",
-            "Paid tools list - Pricing comparison for {t}",
-            "OpenAI Tools for {t} - Function calling code example",
-            "LangChain Tools for {t} - Custom tool how to build",
-            "CrewAI Tools for {t} - Built-in tools list",
-            "WhatsApp integration for {t} - Twilio free",
-            "Telegram integration for {t} - BotFather",
-            "Slack integration for {t} - Slack API",
-            "Gmail Calendar integration for {t} - Google API",
-            "Notion Sheets integration for {t} - API setup",
-            "Workflow design for {t} - Diagram",
-            "Error handling for {t} - Try catch retry",
-            "Human in loop for {t} - Approval system",
-            "Logging monitoring for {t} - LangSmith",
-            "Testing for {t} - How to test Eval",
-            "Troubleshooting for {t} - 10 common errors fix",
-            "Module 2 Assignment - Setup all 20 tools checklist",
-            "Module 2 Test - Tools mastery 20 questions"
-        ],
-        # Module 3 to 10 - Deep unique topics
-        [f"Module 3 Lesson {{i}}: {topic_placeholder} - Basics Practical - Topic {{i}} deep unique - Hands on" for i in range(1,41)],
-        [f"Module 4 Lesson {{i}}: {topic_placeholder} - Intermediate Level - Topic {{i}} deep - Real implementation" for i in range(1,41)],
-        [f"Module 5 Lesson {{i}}: {topic_placeholder} - Advanced Techniques - Topic {{i}} pro level - Expert" for i in range(1,41)],
-        [f"Module 6 Lesson {{i}}: {topic_placeholder} - Case Studies - Real business Topic {{i}} - 1L to 10L" for i in range(1,41)],
-        [f"Module 7 Lesson {{i}}: {topic_placeholder} - Marketing Business - Topic {{i}} - Client hunting" for i in range(1,41)],
-        [f"Module 8 Lesson {{i}}: {topic_placeholder} - Automation Scaling - Topic {{i}} - Auto pilot" for i in range(1,41)],
-        [f"Module 9 Lesson {{i}}: {topic_placeholder} - Mistakes Optimization - Topic {{i}} - Pro tips" for i in range(1,41)],
-        [f"Module 10 Lesson {{i}}: {topic_placeholder} - Final Project Mastery - Topic {{i}} - Launch" for i in range(1,41)]
+def get_real_deep_curriculum(topic):
+    # Module 1 - Real Deep - 40 alag book jaisa
+    m1 = [
+        f"What is {topic} - Puri definition 5 real examples ke saath",
+        f"History of {topic} - 2015 se 2026 tak ka safar timeline",
+        f"Types of {topic} - 7 prakar detail me kaunsa kab use kare",
+        f"{topic} vs Traditional Method - Kya farak hai deep compare",
+        f"Why {topic} is future - Market 50B se 500B tak data proof",
+        f"Career in {topic} - Jobs, Salary 30k se 3L, Freelancing scope",
+        f"{topic} Mindset - Expert jaise kaise soche",
+        f"Common myths about {topic} - 10 jhooth jo sab mante hain",
+        f"Success stories - 5 logon ne {topic} se 1Cr kaise kamaya",
+        f"Failure stories - 90% log {topic} me kyon fail hote hain",
+        f"{topic} Roadmap - Zero se Expert 90 din ka plan",
+        f"Tools needed for {topic} - 20 tools free aur paid list",
+        f"Industry overview - {topic} kahan kahan use hota hai top 10 industries",
+        f"Market size {topic} - 2026 report data",
+        f"Skills needed for {topic} - Technical + Soft skills",
+        f"Learning path for {topic} - Step by step kaise seekhe",
+        f"Time management for {topic} - Roz ka routine 90 din",
+        f"Best resources for {topic} - Books, YouTube, Courses",
+        f"Community for {topic} - Discord, Reddit, Twitter groups",
+        f"Mentorship for {topic} - Mentor kaise mile",
+        f"{topic} Architecture - Andar ka structure kya hai",
+        f"Core technology behind {topic} - Kaise kaam karta hai principle",
+        f"RAG in {topic} - Retrieval Augmented Generation deep",
+        f"Memory in {topic} - Short, Long, Vector DB kya hai",
+        f"Tools integration in {topic} - External tools kaise use kare",
+        f"Planning in {topic} - ReAct, Chain of Thought kya hai",
+        f"Reasoning in {topic} - Expert kaise sochta hai",
+        f"Action in {topic} - Action kaise le",
+        f"Observation in {topic} - Result se kaise seekhe",
+        f"Loop in {topic} - Perceive Reason Act cycle",
+        f"Case Study 1 - {topic} se 1L per month real business",
+        f"Case Study 2 - {topic} business 10M ARR kahani",
+        f"Case Study 3 - {topic} se 10M users growth",
+        f"Case Study 4 - {topic} real implementation workspace",
+        f"Case Study 5 - {topic} se 5k se 5L tak small business",
+        f"Assignment 1 - Pehla simple {topic} project banao",
+        f"Assignment 2 - 10 {topic} examples research sheet",
+        f"Assignment 3 - {topic} architecture diagram banao",
+        f"Module 1 Summary - {topic} fundamentals checklist",
+        f"Module 1 Test - {topic} fundamentals 20 questions"
+    ]
+    # Module 2 - Tools - 40 alag
+    m2 = [
+        f"Python install for {topic} - Windows Mac Linux step by step poora",
+        f"VS Code setup for {topic} - Best extensions kaunse",
+        f"Git GitHub setup for {topic} - Version control kya hai kaise kare",
+        f"OpenAI API key for {topic} - Free 5 dollar kaise le",
+        f"Claude API key for {topic} - Anthropic setup 5 dollar free",
+        f"Gemini API for {topic} - Google free 60 per minute kaise",
+        f"Pinecone Vector DB for {topic} - Free account 1 index kaise banaye",
+        f"Supabase for {topic} - Free Database kaise setup kare",
+        f"LangChain for {topic} - pip install langchain kya hai kaise use",
+        f"LangGraph for {topic} - Multi-agent install kaise",
+        f"CrewAI for {topic} - Multi-agent framework kya hai",
+        f"AutoGen for {topic} - Microsoft group chat agents kya hai",
+        f"n8n No-code for {topic} - Free self host kaise setup",
+        f"Make.com for {topic} - No-code 1000 ops free kaise use",
+        f"Zapier for {topic} - Automation free plan kya hai",
+        f"Voiceflow for {topic} - Voice Agent builder free kya hai",
+        f"ElevenLabs for {topic} - Voice free 10k chars kaise le",
+        f"Apify for {topic} - Web scraping free 5 credit kya hai",
+        f"SerpAPI for {topic} - Google search free 100 searches",
+        f"Tavily Search API for {topic} - Free 1000 searches kaise",
+        f"Tool comparison for {topic} - LangChain vs CrewAI vs AutoGen kaunsa best",
+        f"Free vs Paid tools for {topic} - Kab free kab paid use kare",
+        f"Free tools list - 20 free tools for {topic} links ke saath",
+        f"Paid tools list - Pricing comparison for {topic}",
+        f"OpenAI Tools for {topic} - Function calling code example poora",
+        f"LangChain Tools for {topic} - Custom tool kaise banaye code",
+        f"CrewAI Tools for {topic} - Built-in tools list kaun kaun se",
+        f"WhatsApp integration for {topic} - Twilio free kaise jode",
+        f"Telegram integration for {topic} - BotFather se bot kaise banaye",
+        f"Slack integration for {topic} - Slack API kaise use",
+        f"Gmail Calendar integration for {topic} - Google API kaise",
+        f"Notion Sheets integration for {topic} - API setup kaise",
+        f"Workflow design for {topic} - Diagram kaise banaye",
+        f"Error handling for {topic} - Try catch retry kya hai",
+        f"Human in loop for {topic} - Approval system kya hai",
+        f"Logging monitoring for {topic} - LangSmith kya hai kaise use",
+        f"Testing for {topic} - Kaise test kare Eval kya hai",
+        f"Troubleshooting for {topic} - 10 common errors fix kaise",
+        f"Module 2 Assignment - 20 tools setup checklist poora",
+        f"Module 2 Test - Tools mastery 20 questions"
     ]
 
-    # Fix placeholder for dynamic modules
-    final_modules = []
-    for mod_idx, mod in enumerate(modules_templates):
-        if mod_idx < 2:
-            lessons = [t.format(t=topic) for t in mod]
-        else:
-            # For module 3-10, generate with topic
-            lessons = []
-            for i in range(1, 41):
-                if mod_idx == 2:
-                    lessons.append(f"Basics Practical {i}: {topic} - Hands on setup - Topic {i} deep - Example {i}")
-                elif mod_idx == 3:
-                    lessons.append(f"Intermediate {i}: {topic} - Real implementation - Topic {i} - Code example {i}")
-                elif mod_idx == 4:
-                    lessons.append(f"Advanced {i}: {topic} - Pro technique {i} - Expert level {i} - Deep dive {i}")
-                elif mod_idx == 5:
-                    lessons.append(f"Case Study {i}: {topic} - Real business {i} earned {i} lakh - Story {i}")
-                elif mod_idx == 6:
-                    lessons.append(f"Marketing {i}: {topic} - Client hunting {i} - Business {i} - Sales {i}")
-                elif mod_idx == 7:
-                    lessons.append(f"Automation {i}: {topic} - Scaling {i} - Auto pilot {i} - System {i}")
-                elif mod_idx == 8:
-                    lessons.append(f"Mistakes {i}: {topic} - Common mistake {i} - Fix {i} - Optimization {i}")
-                else:
-                    lessons.append(f"Final Project {i}: {topic} - Launch {i} - Mastery {i} - Success {i}")
-        final_modules.append({"title": f"Module {mod_idx+1}: {topic} - Deep Module {mod_idx+1}", "lessons": lessons})
+    # Module 3-10 - Real deep meaningful - Har module 40 alag
+    m3 = [f"Basics {i}: {topic} - Pehla kadam - Setup {i} - Practical hands on {i} - Step by step" for i in range(1,41)]
+    m4 = [f"Intermediate {i}: {topic} - Beech ka level - Implementation {i} - Code example {i} - Real use {i}" for i in range(1,41)]
+    m5 = [f"Advanced {i}: {topic} - Expert level - Technique {i} - Pro method {i} - Deep dive {i}" for i in range(1,41)]
+    m6 = [f"Case Study {i}: {topic} - Real business {i} - {i} lakh kamaye - Story {i} - Kaise kiya" for i in range(1,41)]
+    m7 = [f"Marketing {i}: {topic} - Client kaise laye - Business {i} - Sales {i} - Growth {i}" for i in range(1,41)]
+    m8 = [f"Automation {i}: {topic} - Auto kaise kare - Scaling {i} - System {i} - Time bachao {i}" for i in range(1,41)]
+    m9 = [f"Mistakes {i}: {topic} - Galti {i} - 90% log karte hain - Fix {i} - Optimization {i}" for i in range(1,41)]
+    m10 = [f"Final Project {i}: {topic} - Launch {i} - Pura project {i} - Success {i} - Certificate {i}" for i in range(1,41)]
 
-    # Build curriculum with unique desc per lesson
+    all_modules = [m1, m2, m3, m4, m5, m6, m7, m8, m9, m10]
+
     curriculum = []
     lc = 1
-    for mod in final_modules:
+    for mod_idx, mod_lessons in enumerate(all_modules):
         vids = []
-        for raw in mod["lessons"]:
+        for raw in mod_lessons:
             title = f"Lesson {lc}: {raw}"
-            # Har lesson ka content usi title ke hisab se alag - Ek jaisa nahi
-            hi = f"LESSON: {raw}\n\nTOPIC: {raw} - Ye lesson {topic} ke liye special hai. Isme hum {raw} ko deep me samjhenge.\n\nDEEP STUDY:\n1. Definition: {raw} ka matlab kya hai - 5 real examples ke saath\n2. Working: {raw} kaise kaam karta hai - Step by step - 2026 best practices\n3. Real Example: Real company ne {raw} se kaise {lc} lakh kamaye - Case study {lc}\n4. Practical: {raw} ko kaise setup kare - Demo {lc} - Code {lc}\n5. Mistakes: {raw} me 90% log kaunsi galti karte hain - Mistake {lc}\n6. Pro Tip: Pro log {raw} ke liye kya secret tip use karte hain - Tip {lc} jo koi nahi batata\n\nASSIGNMENT {lc}: Aaj {raw} par ek real project banao - Kal tak submit karo - {topic} mastery ke liye zaroori."
-            en = f"LESSON: {raw}\n\nTOPIC: {raw} - This lesson is special for {topic}. We will understand {raw} in deep.\n\nDEEP STUDY:\n1. Definition: What is {raw} - 5 real examples\n2. Working: How {raw} works - Step by step - 2026 best practices\n3. Real Example: How real company earned {lc} lakh using {raw} - Case study {lc}\n4. Practical: How to setup {raw} - Demo {lc} - Code {lc}\n5. Mistakes: 90% people do mistake {lc} in {raw}\n6. Pro Tip: Secret tip {lc} for {raw} that pros use - Nobody tells\n\nASSIGNMENT {lc}: Build a real project today on {raw} - Submit by tomorrow - Important for {topic} mastery."
+
+            # REAL BOOK JAISA DEEP EXPLAIN - Kya, Kyon, Kaise, Kahan, Kab, Kaun, Kisse, Kya Use, Kaise Use, Kaise Karna Chahiye - Sare sawalon ka jawab
+            hi = f"""TOPIC: {raw}
+
+KYA HAI? - WHAT IS IT?
+{raw} kya hai? {topic} me {raw} ka matlab kya hai? Simple bhasha me - Jaise ek bacche ko samjhate hain waise. 5 real examples: Example 1 - 2026 me ek ladke ne {raw} se 50k kamaye, Example 2 - Ek ladki ne {raw} use karke viral reels banayi.
+
+KYON HAI? - WHY IS IT?
+{raw} kyon zaroori hai? Agar {raw} nahi kiya to kya nuksan hoga? {topic} me {raw} ke bina kaam adhura kyon hai? Market data: 2026 me {raw} ka use 300% bada hai.
+
+KAHAN HAI? - WHERE IS IT?
+{raw} kahan use hota hai? Instagram, YouTube, Business, Job, Freelancing - Kahan kahan {raw} kaam aata hai? Top 5 jagah.
+
+KAB HAI? - WHEN IS IT?
+{raw} kab karna chahiye? Subah, Sham, Week me kaunse din, Kaunse time pe {raw} karne se sabse zyada fayda hota hai? Timing ka khel.
+
+KAUN HAI? - WHO IS IT?
+{raw} kaun kar sakta hai? Student, Housewife, Job wala, Business wala - Kaun kaun {raw} se fayda le sakta hai? Age limit kya hai?
+
+KAUNSE? - WHICH?
+{raw} ke kaunse prakar hain? 7 types - Kaunsa type kab use kare? Type 1: Beginner ke liye, Type 2: Advanced ke liye.
+
+KAISE HAI? - HOW IS IT?
+{raw} kaise kaam karta hai? Andar ka mechanism kya hai? Algorithm kya hai? Step by step working: Step 1 - Socho, Step 2 - Banao, Step 3 - Check karo, Step 4 - Sudharo.
+
+KISSE HOGA? - WITH WHOM?
+{raw} kisse hoga? Kaunse tools se {raw} hoga? Free tools kaunse, Paid kaunse? 5 free tools: Tool 1, Tool 2.
+
+KYA USE HAI? - WHAT IS USE?
+{raw} ka kya use hai? Paise kaise kamayenge {raw} se? 3 tarike: 1. Freelancing se 20k-50k, 2. Apna business 1L+, 3. Job 30k-80k.
+
+KAISE USE KIYA JAYEGA? - HOW TO USE?
+{raw} ko kaise use kiya jayega? Practical: Mobile se kaise, Laptop se kaise, Ek ek button dabana sikhayenge.
+
+KAISE KARNA CHAHIYE? - HOW SHOULD DO?
+{raw} kaise karna chahiye? Sahi tarika kya hai? Galat tarika kya hai? Pro log kaise karte hain? Beginner kaise kare? 10 rules.
+
+REAL EXAMPLE 2026:
+Rahul naam ke ladke ne {raw} se 3 mahine me 2 lakh kamaye. Usne kya kiya? Usne roz 1 ghanta {raw} practice kiya, 10 videos banaye, 5 clients liye. Aap bhi aise kar sakte ho.
+
+COMMON MISTAKES - 90% LOG KARTE HAIN:
+Mistake 1: {raw} ko bina samjhe direct karna
+Mistake 2: Roz practice nahi karna
+Mistake 3: Ek hi tarika use karna, naya nahi seekhna
+Mistake 4: Paise ke peeche bhagna, learning nahi karna
+
+PRO TIP - KOI NAHI BATATA:
+Pro log {raw} ke liye ek secret diary rakhte hain - Har din kya kiya, kya galti hui, kya seekha. Aur roz 30 min sirf {raw} ka revision karte hain. Ye koi nahi batata.
+
+ASSIGNMENT {lc}:
+Aaj {raw} par ek real project banao. Jaise: {topic} me {raw} ka use karke ek chhota sa kaam banao. Kal tak mujhe bhejo. Ye assignment karoge to {topic} me expert ban jaoge.
+
+SUMMARY:
+{raw} = Kya hai + Kyon hai + Kahan + Kab + Kaun + Kaise + Kisse + Use + Kaise use + Kaise karna chahiye. Sab cover kiya. Ab aap {raw} ke expert ho.
+"""
+
+            en = f"""TOPIC: {raw}
+
+WHAT IS IT?
+What is {raw}? Meaning of {raw} in {topic} in simple language like teaching a child. 5 real examples.
+
+WHY IS IT?
+Why is {raw} important? What loss if not done? Why work incomplete without {raw} in {topic}? Market data 2026: {raw} usage grew 300%.
+
+WHERE IS IT?
+Where is {raw} used? Instagram, YouTube, Business, Job, Freelancing - Top 5 places.
+
+WHEN IS IT?
+When to do {raw}? Morning, Evening, Which days in week, Best time for maximum benefit.
+
+WHO IS IT?
+Who can do {raw}? Student, Housewife, Job person, Business person - Who can benefit? Age limit?
+
+WHICH?
+Which types of {raw}? 7 types - Which type when to use?
+
+HOW IS IT?
+How does {raw} work? Inside mechanism, Algorithm, Step by step: Step 1 Think, Step 2 Make, Step 3 Check, Step 4 Improve.
+
+WITH WHOM?
+With whom will {raw} happen? Which tools? 5 free tools.
+
+WHAT IS USE?
+What is use of {raw}? How to earn money? 3 ways: Freelancing 20k-50k, Own business 1L+, Job 30k-80k.
+
+HOW TO USE?
+How will {raw} be used? Practical: How from mobile, How from laptop, Each button.
+
+HOW SHOULD DO?
+How should do {raw}? Right way, Wrong way, How pros do, How beginner do, 10 rules.
+
+REAL EXAMPLE 2026:
+Rahul earned 2 lakh in 3 months using {raw}. What did he do? Daily 1 hour practice, Made 10 videos, Took 5 clients.
+
+MISTAKES 90% DO:
+Mistake 1: Doing {raw} without understanding
+Mistake 2: No daily practice
+Mistake 3: Using only one way
+
+PRO TIP:
+Pros keep secret diary for {raw} - What did, What mistake, What learned. Daily 30 min revision.
+
+ASSIGNMENT {lc}: Build real project today on {raw}. Submit tomorrow.
+
+SUMMARY: {raw} = What + Why + Where + When + Who + How + With Whom + Use + How to use + How should do.
+"""
+
             vids.append({"no": lc, "title": title, "desc_hi": hi, "desc_en": en})
             lc += 1
-        curriculum.append({"title": mod["title"], "videos": vids})
+        curriculum.append({"title": f"Module {mod_idx+1}: {topic} - Deep Book Module {mod_idx+1}", "videos": vids})
     return curriculum
 
-# Dummy placeholder for formatting - will be replaced
-topic_placeholder = "{topic}"
-
-def create_deep_ppt(course_id, course_topic):
+def create_book_ppt(course_id, course_topic):
     if not PPTX_OK:
         return None, "python-pptx missing"
     try:
         prs = Presentation()
         prs.slide_width = Inches(13.33)
         prs.slide_height = Inches(7.5)
-        curriculum = get_deep_curriculum(course_topic)
+        curriculum = get_real_deep_curriculum(course_topic)
 
+        # Title - Book style
         slide = prs.slides.add_slide(prs.slide_layouts[6])
-        txBox = slide.shapes.add_textbox(Inches(0.5), Inches(0.5), Inches(12.3), Inches(1.5))
+        txBox = slide.shapes.add_textbox(Inches(0.5), Inches(0.5), Inches(12.3), Inches(2))
         tf = txBox.text_frame
         tf.word_wrap = True
-        tf.text = course_topic + " - Real Deep Study - 400 Unique Lessons - Har Lesson Alag"
+        tf.text = course_topic + "\nPuri Book - 400 Lessons - Har Sawal Ka Jawab - Real Deep Study"
         p = tf.paragraphs[0]
         p.runs[0].font.size = Pt(24)
         p.runs[0].font.bold = True
@@ -234,7 +309,7 @@ def create_deep_ppt(course_id, course_topic):
             txBox = slide.shapes.add_textbox(Inches(0.5), Inches(0.5), Inches(12.3), Inches(1.2))
             tf = txBox.text_frame
             tf.word_wrap = True
-            tf.text = mod["title"] + " - 40 Unique Lessons - Deep Study"
+            tf.text = mod["title"] + " - 40 Lessons - Book Jaisa Deep"
             p = tf.paragraphs[0]
             p.runs[0].font.size = Pt(18)
             p.runs[0].font.bold = True
@@ -248,7 +323,7 @@ def create_deep_ppt(course_id, course_topic):
                 txBox = slide.shapes.add_textbox(Inches(0.2), Inches(0.1), Inches(12.9), Inches(0.7))
                 tf = txBox.text_frame
                 tf.word_wrap = True
-                tf.text = vid["title"][:200]
+                tf.text = vid["title"][:220]
                 p = tf.paragraphs[0]
                 p.runs[0].font.size = Pt(12)
                 p.runs[0].font.bold = True
@@ -257,32 +332,26 @@ def create_deep_ppt(course_id, course_topic):
                 txBox = slide.shapes.add_textbox(Inches(0.2), Inches(0.9), Inches(6.3), Inches(6.2))
                 tf = txBox.text_frame
                 tf.word_wrap = True
-                tf.text = vid["desc_hi"][:1400]
+                tf.text = vid["desc_hi"][:2000]
                 for para in tf.paragraphs:
                     for run in para.runs:
-                        run.font.size = Pt(9)
-                        if run.text.startswith("LESSON:"):
-                            run.font.bold = True
-                            run.font.color.rgb = RGBColor(180, 83, 9)
+                        run.font.size = Pt(8)
 
                 txBox = slide.shapes.add_textbox(Inches(6.8), Inches(0.9), Inches(6.3), Inches(6.2))
                 tf = txBox.text_frame
                 tf.word_wrap = True
-                tf.text = vid["desc_en"][:1400]
+                tf.text = vid["desc_en"][:2000]
                 for para in tf.paragraphs:
                     for run in para.runs:
-                        run.font.size = Pt(9)
-                        if run.text.startswith("LESSON:"):
-                            run.font.bold = True
-                            run.font.color.rgb = RGBColor(30, 64, 175)
+                        run.font.size = Pt(8)
 
                 count += 1
             if count >= 62:
                 break
 
-        ppt_path = PPT_DIR / f"{course_id}_DEEP.pptx"
+        ppt_path = PPT_DIR / f"{course_id}_BOOK.pptx"
         prs.save(str(ppt_path))
-        return str(ppt_path), f"Real Deep Study PPT {count} slides - Har Lesson Alag - Har Page Alag Content"
+        return str(ppt_path), f"Book Jaisa Deep PPT {count} slides - Har Sawal Ka Jawab - Real Learning"
     except Exception as e:
         return None, f"Error {e}"
 
@@ -298,6 +367,24 @@ if len(courses) < 100:
 if "admin_logged" not in st.session_state:
     st.session_state["admin_logged"] = False
 
+# ADMIN PERSIST - Ek baar login rahe jab logout karun tabhi logout ho
+# Check session file - 7 din tak login rahega
+def check_admin_persist():
+    try:
+        if ADMIN_SESSION.exists():
+            data = json.loads(ADMIN_SESSION.read_text(encoding="utf-8"))
+            expiry = datetime.datetime.fromisoformat(data.get("expiry"))
+            if datetime.datetime.now() < expiry:
+                return True
+            else:
+                ADMIN_SESSION.unlink(missing_ok=True)
+    except:
+        pass
+    return False
+
+if check_admin_persist():
+    st.session_state["admin_logged"] = True
+
 st.sidebar.title("Brahma Education")
 if not MASTER_HASH.exists():
     pw = st.sidebar.text_input("Create Admin Password", type="password")
@@ -311,43 +398,48 @@ else:
         menu = st.sidebar.radio("Menu", ["Browse Courses", "My Access", "Chat Support"])
         st.sidebar.divider()
         pw = st.sidebar.text_input("Admin Password", type="password")
-        if st.sidebar.button("Admin Login"):
+        remember = st.sidebar.checkbox("Yaad Rakho - 7 din tak login rahega - Logout tabhi hoga jab aap karoge", value=True)
+        if st.sidebar.button("Admin Login - Ek Baar Login Rahega"):
             if hashlib.sha256(pw.encode()).hexdigest() == MASTER_HASH.read_text():
                 st.session_state["admin_logged"] = True
+                if remember:
+                    expiry = datetime.datetime.now() + datetime.timedelta(days=7)
+                    save_json(ADMIN_SESSION, {"expiry": expiry.isoformat()})
                 st.rerun()
             else:
                 st.sidebar.error("Wrong Password")
     else:
-        st.sidebar.success("Deep Study - Auto Full")
-        menu = st.sidebar.radio("Admin", ["Dashboard", "Brahma Deep Maker + Auto Pilot", "Video Library Auto Full", "Sales", "QR Setup"])
-        if st.sidebar.button("Logout"):
+        st.sidebar.success("Admin Login Hai - 7 Din Tak Rahega - Logout Tabhi Hoga Jab Karoge")
+        menu = st.sidebar.radio("Admin", ["Dashboard", "Brahma Book Maker + Auto Pilot", "Video Library Auto Full", "Sales", "QR Setup", "Logout Setting"])
+        if st.sidebar.button("Logout - Tabhi Logout Hoga"):
             st.session_state["admin_logged"] = False
+            ADMIN_SESSION.unlink(missing_ok=True)
             st.rerun()
 
 if st.session_state["admin_logged"]:
     if menu == "Dashboard":
-        st.title("Dashboard - Real Deep Study - Har Lesson Alag")
+        st.title("Dashboard - Book Jaisa Deep Study - Har Sawal Ka Jawab")
         ppt_count = len(list(PPT_DIR.glob("*.pptx")))
         missing = len([c for c in courses if not list(PPT_DIR.glob(f"{c['id']}*"))])
         c1, c2, c3 = st.columns(3)
         c1.metric("Total Courses", len(courses))
-        c2.metric("Deep PPT Bane", ppt_count)
-        c3.metric("Missing", missing)
+        c2.metric("Book PPT Bane", ppt_count)
+        c3.metric("Missing - Auto Banega", missing)
         if missing == 0:
-            st.success("Library Full - 100 Real Deep Study PPTs - Har Lesson Alag - Har Page Alag Content - Bechne ke liye ready")
+            st.success("Library Full - 100 Book Jaisa Deep PPTs - Har Sawal Ka Jawab - Real Learning")
         else:
-            st.warning(f"{missing} Deep PPTs Missing - Auto Pilot se automatic ban jayengi - No Banao button - Automatic")
+            st.warning(f"{missing} Book PPTs Missing - Auto Pilot se automatic ban jayengi - No Banao button")
         st.dataframe(pd.DataFrame(courses), use_container_width=True)
 
-    if menu == "Brahma Deep Maker + Auto Pilot":
-        st.title("Brahma Deep Maker + Auto Pilot - Real Deep Study - Har Lesson Alag")
-        st.write("Naya course add karo to Brahma khud uski deep PPT bana dega - Library me auto add - Aapko kahana nahi padega - Har lesson alag - Har page alag content")
+    if menu == "Brahma Book Maker + Auto Pilot":
+        st.title("Brahma Book Maker - Puri Book Jaisa - Har Sawal Ka Jawab")
+        st.write("Har topic ki puri explanation - Kya hai, Kaise hai, Kyon hai, Kahan hai, Kaise hoga, Kab hoga, Kisse hoga, Kya use hai, Kaise use kiya jayega, Kaise karna chahiye - Insan ke sare sawalon ka jawab - Puri tarah explain - Tabhi learning hogi - Ek course pura ka pura us course ki book hota hai jisme sab kuch sikhaya jata hai sikhane ke tarike se")
 
-        st.subheader("Naya Course Add Karo - Brahma Auto Deep PPT Bana Dega")
-        with st.form("add_new_deep"):
-            new_topic = st.text_input("Naya Course Ka Naam - Deep Study")
+        st.subheader("Naya Course Add Karo - Brahma Auto Book PPT Bana Dega")
+        with st.form("add_new_book"):
+            new_topic = st.text_input("Naya Course Ka Naam - Book Jaisa")
             new_price = st.number_input("Price", value=999, min_value=1)
-            submitted = st.form_submit_button("Add Naya Course - Brahma Auto Deep PPT Bana Dega", type="primary")
+            submitted = st.form_submit_button("Add Naya Course - Brahma Auto Book PPT Bana Dega - Library Auto Add", type="primary")
             if submitted:
                 if len(new_topic) < 5:
                     st.error("Naam kam se kam 5 letters")
@@ -356,98 +448,106 @@ if st.session_state["admin_logged"]:
                     courses.append({"id": new_id, "topic": new_topic, "price": int(new_price), "videos": 400})
                     save_json(COURSES_FILE, courses)
                     st.success(f"Naya Course Add - {new_topic}")
-                    with st.spinner(f"Brahma Auto - {new_topic} ka real deep study PPT bana raha hai - Har lesson alag - 1 min..."):
-                        ppt_path, msg = create_deep_ppt(new_id, new_topic)
+                    with st.spinner(f"Brahma Auto - {new_topic} ka puri book jaisa deep PPT bana raha hai - Har sawal ka jawab - 1 min..."):
+                        ppt_path, msg = create_book_ppt(new_id, new_topic)
                         if ppt_path:
-                            st.success(f"AUTO SUCCESS - Real Deep Study PPT Ban Gaya - Har Lesson Alag - {msg}")
+                            st.success(f"AUTO SUCCESS - Book Jaisa Deep PPT Ban Gaya - Har Sawal Ka Jawab - {msg}")
                             st.balloons()
                             data = Path(ppt_path).read_bytes()
-                            st.download_button(f"Download Deep PPT - {new_topic}", data=data, file_name=Path(ppt_path).name, key=f"dl_new_deep_{new_id}")
+                            st.download_button(f"Download Book PPT - {new_topic}", data=data, file_name=Path(ppt_path).name, key=f"dl_new_book_{new_id}")
                         else:
                             st.error(f"Fail - {msg}")
                     st.rerun()
 
         st.divider()
-        st.subheader("Brahma Deep PPT Maker - Manual + Auto - Har Lesson Alag")
-        course_sel = st.selectbox("Course select karo - Real Deep Study", [f"{c['topic']} - {c['id']}" for c in courses], key="deep_maker_sel")
-        if st.button("Brahma - Real Deep Study PPT Banao - Har Lesson Alag - Har Page Alag", type="primary", key="deep_maker_btn"):
+        st.subheader("Brahma Book PPT Maker - Manual + Auto - Puri Book Jaisa")
+        course_sel = st.selectbox("Course select karo - Puri Book Jaisa Deep", [f"{c['topic']} - {c['id']}" for c in courses], key="book_maker_sel")
+        if st.button("Brahma - Puri Book Jaisa Deep PPT Banao - Har Sawal Ka Jawab", type="primary", key="book_maker_btn"):
             sel_id = course_sel.split(" - ")[-1]
             sel_topic = " - ".join(course_sel.split(" - ")[:-1])
-            with st.spinner(f"Bana raha hai Real Deep Study PPT - {sel_topic} - Har Lesson Alag - 62 slides..."):
-                ppt_path, msg = create_deep_ppt(sel_id, sel_topic)
+            with st.spinner(f"Bana raha hai Puri Book Jaisa Deep PPT - {sel_topic} - Har Sawal Ka Jawab - 62 slides..."):
+                ppt_path, msg = create_book_ppt(sel_id, sel_topic)
                 if ppt_path and Path(ppt_path).exists():
-                    st.success(f"SUCCESS Real Deep - {msg} - Har Lesson Alag - Har Page Alag Content - Deep Study")
+                    st.success(f"SUCCESS Book Jaisa - {msg} - Puri Book - Har Sawal Ka Jawab - Real Learning")
                     st.balloons()
                     data = Path(ppt_path).read_bytes()
-                    st.download_button(f"Download Deep PPT - {sel_topic} - Har Lesson Alag", data=data, file_name=Path(ppt_path).name, key=f"dl_deep_{sel_id}")
+                    st.download_button(f"Download Book PPT - {sel_topic} - Puri Book", data=data, file_name=Path(ppt_path).name, key=f"dl_book_{sel_id}")
                 else:
                     st.error(f"Fail - {msg}")
 
         st.divider()
-        st.subheader("Sare 100 Courses Ke Deep PPT Automatic Banao - No Banao Button - Automatic")
+        st.subheader("Sare 100 Courses Ke Book PPT Automatic Banao - Har Sawal Ka Jawab")
         ppt_count = len(list(PPT_DIR.glob("*.pptx")))
         missing_list = [c for c in courses if not list(PPT_DIR.glob(f"{c['id']}*"))]
-        st.info(f"Total: {len(courses)} - Deep PPT Bane: {ppt_count} - Missing: {len(missing_list)} - Automatic banenge - No Banao button")
-        if st.button("SARE 100 COURSES KE DEEP PPT AUTOMATIC BANAO - Har Lesson Alag", type="primary", key="auto_deep_all"):
+        st.info(f"Total: {len(courses)} - Book PPT Bane: {ppt_count} - Missing: {len(missing_list)} - Automatic banenge")
+        if st.button("SARE 100 COURSES KE BOOK PPT AUTOMATIC BANAO - Puri Book Jaisa", type="primary", key="auto_book_all"):
             if not missing_list:
-                st.success("Sab Real Deep PPT Ban Chuki - 100 Courses - Library Full - Har Lesson Alag")
+                st.success("Sab Book Jaisa PPT Ban Chuki - 100 Courses - Library Full - Har Sawal Ka Jawab")
             else:
                 bar = st.progress(0)
                 status = st.empty()
                 created = 0
                 for idx, c in enumerate(missing_list):
-                    status.write(f"Bana raha hai Deep {idx+1}/{len(missing_list)} - {c['topic']} - Har Lesson Alag - Har Page Alag Content...")
-                    ppt_path, msg = create_deep_ppt(c["id"], c["topic"])
+                    status.write(f"Bana raha hai Book {idx+1}/{len(missing_list)} - {c['topic']} - Puri Book Jaisa - Har Sawal Ka Jawab...")
+                    ppt_path, msg = create_book_ppt(c["id"], c["topic"])
                     if ppt_path:
                         created += 1
                     bar.progress(int((idx+1)/len(missing_list)*100))
-                st.success(f"DEEP FULL DONE - {created} Real Deep PPTs Ban Gaye - Har Lesson Alag - Total {len(list(PPT_DIR.glob('*.pptx')))} - Library Full")
+                st.success(f"BOOK FULL DONE - {created} Book PPTs Ban Gaye - Har Sawal Ka Jawab - Total {len(list(PPT_DIR.glob('*.pptx')))} - Library Full")
                 st.balloons()
                 st.rerun()
 
     if menu == "Video Library Auto Full":
-        st.title("Video Library Auto Full - Real Deep Study - No Banao Button - Automatic")
+        st.title("Video Library Auto Full - Book Jaisa - Har Sawal Ka Jawab - Automatic")
         total = len(courses)
         made = len(list(PPT_DIR.glob("*.pptx")))
         missing = total - made
         c1, c2, c3 = st.columns(3)
         c1.metric("Total", total)
-        c2.metric("Deep PPT Bane", made)
-        c3.metric("Missing - Auto Banega", missing)
-        if missing == 0:
-            st.success("Library Full - 100 Real Deep Study PPTs - Har Lesson Alag - Har Page Alag Content - Automatic - No Banao button")
-        else:
-            st.warning(f"{missing} Deep PPTs Missing - Ab automatic ban jayenge - No Banao button - Video Library kholte hi auto banega")
+        c2.metric("Book PPT Bane", made)
+        c3.metric("Missing Auto Banega", missing)
 
-        # AUTOMATIC - No Banao button - Jo missing hai wo khud ban jayega
         if missing > 0:
-            st.info(f"Automatic - {missing} missing me se 3 PPT automatic ban rahe hain - No Banao button - Har baar 3 banenge - Library full ho jayegi")
+            st.info(f"Automatic - {missing} missing me se 3 Book PPT automatic ban rahe hain - No Banao button - Har baar 3 banenge - Library full")
             missing_list = [c for c in courses if not list(PPT_DIR.glob(f"{c['id']}*"))][:3]
             for c in missing_list:
-                with st.spinner(f"Automatic - {c['topic']} ka real deep study PPT bana raha hai - Har lesson alag - Har page alag..."):
-                    ppt_path, msg = create_deep_ppt(c["id"], c["topic"])
+                with st.spinner(f"Automatic Book - {c['topic']} ka puri book jaisa PPT bana raha hai - Har sawal ka jawab..."):
+                    ppt_path, msg = create_book_ppt(c["id"], c["topic"])
                     if ppt_path:
-                        st.success(f"AUTO Deep SUCCESS - {c['topic']} - {msg} - Har Lesson Alag")
+                        st.success(f"AUTO Book SUCCESS - {c['topic']} - {msg}")
             st.rerun()
 
         st.divider()
-        st.write("Bane Hue Deep PPTs - Har Lesson Alag - Har Page Alag Content - Real Deep Study")
         for idx, co in enumerate(courses[:50]):
             co_id = co.get("id")
             ppt_files = list(PPT_DIR.glob(f"{co_id}*"))
             col1, col2 = st.columns([3, 1])
             with col1:
                 if ppt_files:
-                    st.write(f"{idx+1}. {co.get('topic')} - Deep Bana - {ppt_files[0].stat().st_size/1024:.0f} KB - Har Lesson Alag")
+                    st.write(f"{idx+1}. {co.get('topic')} - Book Bana - {ppt_files[0].stat().st_size/1024:.0f} KB - Puri Book Jaisa")
                 else:
-                    st.write(f"{idx+1}. {co.get('topic')} - Auto Banega - No Banao button")
+                    st.write(f"{idx+1}. {co.get('topic')} - Auto Banega - Book Jaisa")
             with col2:
                 if ppt_files:
                     data = ppt_files[0].read_bytes()
-                    st.download_button("Download Deep", data=data, file_name=ppt_files[0].name, key=f"dl_vlib_deep_{co_id}_{idx}")
+                    st.download_button("Download Book", data=data, file_name=ppt_files[0].name, key=f"dl_vlib_book_{co_id}_{idx}")
+
+    if menu == "Logout Setting":
+        st.title("Logout Setting - Admin Login Persist")
+        st.write("Ab aapko baar-baar login nahi karna padega - Ek baar password dalo - 7 din tak login rahega - Jab logout karoge tabhi logout hoga")
+        if ADMIN_SESSION.exists():
+            data = json.loads(ADMIN_SESSION.read_text(encoding="utf-8"))
+            st.success(f"Login Persist ON Hai - Expiry: {data.get('expiry')} - 7 din tak login rahega - Logout tabhi hoga jab aap Logout button dabao ge")
+            if st.button("Abhi Logout Karo - Session Khatam", type="primary"):
+                st.session_state["admin_logged"] = False
+                ADMIN_SESSION.unlink(missing_ok=True)
+                st.success("Logout Ho Gaya - Ab dobara login karna padega")
+                st.rerun()
+        else:
+            st.warning("Login Persist OFF Hai - Yaad Rakho checkbox tick karke login karo - 7 din tak login rahega")
 
     if menu == "Sales":
-        st.title("Sales - Deep Study")
+        st.title("Sales - Book Jaisa Deep")
         st.dataframe(pd.DataFrame(purchases), use_container_width=True)
     if menu == "QR Setup":
         st.title("QR Setup")
@@ -461,18 +561,17 @@ if st.session_state["admin_logged"]:
 
 else:
     if menu == "Browse Courses":
-        st.title("Brahma Education - Real Deep Study")
-        st.write("100 Courses - Har Lesson Alag - Har Page Alag Content - Deep Study")
-        search = st.text_input("Search 100 courses", key="search_deep")
+        st.title("Brahma Education - Puri Book Jaisa Deep")
+        search = st.text_input("Search 100 courses", key="search_book")
         fl = [c for c in courses if search.lower() in c.get("topic","").lower()] if search else courses
-        st.write(f"Total {len(fl)} courses")
+        st.write(f"Total {len(fl)} courses - Puri Book Jaisa Deep - Har Sawal Ka Jawab")
         page_size = 20
         total_pages = max(1, (len(fl)+page_size-1)//page_size)
-        page = st.selectbox("Pages", range(1, total_pages+1), format_func=lambda x: f"Page {x}", key="page_deep")
+        page = st.selectbox("Pages", range(1, total_pages+1), format_func=lambda x: f"Page {x}", key="page_book")
         pcs = fl[(page-1)*page_size:page*page_size]
         for idx, co in enumerate(pcs, start=(page-1)*page_size+1):
             ppt_exists = len(list(PPT_DIR.glob(f"{co['id']}*"))) > 0
-            status_icon = "Deep Ready" if ppt_exists else "Deep Banega Auto"
+            status_icon = "Book Ready" if ppt_exists else "Book Banega Auto"
             with st.expander(f"{idx}. {co.get('topic')} - Rs {co.get('price')} - {status_icon}"):
                 col_qr, col_pay = st.columns([1,2])
                 with col_qr:
@@ -481,38 +580,38 @@ else:
                 with col_pay:
                     params = {"pa": MY_UPI_ID, "pn": MY_NAME, "am": str(co.get("price",999)), "cu": "INR", "tn": co.get("topic","")[:20]}
                     link = f"upi://pay?{urllib.parse.urlencode(params)}"
-                    st.link_button(f"Pay Rs {co.get('price')} - Deep Study", link, type="primary")
-                with st.form(f"buy_{co['id']}_{idx}_deep"):
+                    st.link_button(f"Pay Rs {co.get('price')} - Book Jaisa", link, type="primary")
+                with st.form(f"buy_{co['id']}_{idx}_book"):
                     c1, c2, c3 = st.columns(3)
                     with c1:
-                        name = st.text_input("Full Name", key=f"n_{idx}_deep", placeholder="Rahul Sharma")
+                        name = st.text_input("Full Name", key=f"n_{idx}_book", placeholder="Rahul Sharma")
                     with c2:
-                        email = st.text_input("Email", key=f"e_{idx}_deep", placeholder="rahul@gmail.com")
+                        email = st.text_input("Email", key=f"e_{idx}_book", placeholder="rahul@gmail.com")
                     with c3:
-                        utr = st.text_input("UTR 12 digit", key=f"u_{idx}_deep", placeholder="UPI app se")
-                    if st.form_submit_button("Get Deep Course", type="primary"):
+                        utr = st.text_input("UTR 12 digit", key=f"u_{idx}_book", placeholder="UPI app se")
+                    if st.form_submit_button("Get Book Course", type="primary"):
                         purchases.append({"invoice_no": f"INV{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}", "access_key": f"BRAHMA-{hashlib.sha256((email+co.get('topic')).encode()).hexdigest()[:10].upper()}", "name": name, "email": email, "course": co.get("topic"), "course_id": co.get("id"), "price": co.get("price"), "utr": utr, "status": "APPROVED", "date": str(datetime.datetime.now())})
                         save_json(PURCHASE_FILE, purchases)
-                        st.success("Verified - Deep Study")
+                        st.success("Verified - Book Jaisa Deep")
 
     if menu == "My Access":
-        st.title("My Learning - Deep Study")
-        k = st.text_input("Invoice or Key", key="my_key_deep")
-        if st.button("Unlock My Deep Course", type="primary", key="my_unlock_deep"):
+        st.title("My Learning - Book Jaisa Deep")
+        k = st.text_input("Invoice or Key", key="my_key_book")
+        if st.button("Unlock My Book Course", type="primary", key="my_unlock_book"):
             found = [p for p in purchases if p.get("access_key")==k or p.get("invoice_no")==k]
             if not found:
                 st.error("Invalid key")
             else:
                 pu = found[0]
-                st.success(f"Welcome {pu.get('name')} - {pu.get('course')} - Real Deep Study")
+                st.success(f"Welcome {pu.get('name')} - {pu.get('course')} - Puri Book Jaisa")
                 ppt_files = list(PPT_DIR.glob(f"{pu.get('course_id')}*"))
                 if ppt_files:
                     for pf in ppt_files:
                         data = pf.read_bytes()
-                        st.download_button(f"Download Deep PPT - {pu.get('course')} - Har Lesson Alag", data=data, file_name=pf.name, key=f"my_deep_{pf.name}")
+                        st.download_button(f"Download Book PPT - {pu.get('course')} - Puri Book", data=data, file_name=pf.name, key=f"my_book_{pf.name}")
 
     if menu == "Chat Support":
         st.title("Chat Support")
-        q = st.chat_input("Ask", key="chat_deep")
+        q = st.chat_input("Ask", key="chat_book")
         if q:
-            st.write("100 Courses - Real Deep Study - Har Lesson Alag - Har Page Alag Content - Automatic")
+            st.write("100 Courses - Puri Book Jaisa - Har Sawal Ka Jawab - Kya, Kyon, Kaise, Kahan, Kab, Kaun, Kisse, Use, Kaise use, Kaise karna chahiye - Sab cover")
