@@ -1,6 +1,3 @@
 streamlit
 pandas
-gtts
-Pillow
 python-pptx
-edge-tts
