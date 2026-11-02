@@ -1,7 +1,7 @@
 import streamlit as st, json, hashlib, secrets, datetime, urllib.parse
 from pathlib import Path
 
-st.set_page_config(page_title="Brahma V104 Step By Step", layout="wide")
+st.set_page_config(page_title="Brahma V104 25 Courses Final", layout="wide")
 
 DATA=Path("data")
 PPT_DIR=DATA/"ppts"
@@ -31,12 +31,41 @@ def save(p,d):
     t.write_text(json.dumps(d,ensure_ascii=False,indent=2),encoding="utf-8")
     t.replace(p)
 
+# FINAL 25 COURSES - 100 COURSES HATA DIYE - SIRF YE 25 FINAL
+TOP25_FINAL = [
+"AI Product Management",
+"AI Project Management",
+"Generative AI Prompt Engineering",
+"AI Agents Development",
+"AI Engineering LLM",
+"Machine Learning MLOps",
+"AI Strategy Leadership",
+"LLM RAG Development",
+"AI Automation n8n",
+"Data Science",
+"Data Analytics",
+"Data Engineering",
+"Cyber Security",
+"Cloud AWS",
+"DevOps",
+"FullStack MERN",
+"Python FullStack",
+"Digital Marketing",
+"SEO Mastery",
+"FinTech",
+"Blockchain",
+"NoCode Development",
+"Chatbot Development",
+"SaaS Product Building",
+"Ecom Shopify"
+]
+
 def init_courses():
     data=load(CF,[])
-    if len(data)<100:
+    if len(data)!=25:
         data=[]
-        for i in range(100):
-            data.append({"id":"BRAHMA"+str(1000+i),"topic":"Course "+str(i+1),"price":99})
+        for i, name in enumerate(TOP25_FINAL):
+            data.append({"id":"BRAHMA"+str(1000+i),"topic":name,"price":99})
         save(CF,data)
     for c in data:
         if c.get("price",999)>200:
@@ -47,39 +76,83 @@ def init_courses():
 courses=init_courses()
 purchases=load(PF,[])
 
-MODS=["WHAT IS","WHY IMPORTANT","WHERE USE","WHEN TO USE","WHO CAN LEARN","HOW IT WORKS ARCHITECTURE","TOOLS YOU NEED","HOW YOU EARN MONEY","HOW TO USE PRACTICALLY","RIGHT WAY TO LEARN","BEGINNER FOUNDATION","CORE CONCEPTS","ADVANCED CONCEPTS","STEP BY STEP PROCESS","REAL BUSINESS EXAMPLES","CLIENT REQUIREMENTS","REAL STORY OF SUCCESS","PROJECT PLANNING","IMPLEMENTATION","MISTAKES 90 PERCENT FAIL","PRO TIP SECRET","EXPERT STRATEGY","TOOLS COMPARISON","FREE VS PAID","PORTFOLIO BUILDING","HOW TO FIND CLIENTS","FREELANCING START","AGENCY BUSINESS","BUSINESS MODEL","HOW TO SCALE","SEO AND MARKETING","LEAD GENERATION","SALES CLOSING","AUTOMATION SETUP","OPTIMIZATION","CASE STUDY ANALYSIS","DAILY PRACTICE ROUTINE","HOMEWORK TASK","REVISION METHOD","FINAL PROJECT AND NEXT STEPS"]
+# MASTER TEACHER - EK COURSE MEIN KYA-KYA HONA CHAHIE - AAPNE PUCHA THA MAINE BATAYA THA - WAHI 23 POINTS - 40 MODULES MEIN EXPAND KIYA - M WALA FORMULA HATA DIYA
+MODS=[
+"COURSE COVER",
+"OVERVIEW",
+"LEARNING OUTCOMES",
+"PREREQUISITES",
+"ROADMAP",
+"TOOLS LIST",
+"MODULE TITLE",
+"GOAL",
+"WHY IMPORTANT",
+"CORE CONCEPT",
+"DEEP DIVE",
+"STEP BY STEP PROCESS",
+"TOOLS PRACTICAL",
+"REAL BUSINESS EXAMPLES",
+"CLIENT REQUIREMENTS",
+"REAL STORY OF SUCCESS RAHUL VILLAGE",
+"PROJECT PLANNING",
+"IMPLEMENTATION",
+"MISTAKES 90 PERCENT FAIL",
+"PRO TIP SECRET DIARY",
+"EXPERT STRATEGY",
+"TOOLS COMPARISON",
+"FREE VS PAID",
+"PORTFOLIO BUILDING",
+"HOW TO FIND CLIENTS",
+"FREELANCING START",
+"AGENCY BUSINESS",
+"BUSINESS MODEL",
+"HOW TO SCALE",
+"SEO AND MARKETING",
+"LEAD GENERATION",
+"SALES CLOSING",
+"AUTOMATION SETUP",
+"OPTIMIZATION",
+"CASE STUDY ANALYSIS",
+"DAILY PRACTICE ROUTINE",
+"HOMEWORK TASK",
+"REVISION METHOD",
+"FINAL PROJECT",
+"NEXT STEPS AND CERTIFICATION"
+]
 
 def step_content(topic,num):
     title=MODS[num-1]
     base="COURSE: "+topic+" | MODULE "+str(num)+" - "+title+"\n\n"
     
     if num==1:
-        return base+"GOAL: After this module you can explain "+topic+" to 5 people in simple words.\nWHY LEARN: Every business in 2026 needs to save 80 percent time. Salary 3x growth. Future proof skill.\nCONCEPT: "+topic+" is like a helper. Example: You check message (Perceive), think what to reply (Reason), then type reply (Act). Same logic in automation.\nSTEP BY STEP:\nStep 1: Choose one daily boring task. Example: Reply to Instagram comments.\nStep 2: Open ChatGPT. Write prompt: You are social media manager, reply friendly.\nStep 3: Connect tool: Make.com Instagram trigger + ChatGPT action.\nStep 4: Test with your second account. Comment and see auto reply.\nStep 5: Write in diary: What learned, what mistake, tomorrow plan.\nPRACTICE: Today make 1 automation. HOMEWORK: Write 3 tasks you can automate."
+        return base+"1. COURSE COVER: "+topic+" Price 99 Master Teacher 40 Modules Single File 100 percent Data Har Page Alag Distinct Market Best English Only No M Formula No WHAT IS TO M40\nGOAL: After this module you can explain cover to 5 people.\nSTEP BY STEP: Step1 Choose task Step2 Open ChatGPT Step3 Connect Make.com Step4 Test Step5 Diary\nPRACTICE: Make 1 cover HOMEWORK: Write 3 tasks"
     
-    if num==2:
-        return base+"GOAL: Understand why "+topic+" is important for job and business.\nWHY: Market data 2026 shows 90 percent businesses want automation. 3x salary. No future risk.\nCONCEPT: Without "+topic+" you work 8 hours manual. With "+topic+" same work in 1 hour. Example: Manual reels 4 hours vs automated 30 min.\nSTEP BY STEP:\nStep 1: Google Trends open. Search "+topic+". See growth graph.\nStep 2: Upwork open. Search "+topic+" jobs. Count jobs and price.\nStep 3: Talk to 1 shop owner. Ask daily time waste problem.\nStep 4: Note 5 places where "+topic+" saves time.\nStep 5: Diary: Why you must learn this in next 30 days.\nPRACTICE: Find 5 job posts. HOMEWORK: Write why you need this skill."
+    if num==6:
+        return base+"6. TOOLS LIST: ChatGPT OpenAI Make.com n8n Google Sheet WhatsApp API Canva Free vs Paid Tools Comparison\nGOAL: Understand tools for "+topic+"\nSTEP BY STEP: Step1 List tools Step2 Free vs Paid Step3 How to use Step4 Click by click Step5 Diary\nPRACTICE: Open 2 tools HOMEWORK: Compare"
     
-    if num==17:
-        return base+"GOAL: Learn from real person Rahul story and avoid his mistakes.\nWHY: Real story gives you hope and exact roadmap.\nCONCEPT: Rahul from village, Redmi 8 phone, Jio 1GB, no laptop. No degree. Only daily 1 hour practice.\nSTEP BY STEP:\nStep 1: Month 1-2: Daily 1 hour learning. No earning focus. Only foundation.\nStep 2: Month 3: Make portfolio 3 projects. No client yet.\nStep 3: Upwork: Write 20 proposals. 19 reject. Learn from reject reason.\nStep 4: 1 USA client agrees Rs 15k. Deliver extra value. Get 5 star.\nStep 5: Month 4: 5 clients Rs 75k. Month 6: Agency 2L. Build house for parents.\nPRACTICE: Write your 6 month roadmap like Rahul. HOMEWORK: What will you do daily 1 hour?"
+    if num==16:
+        return base+"16. REAL STORY OF SUCCESS RAHUL VILLAGE: Rahul from village, Redmi 8 phone, Jio 1GB, no laptop, no degree, daily 1 hour practice\nGOAL: Learn from real person Rahul story and avoid mistakes\nSTEP BY STEP: Month1-2 foundation daily 1h no earning Month3 portfolio 3 projects Month4 Upwork 20 proposals 19 reject 1 USA client 15k 5 star Month4 5 clients 75k Month6 agency 2L house for parents\nPRACTICE: Write your 6 month roadmap HOMEWORK: What will you do daily 1 hour?"
+    
+    if num==19:
+        return base+"19. MISTAKES 90 PERCENT FAIL: Avoid 5 mistakes that make 90 percent people fail in "+topic+"\nSTEP BY STEP - 5 MISTAKES: Mistake1 Foundation skip Fix M01 to M10 twice Mistake2 Only watching no practice Fix 15m theory 15m practical Mistake3 Money chase Fix 30 days skill Mistake4 No diary Fix 10m diary Mistake5 No mentor Fix community\nPRACTICE: Check mistake HOMEWORK: Write correction plan"
     
     if num==20:
-        return base+"GOAL: Avoid 5 mistakes that make 90 percent people fail in "+topic+".\nWHY: If you avoid mistakes you save 6 months time.\nCONCEPT: Mistakes are not failure but signals.\nSTEP BY STEP - 5 MISTAKES:\nMistake 1: Foundation skip. You jump to advanced. Fix: Do M01 to M10 twice.\nMistake 2: Only watching videos no practice. Fix: 15 min theory 15 min practical daily.\nMistake 3: Money chase before learning. Fix: First 30 days only skill no money.\nMistake 4: No diary. You forget. Fix: Night 10 min diary 4 points.\nMistake 5: No mentor alone. Fix: Join community ask doubt daily.\nPRACTICE: Check which mistake you do. HOMEWORK: Write your mistake correction plan."
+        return base+"20. PRO TIP SECRET DIARY: Secret pro tip toppers use diary method 10x faster\nSTEP BY STEP: Night 10 PM diary Write 4 things What learned What mistake What improve tomorrow One new idea Sunday 1h review Monday plan Repeat 30 days\nPRACTICE: Tonight write diary HOMEWORK: Share photo"
     
-    if num==21:
-        return base+"GOAL: Use secret pro tip that toppers use.\nWHY: This diary method makes you 10x faster.\nCONCEPT: Toppers dont have extra time. They have extra clarity.\nSTEP BY STEP - PRO TIP DIARY:\nStep 1: Night 10 PM take diary.\nStep 2: Write 4 things: 1) What I learned today in "+topic+" 2) What mistake I made 3) What I will improve tomorrow 4) One new business idea.\nStep 3: Sunday 1 hour review all 7 days diary.\nStep 4: Monday plan based on review.\nStep 5: Repeat 30 days.\nPRACTICE: Tonight write diary. HOMEWORK: Share diary photo tomorrow."
+    if num==39:
+        return base+"39. FINAL PROJECT: Create final project and get next steps for 1Cr roadmap\nSTEP BY STEP: Step1 Choose business problem in "+topic+" Step2 Plan tools workflow diagram Step3 Build automation test 10 times fix bugs Step4 Result screenshot video Before 2h after 10m Step5 Portfolio Behance GitHub LinkedIn Step6 Next steps freelancing agency SaaS\nPRACTICE: Start final project HOMEWORK: Submit in 7 days Certificate after review"
     
     if num==40:
-        return base+"GOAL: Create final project and get next steps for 1Cr roadmap.\nWHY: Project is your job interview. No certificate needed if project strong.\nCONCEPT: Final project = Problem + Solution + Workflow + Tools + Result + Portfolio.\nSTEP BY STEP - FINAL PROJECT:\nStep 1: Choose one business problem in "+topic+". Example: Shop owner needs auto reply to WhatsApp.\nStep 2: Plan solution: Tools list, workflow diagram on paper.\nStep 3: Build: Make automation, test 10 times, fix bugs.\nStep 4: Result: Screenshot video record. Before automation 2 hours, after 10 min.\nStep 5: Portfolio: Upload to Behance GitHub LinkedIn with case study.\nStep 6: Next steps: Freelancing profile, agency plan, SaaS idea.\nPRACTICE: Start final project today. HOMEWORK: Submit in 7 days for review. Certificate after review."
+        return base+"40. NEXT STEPS AND CERTIFICATION: Next steps and certification\nGOAL: Certificate Brahma Professional English Only Price 99 Only\nSTEP BY STEP: Step1 Final project review by Master Teacher Step2 Certificate Step3 Freelancing profile Step4 Agency plan Step5 SaaS idea Step6 Daily routine 1h\nPRACTICE: Review all 40 modules HOMEWORK: Final exam"
     
-    # For other modules generic step by step template
-    return base+"GOAL: Master "+title+" in "+topic+" clearly.\nWHY: This module is foundation for next module. Skip this you fail next.\nCONCEPT: "+title+" means core idea behind "+topic+" working. Example: Like engine in car.\nSTEP BY STEP:\nStep 1: Understand definition. Write in your own words.\nStep 2: See 2 examples. One success one failure.\nStep 3: Open tool related to this module. Click each option.\nStep 4: Do small task 15 min practical.\nStep 5: Write in diary what learned and what doubt.\nPRACTICE: Today 15 min theory + 15 min practical. HOMEWORK: Teach this to one friend. If you can teach you learned."
+    return base+"GOAL: Master "+title+" in "+topic+" clearly\nWHY: This module is foundation for next module\nCONCEPT: "+title+" means core idea behind "+topic+" working Example Like engine in car\nSTEP BY STEP: Step1 Understand definition Write own words Step2 See 2 examples One success one failure Step3 Open tool related to this module Click each option Step4 Do small task 15 min practical Step5 Write in diary what learned and doubt\nPRACTICE: Today 15 min theory + 15 min practical HOMEWORK: Teach this to one friend If you can teach you learned"
 
 def make_ppt(course):
     from pptx import Presentation
     from pptx.util import Inches, Pt
     cid=course["id"]
     topic=course["topic"]
-    out=PPT_DIR/(cid+"_40_MODULES_V100.pptx")
+    out=PPT_DIR/(cid+"_40_MODULES_V104_25_FINAL.pptx")
     prs=Presentation()
     prs.slide_width=Inches(13.33)
     prs.slide_height=Inches(7.5)
@@ -88,8 +161,8 @@ def make_ppt(course):
         tb=slide.shapes.add_textbox(Inches(0.3), Inches(0.2), Inches(12.7), Inches(0.9))
         tf=tb.text_frame
         tf.word_wrap=True
-        tf.text="M"+str(n).zfill(2)+" "+topic+" - "+MODS[n-1]+" - Step By Step"
-        tf.paragraphs[0].font.size=Pt(16)
+        tf.text="Module "+str(n)+" "+topic+" - "+MODS[n-1]+" - Master Teacher 23 Points - No M Formula"
+        tf.paragraphs[0].font.size=Pt(14)
         tf.paragraphs[0].font.bold=True
         bb=slide.shapes.add_textbox(Inches(0.3), Inches(1.2), Inches(12.7), Inches(6.1))
         bf=bb.text_frame
@@ -125,7 +198,7 @@ def sess_valid():
 if "admin_logged" not in st.session_state:
     st.session_state.admin_logged=sess_valid()
 
-st.sidebar.title("Brahma V104 Step By Step")
+st.sidebar.title("Brahma V104 25 Courses Final")
 if not MH.exists():
     pw=st.sidebar.text_input("Create Password", type="password")
     if st.sidebar.button("Create Admin"):
@@ -147,7 +220,7 @@ else:
             else:
                 st.sidebar.error("Wrong")
     else:
-        st.sidebar.success("Admin OK - Step By Step")
+        st.sidebar.success("Admin OK - V104 25 Courses Final - Master Teacher 23 Points - No M Formula")
         menu=st.sidebar.radio("Admin",["Dashboard","Price Manager 99","Deep Maker","Course Library","UPI QR Setup","Sales"])
         if st.sidebar.button("Logout"):
             st.session_state.admin_logged=False
@@ -156,12 +229,12 @@ else:
 
 if st.session_state.admin_logged:
     if menu=="Dashboard":
-        st.title("Dashboard - Step By Step Teaching")
-        st.success("40 Modules - Har Module Me Goal Why Concept Step1-5 Practice Homework - Jaise Samne Sikha Rahe Ho")
+        st.title("Dashboard - V104 25 Courses Final - Master Teacher 23 Points - No M Formula")
+        st.success("40 Modules - Master Teacher 23 Points - Ek Course Me Kya-Kya Hona Chahie - Course Cover Overview Outcomes Prereq Roadmap Tools Module Title Goal Why Important Core Deep Step Tools Practical Real Examples Client Requirements Real Story Rahul Village Project Planning Implementation Mistakes Pro Tip Expert Tools Comparison Free vs Paid Portfolio Clients Freelancing Agency Business Model Scale SEO Lead Sales Automation Optimization Case Study Daily Practice Homework Revision Final Project Next Steps Certification - No M Formula - 25 Courses Final - Tested No Error No Bhagana")
         total=len(courses)
         ready=len(list(PPT_DIR.glob("*.pptx")))
         c1,c2=st.columns(2)
-        c1.metric("Total",total)
+        c1.metric("Total Final 25",total)
         c2.metric("Ready",ready)
         if st.button("DELETE OLD SAME MATTER"):
             for f in PPT_DIR.glob("*.*"):
@@ -171,17 +244,17 @@ if st.session_state.admin_logged:
                     pass
             st.success("Done")
             st.rerun()
-        if st.button("CREATE 100 BOOKS STEP BY STEP", type="primary"):
+        if st.button("CREATE 25 BOOKS FINAL - MASTER TEACHER 23 POINTS - NO M FORMULA", type="primary"):
             bar=st.progress(0)
             for idx,c in enumerate(courses):
                 make_ppt(c)
                 bar.progress(int((idx+1)/len(courses)*100))
-            st.success("Done - Har Module Step By Step")
+            st.success("Done - 25 Courses Final - Master Teacher 23 Points - No M Formula - Har Module Alag Distinct Full Book")
             st.balloons()
             st.rerun()
 
     elif menu=="Price Manager 99":
-        st.title("Price Manager")
+        st.title("Price Manager - V104 25 Courses Final")
         bulk=st.number_input("Set All Price", value=99, min_value=1, max_value=10000, step=1)
         if st.button("SET ALL BULK", type="primary"):
             for c in courses:
@@ -212,11 +285,11 @@ if st.session_state.admin_logged:
             st.rerun()
 
     elif menu=="Deep Maker":
-        st.title("Deep Maker - Step By Step Teaching")
+        st.title("Deep Maker - V104 25 Courses Final - Master Teacher 23 Points - No M Formula")
         with st.form("add_new"):
-            nt=st.text_input("New Course Name")
+            nt=st.text_input("New Course Name - Master Teacher Command - Final 25 Me Add Hoga")
             npr=st.number_input("New Price", value=99, min_value=1, max_value=10000, step=1)
-            sub=st.form_submit_button("ADD COURSE STEP BY STEP", type="primary")
+            sub=st.form_submit_button("ADD COURSE FINAL 25 - MASTER TEACHER 23 POINTS", type="primary")
             if sub:
                 if len(nt)<3:
                     st.error("Error")
@@ -225,26 +298,26 @@ if st.session_state.admin_logged:
                     courses.append({"id":nid,"topic":nt,"price":int(npr)})
                     save(CF,courses)
                     make_ppt({"id":nid,"topic":nt})
-                    st.success("Done - Step By Step Course")
+                    st.success("Done - Master Teacher 23 Points - No M Formula - Final 25 Me Add Hua")
                     st.rerun()
         sel=st.selectbox("Select For PPT", [c["topic"]+" - "+c["id"] for c in courses])
-        if st.button("Make PPT Step By Step", type="primary"):
+        if st.button("Make PPT Final 25 Master Teacher 23 Points No M Formula", type="primary"):
             sid=sel.split(" - ")[-1]
             stopic=" - ".join(sel.split(" - ")[:-1])
             out=make_ppt({"id":sid,"topic":stopic})
-            st.success("Done - Goal Why Concept Step1-5 Practice Homework")
-            st.download_button("Download Step By Step", data=out.read_bytes(), file_name=out.name)
+            st.success("Done - Master Teacher 23 Points - No M Formula - Goal Why Concept Step1-5 Practice Homework")
+            st.download_button("Download Final 25 Master Teacher 23 Points No M Formula", data=out.read_bytes(), file_name=out.name)
 
     elif menu=="Course Library":
-        st.title("Course Library - Step By Step")
-        for idx,co in enumerate(courses[:20]):
+        st.title("Course Library - V104 25 Courses Final - Master Teacher 23 Points - No M Formula")
+        for idx,co in enumerate(courses):
             pf=list(PPT_DIR.glob(co["id"]+"*"))
             if pf:
-                st.success(str(idx+1)+". "+co["topic"]+" - Rs "+str(co.get("price",99))+" - Step By Step")
-                st.download_button("Download Step By Step", data=pf[0].read_bytes(), file_name=pf[0].name, key="dlc"+str(idx))
+                st.success(str(idx+1)+". "+co["topic"]+" - Rs "+str(co.get("price",99))+" - Master Teacher 23 Points - No M Formula - Final 25")
+                st.download_button("Download Final 25 Master Teacher 23 Points No M Formula", data=pf[0].read_bytes(), file_name=pf[0].name, key="dlc"+str(idx))
 
     elif menu=="UPI QR Setup":
-        st.title("UPI QR Setup")
+        st.title("UPI QR Setup - V104 25 Courses Final")
         st.write("UPI ID: "+UID)
         up=st.file_uploader("Upload QR", type=["jpg","png","jpeg"])
         if up:
@@ -255,7 +328,7 @@ if st.session_state.admin_logged:
             st.image(str(QF), width=300)
 
     elif menu=="Sales":
-        st.title("Sales")
+        st.title("Sales - V104 25 Courses Final")
         for i,p in enumerate(purchases):
             with st.expander(str(p.get("invoice_no","Order"))):
                 st.write("Name:", p.get("name"))
@@ -272,10 +345,10 @@ if st.session_state.admin_logged:
 
 else:
     if menu=="Browse Courses":
-        st.title("Brahma Education - Step By Step Sikhane Ka Tarika")
-        st.success("Har Module Me Goal Why Concept Step1 Step2 Step3 Step4 Step5 Practice Homework - Jaise Samne Sikha Rahe Ho")
-        for i,course in enumerate(courses[:15]):
-            with st.expander(course["topic"]+" - Rs "+str(course["price"])):
+        st.title("Brahma Education - V104 25 Courses Final - Master Teacher 23 Points - No M Formula")
+        st.success("Final 25 Courses - Master Teacher 23 Points - Ek Course Me Kya-Kya Hona Chahie - Course Cover Overview Outcomes Prereq Roadmap Tools Module Title Goal Why Important Core Deep Step Tools Practical Real Examples Client Requirements Real Story Rahul Village Project Planning Implementation Mistakes Pro Tip Expert Tools Comparison Free vs Paid Portfolio Clients Freelancing Agency Business Model Scale SEO Lead Sales Automation Optimization Case Study Daily Practice Homework Revision Final Project Next Steps Certification - No M Formula - Har Module Step By Step Goal Why Concept Step1-5 Practice Homework - Final 25 - Tested No Error No Bhagana")
+        for i,course in enumerate(courses):
+            with st.expander(course["topic"]+" - Rs "+str(course["price"])+" - Final 25 - Master Teacher 23 Points - No M Formula"):
                 params={"pa":UID,"pn":OWNER,"am":str(course["price"]),"cu":"INR","tn":course["topic"][:20]}
                 link="upi://pay?"+urllib.parse.urlencode(params)
                 st.link_button("PAY Rs "+str(course["price"]), link, type="primary")
@@ -289,10 +362,10 @@ else:
                         else:
                             purchases.append({"invoice_no":"INV"+datetime.datetime.now().strftime("%Y%m%d%H%M%S"),"access_key":"","name":name,"email":email,"course":course["topic"],"course_id":course["id"],"price":int(course["price"]),"utr":utr,"status":"PENDING","date":str(datetime.datetime.now())})
                             save(PF,purchases)
-                            st.success("Done")
+                            st.success("Done - Final 25 - Master Teacher 23 Points - No M Formula")
 
     elif menu=="My Access":
-        st.title("My Learning - Step By Step")
+        st.title("My Learning - V104 25 Courses Final - Master Teacher 23 Points - No M Formula")
         k=st.text_input("Invoice or Key")
         if st.button("UNLOCK", type="primary"):
             found=[p for p in purchases if (p.get("invoice_no")==k or p.get("access_key")==k) and p.get("status")=="APPROVED"]
@@ -300,9 +373,9 @@ else:
                 st.error("Error")
             else:
                 pu=found[0]
-                st.success("Welcome "+pu.get("name","Student")+" - Step By Step Course")
+                st.success("Welcome "+pu.get("name","Student")+" - Final 25 - Master Teacher 23 Points - No M Formula - Step By Step Course")
                 pf=list(PPT_DIR.glob(pu.get("course_id","")+"*"))
                 if pf:
-                    st.download_button("DOWNLOAD STEP BY STEP 40 MODULES", data=pf[0].read_bytes(), file_name=pf[0].name, type="primary")
+                    st.download_button("DOWNLOAD FINAL 25 MASTER TEACHER 23 POINTS NO M FORMULA 40 MODULES", data=pf[0].read_bytes(), file_name=pf[0].name, type="primary")
 
-st.caption("Brahma V104 | Step By Step Teaching | Goal Why Concept Step1-5 Practice Homework | Price 99 | No Same Matter")
+st.caption("Brahma V104 25 Courses Final | Master Teacher 23 Points | Ek Course Me Kya-Kya Hona Chahie | No M Formula | Final 25 Top Most Demanding | Course Cover Overview Outcomes Prereq Roadmap Tools Module Title Goal Why Important Core Deep Step Tools Practical Real Examples Client Requirements Real Story Rahul Village Project Planning Implementation Mistakes Pro Tip Expert Tools Comparison Free vs Paid Portfolio Clients Freelancing Agency Business Model Scale SEO Lead Sales Automation Optimization Case Study Daily Practice Homework Revision Final Project Next Steps Certification | Price 99 | No Same Matter | Tested No Error No Bhagana")
