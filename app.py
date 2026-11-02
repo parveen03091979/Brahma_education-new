@@ -49,18 +49,23 @@ def save_json(p, data):
 courses = load_json(COURSES_FILE, [])
 purchases = load_json(PURCHASE_FILE, [])
 chats = load_json(CHAT_FILE, [])
-config = load_json(CONFIG_FILE, [])
+config = load_json(CONFIG_FILE, {})
 logs = load_json(LOG_FILE, [])
 
 if len(courses) == 0:
     for i in range(100):
-        topic = f'Course {i+1} - Professional Skill'
-        if i == 0: topic = 'AI Agent Automation 2026'
-        if i == 1: topic = 'Instagram Viral Reels Mastery'
-        if i == 2: topic = 'YouTube Automation AI'
-        if i == 3: topic = 'Prompt Engineering Pro'
-        if i == 4: topic = 'Digital Marketing SEO 2026'
-        courses.append({'id': f'BRAHMA{1000+i}', 'topic': topic, 'price': 999, 'videos': 400})
+        t = f'Course {i+1}'
+        if i == 0:
+            t = 'AI Agent Automation 2026'
+        if i == 1:
+            t = 'Instagram Reels Mastery'
+        if i == 2:
+            t = 'YouTube Automation AI'
+        if i == 3:
+            t = 'Prompt Engineering Pro'
+        if i == 4:
+            t = 'Digital Marketing SEO'
+        courses.append({'id': f'BRAHMA{1000+i}', 'topic': t, 'price': 999, 'videos': 400})
     save_json(COURSES_FILE, courses)
 
 if 'admin_logged' not in st.session_state:
@@ -93,24 +98,211 @@ else:
             st.rerun()
 
 def make_voice(text, lang, path):
-    if not GTTS_OK: return False
+    if not GTTS_OK:
+        return False
     try:
         tts = gTTS(text=text, lang=lang, slow=False)
         tts.save(str(path))
         return True
-    except: return False
+    except:
+        return False
 
-# SMART CHATBOT - NO REPEAT - PROFESSIONAL ANSWERS
-def get_smart_answer(user_q, courses_list):
-    q = (user_q or '').lower().strip()
-    if any(x in q for x in ['kya kya hai', 'kitne course', 'course list', 'kaun kaun']):
-        top5 = ', '.join([c.get('topic') for c in courses_list[:5]])
-        return f"Hamare paas 100+ professional courses hain. Top courses: {top5} aur bhi 95 courses. Browse Courses me full list dekho. Har course me 400 videos Hindi English me."
-    if 'best' in q and 'course' in q:
-        return "Best courses: 1. AI Agent Automation 2026 2. Instagram Viral Reels Mastery 3. YouTube Automation AI 4. Digital Marketing SEO 5. Prompt Engineering Pro. Aapki interest ke hisab se choose karo."
-    if 'price' in q or 'fees' in q or 'kitne ka' in q or 'paisa' in q:
-        return f"Har course Rs 999 se Rs 1399 me. 400 videos, 46 hours, Hindi English, lifetime access. Secure UPI payment {MY_UPI_ID}."
+def smart_answer(q, courses_list):
+    q = (q or '').lower()
+    if 'kya' in q or 'kitne' in q or 'list' in q:
+        top = courses_list[0].get('topic') if courses_list else 'AI Course'
+        return f'We have 100+ courses. Top is {top}. Check Browse Courses for full list. Each has 400 videos.'
+    if 'best' in q:
+        return 'Best courses are AI Agent Automation, Instagram Reels, YouTube Automation, Digital Marketing, Prompt Engineering.'
+    if 'price' in q or 'fees' in q:
+        return 'Price Rs 999 to 1399. 400 videos. Lifetime access. Secure UPI payment.'
     if 'hindi' in q:
-        return "Haan, har course Hindi aur English dono me available hai. 400 videos Hindi me alag, English me alag. Voice bhi Hindi English separate FREE tools se banayi hai."
-    if 'certificate' in q or 'job' in q or 'naukri' in q:
-        return "Har course complete karne par certificate mile
+        return 'Yes, all courses have Hindi and English. Voice Hindi and English separate using FREE tools.'
+    if 'certificate' in q:
+        return 'Yes, certificate after completion. Helps in job and freelancing.'
+    return 'We have 100+ professional courses. Search in Browse Courses. 400 videos Hindi English.'
+
+if st.session_state['admin_logged']:
+    if menu == 'Dashboard':
+        st.title('Dashboard')
+        c1, c2, c3 = st.columns(3)
+        c1.metric('Courses', len(courses))
+        c2.metric('Sales', len(purchases))
+        c3.metric('Pending', len([p for p in purchases if p.get('status') == 'PENDING']))
+        st.dataframe(pd.DataFrame(courses), use_container_width=True)
+
+    if menu == 'Price Edit':
+        st.title('Price Edit')
+        search = st.text_input('Search')
+        fl = [c for c in courses if search.lower() in c.get('topic','').lower()] if search else courses
+        for c in fl[:20]:
+            with st.expander(f"{c.get('topic')} - Rs {c.get('price')}"):
+                np = st.number_input(f"Price {c['id']}", value=int(c.get('price',999)), key=f"p_{c['id']}")
+                if st.button(f"Update {c['id']}", key=f"u_{c['id']}"):
+                    c['price'] = int(np)
+                    save_json(COURSES_FILE, courses)
+                    st.success('Updated')
+
+    if menu == 'QR Setup':
+        st.title('QR Setup')
+        st.info(f'UPI {MY_UPI_ID}')
+        up = st.file_uploader('Upload QR', type=['jpg','png','jpeg'])
+        if up:
+            UPI_QR_PATH.write_bytes(up.getvalue())
+            st.success('QR Saved')
+            st.rerun()
+        if UPI_QR_PATH.exists():
+            st.image(str(UPI_QR_PATH), width=300)
+            if st.button('Delete QR'):
+                UPI_QR_PATH.unlink(missing_ok=True)
+                st.rerun()
+
+    if menu == 'Super Brain':
+        st.title('Super Brain - Auto Agent FREE')
+        st.write('Auto Course - Voice - SEO - Blogs - Posts - Sales - All FREE tools')
+        ca, cb = st.columns(2)
+        with ca:
+            hi = st.text_area('Hindi Text', 'Namaste, AI Agent banana seekhenge', key='hi')
+            if st.button('Make Hindi Voice FREE'):
+                out = VOICE_DIR / 'hindi.mp3'
+                ok = make_voice(hi, 'hi', out)
+                if ok:
+                    st.success('Hindi Voice Done')
+                    st.audio(str(out))
+                else:
+                    st.error('Add gtts in requirements')
+        with cb:
+            en = st.text_area('English Text', 'Hello, we learn AI Agent', key='en')
+            if st.button('Make English Voice FREE'):
+                out = VOICE_DIR / 'english.mp3'
+                ok = make_voice(en, 'en', out)
+                if ok:
+                    st.success('English Voice Done')
+                    st.audio(str(out))
+                else:
+                    st.error('Add gtts')
+        st.divider()
+        b1, b2, b3 = st.columns(3)
+        with b1:
+            if st.button('Make SEO Files'):
+                for co in courses:
+                    (SEO_DIR / f"{co['id']}_seo.txt").write_text(co['topic'], encoding='utf-8')
+                st.success('SEO Done')
+        with b2:
+            if st.button('Make Blogs'):
+                for co in courses:
+                    (BLOG_DIR / f"{co['id']}_blog.txt").write_text(co['topic'], encoding='utf-8')
+                st.success('Blogs Done')
+        with b3:
+            if st.button('Make Social Posts Safe'):
+                for co in courses[:30]:
+                    (SOCIAL_DIR / f"{co['id']}_post.txt").write_text(co['topic'], encoding='utf-8')
+                st.success('Posts Done Safe')
+        st.divider()
+        with st.form('newc'):
+            topic = st.text_input('New Course Topic')
+            price = st.number_input('Price', value=999)
+            if st.form_submit_button('Create Course Auto'):
+                if topic:
+                    new_id = f'BRAHMA{1000+len(courses)+1}'
+                    courses.append({'id': new_id, 'topic': topic, 'price': int(price), 'videos': 400})
+                    save_json(COURSES_FILE, courses)
+                    st.success('Course Created')
+                    st.rerun()
+
+    if menu == 'Sales':
+        st.title('Sales')
+        for p in purchases:
+            if p.get('status') == 'PENDING':
+                with st.expander(f"{p.get('name')} - {p.get('course')} - {p.get('utr')}"):
+                    if st.button(f"Approve {p.get('invoice_no')}", key=f"ap_{p.get('invoice_no')}"):
+                        p['status'] = 'APPROVED'
+                        save_json(PURCHASE_FILE, purchases)
+                        st.rerun()
+        st.dataframe(pd.DataFrame(purchases), use_container_width=True)
+
+    if menu == 'Settings':
+        with st.form('bank'):
+            upi = st.text_input('UPI', value=MY_UPI_ID)
+            if st.form_submit_button('Save'):
+                save_json(CONFIG_FILE, {'upi_id': upi})
+                st.success('Saved')
+
+else:
+    if menu == 'Browse Courses':
+        st.title('Brahma Education')
+        st.write('100+ Professional Courses in Hindi and English')
+        st.write('400+ Videos per Course - Lifetime Access')
+        st.divider()
+        search = st.text_input('Search course')
+        fl = [c for c in courses if search.lower() in c.get('topic','').lower()] if search else courses
+        st.write(f"Total {len(fl)} courses")
+        page_size = 20
+        total_pages = max(1, (len(fl) + page_size - 1) // page_size)
+        page = st.selectbox('Pages', range(1, total_pages+1), format_func=lambda x: f"Page {x}")
+        pcs = fl[(page-1)*page_size:page*page_size]
+        for idx, co in enumerate(pcs, start=(page-1)*page_size+1):
+            with st.expander(f"{idx}. {co.get('topic')} - Rs {co.get('price')}"):
+                col_qr, col_pay = st.columns([1,2])
+                with col_qr:
+                    if UPI_QR_PATH.exists():
+                        st.image(str(UPI_QR_PATH), width=220, caption='Secure UPI Payment')
+                    else:
+                        st.info('Secure UPI Payment')
+                with col_pay:
+                    st.write(f"Course: {co.get('topic')}")
+                    st.write(f"Price: Rs {co.get('price')}")
+                    params = {'pa': MY_UPI_ID, 'pn': MY_NAME, 'am': str(co.get('price',999)), 'cu': 'INR', 'tn': co.get('topic','')[:20]}
+                    link = f"upi://pay?{urllib.parse.urlencode(params)}"
+                    st.link_button(f"Pay Rs {co.get('price')}", link, type='primary')
+                with st.form(f"buy_{co['id']}_{idx}"):
+                    c1, c2, c3 = st.columns(3)
+                    with c1:
+                        name = st.text_input('Name', key=f"n_{idx}")
+                    with c2:
+                        email = st.text_input('Email', key=f"e_{idx}")
+                    with c3:
+                        utr = st.text_input('UTR', key=f"u_{idx}")
+                    if st.form_submit_button('Submit for Access', type='primary'):
+                        if name and email and utr and len(utr) >= 6:
+                            inv = f"INV{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}"
+                            key = f"BRAHMA-{hashlib.sha256((email+co.get('topic')+inv+utr).encode()).hexdigest()[:10].upper()}"
+                            purchases.append({'invoice_no': inv, 'access_key': key, 'name': name, 'email': email, 'course': co.get('topic'), 'price': co.get('price'), 'utr': utr, 'status': 'PENDING', 'date': str(datetime.datetime.now())})
+                            save_json(PURCHASE_FILE, purchases)
+                            st.success(f"Submitted {inv}")
+                            st.info(f"Key {key}")
+                        else:
+                            st.error('Fill all fields')
+
+    if menu == 'My Access':
+        st.title('My Learning')
+        k = st.text_input('Invoice or Key')
+        if st.button('Unlock', type='primary'):
+            found = [p for p in purchases if p.get('access_key') == k or p.get('invoice_no') == k]
+            if not found:
+                st.error('Invalid')
+            else:
+                pu = found[0]
+                if pu.get('status') != 'APPROVED':
+                    st.warning(f"Pending {pu.get('status')}")
+                    st.stop()
+                st.success(f"Unlocked {pu.get('course')}")
+                st.video('https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4')
+
+    if menu == 'Chat Support':
+        st.title('Chat Support')
+        st.write('Ask about courses, price, language, certificate')
+        if st.button('Clear Chat History'):
+            save_json(CHAT_FILE, [])
+            st.success('Chat cleared')
+            st.rerun()
+        for ch in chats[-10:]:
+            with st.chat_message(ch['role']):
+                st.write(ch['msg'])
+        q = st.chat_input('Ask your question')
+        if q:
+            chats.append({'role': 'user', 'msg': q})
+            ans = smart_answer(q, courses)
+            chats.append({'role': 'assistant', 'msg': ans})
+            save_json(CHAT_FILE, chats)
+            st.rerun()
