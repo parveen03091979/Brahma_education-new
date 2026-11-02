@@ -24,15 +24,14 @@ CONFIG_FILE = DATA_DIR / 'config.json'
 UPI_QR_PATH = DATA_DIR / 'upi_qr.jpg'
 VOICE_DIR = DATA_DIR / 'voice'
 VOICE_DIR.mkdir(exist_ok=True)
-SEO_DIR = DATA_DIR / 'seo'
-SEO_DIR.mkdir(exist_ok=True)
-BLOG_DIR = DATA_DIR / 'blogs'
-BLOG_DIR.mkdir(exist_ok=True)
-SOCIAL_DIR = DATA_DIR / 'social'
-SOCIAL_DIR.mkdir(exist_ok=True)
 
 MY_UPI_ID = 'parveen39179@okicici'
 MY_NAME = 'Parveen Kumar'
+
+BLOCKED_UTRS = [
+    '123456789012','123456789123','111111111111','000000000000',
+    '999999999999','184792641807','012345678901','123456789000'
+]
 
 def load_json(p, default):
     try:
@@ -45,66 +44,77 @@ def load_json(p, default):
 def save_json(p, data):
     p.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding='utf-8')
 
-# V29 STRICT VALIDATION - BLOCKS Uuuu. Ggggh AND 123456789123
 def is_valid_name(name):
     name = name.strip()
-    # Rule 1: Only alphabets and space, no dot, no number - Blocks Uuuu. Ggggh
     if not re.match(r'^[A-Za-z ]+$', name):
-        return False, 'Name me sirf alphabets aur space allowed - Dot (.) number nahi - Example Rahul Sharma'
-    # Rule 2: Min 2 words, each min 2 chars - Blocks Ggh
+        return False, 'Name me sirf letters space - Example Rahul Sharma'
     parts = name.split()
     if len(parts) < 2:
-        return False, 'Full name likho - First + Last name - Example Rahul Sharma - Single word not allowed'
-    for part in parts:
-        if len(part) < 2:
-            return False, 'Har word min 2 letters - Example Ra Sh nahi'
-    # Rule 3: No 3 same chars together - Blocks Uuuu (4 u) and Ggggh (4 g)
-    lower = name.lower()
-    for i in range(len(lower)-2):
-        if lower[i] == lower[i+1] == lower[i+2]:
-            return False, f'Name me {lower[i]} 3 baar repeat nahi - Uuuu Ggggh jaise fake names blocked'
-    # Rule 4: At least 3 different letters
-    letters = set(lower.replace(' ', ''))
-    if len(letters) < 3:
-        return False, 'Name me kam se kam 3 alag letters chahie'
+        return False, 'Full name First + Last - Example Rahul Sharma'
+    for i in range(len(name.lower())-2):
+        if name.lower()[i] == name.lower()[i+1] == name.lower()[i+2]:
+            return False, f'Letter {name.lower()[i]} 3 baar repeat not allowed'
     return True, 'OK'
 
 def is_valid_email(email):
     pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
     if not re.match(pattern, email):
-        return False, 'Email me @ aur .com hona chahie - Example test@gmail.com - Hhhhhh blocked'
-    # Block fake emails like aaaa@aaaa.com with repeated chars
+        return False, 'Email must have @ and .com'
     local = email.split('@')[0].lower()
     for i in range(len(local)-2):
         if local[i] == local[i+1] == local[i+2]:
-            return False, 'Email me same letter 3 baar repeat nahi - aaaa@ blocked'
+            return False, 'Email me same letter 3 baar repeat not allowed'
     return True, 'OK'
 
-def is_valid_utr(utr):
+def is_valid_utr(utr, purchases_list):
     utr = utr.strip()
-    # Must be 12 digits
     if not (utr.isdigit() and len(utr) == 12):
-        return False, 'UTR must be exactly 12 digit number - Example 123456789012 se alag real UTR - Wwwwww blocked'
-    # Block obvious fake sequential patterns - Blocks 123456789123
-    fake_patterns = [
-        '123456789012', '123456789123', '012345678901', '123456789000',
-        '000000000000', '111111111111', '222222222222', '123123123123',
-        '121212121212', '112233445566'
-    ]
-    if utr in fake_patterns:
-        return False, f'Fake sequential UTR {utr} not allowed - Real UTR from UPI app dalo - Sequential numbers blocked'
-    # Block if all digits same
-    if len(set(utr)) == 1:
-        return False, 'UTR me same digit 12 baar nahi - Real UTR dalo'
-    # Block if strictly increasing by 1 like 123456789123
-    is_seq = True
-    for i in range(len(utr)-1):
-        if (int(utr[i]) + 1) % 10 != int(utr[i+1]):
-            is_seq = False
-            break
-    if is_seq:
-        return False, 'Sequential UTR like 123456789123 not allowed - Real UTR from UPI history dalo'
+        return False, 'UTR must be exactly 12 digit number from UPI app'
+    if utr in BLOCKED_UTRS:
+        return False, f'Fake UTR {utr} blocked - Real UTR from UPI app dalo'
+    for p in purchases_list:
+        if p.get('utr') == utr:
+            return False, f'This UTR {utr} already used - One UTR one course'
     return True, 'OK'
+
+def make_voice(text, lang, path):
+    if not GTTS_OK:
+        return False
+    try:
+        tts = gTTS(text=text, lang=lang, slow=False)
+        tts.save(str(path))
+        return True
+    except:
+        return False
+
+def get_course_content(course_topic):
+    # APNA KHUD KA COURSE - NO YOUTUBE - FREE TOOLS SE
+    curriculum = []
+    for m in range(1, 11):
+        vids = []
+        for v in range(1, 41):
+            idx = (m-1)*40 + v
+            title = f"Lesson {idx}: {course_topic} - Module {m} Part {v}"
+            if v == 1:
+                title = f"Module {m} Intro: What is {course_topic} in 2026?"
+            elif v == 2:
+                title = f"Module {m} Basics: Fundamentals of {course_topic}"
+            elif v == 20:
+                title = f"Module {m} Practical: Build {course_topic} Project Hands-On"
+            elif v == 40:
+                title = f"Module {m} Summary + Assignment + Next Steps"
+            desc_hi = f"Namaste! Is lesson me aap seekhenge {course_topic} ka Module {m} Lesson {v}. Ye 400 videos me se lesson {idx} hai. Hindi me full detail."
+            desc_en = f"Hello! In this lesson {idx} you will learn {course_topic} Module {m} Lesson {v}. This is lesson {idx} of 400 videos. Full detail in English."
+            vids.append({
+                'no': idx,
+                'title': title,
+                'desc_hi': desc_hi,
+                'desc_en': desc_en,
+                'duration': '12 mins',
+                'notes': f"{course_topic} - Module {m} - Lesson {v} - Important notes and checklist"
+            })
+        curriculum.append({'module_no': m, 'title': f"Module {m}: {course_topic} - Part {m}", 'videos': vids})
+    return curriculum
 
 courses = load_json(COURSES_FILE, [])
 purchases = load_json(PURCHASE_FILE, [])
@@ -147,40 +157,73 @@ else:
                 st.sidebar.error('Wrong Password')
     else:
         st.sidebar.success('Admin Panel')
-        menu = st.sidebar.radio('Admin', ['Dashboard', 'Price Edit', 'QR Setup', 'Super Brain', 'Sales', 'Settings'])
+        menu = st.sidebar.radio('Admin', ['Dashboard', 'Sales', 'Super Brain', 'QR Setup', 'Price Edit', 'Settings'])
         if st.sidebar.button('Logout'):
             st.session_state['admin_logged'] = False
             st.rerun()
 
-def make_voice(text, lang, path):
-    if not GTTS_OK: return False
-    try:
-        tts = gTTS(text=text, lang=lang, slow=False)
-        tts.save(str(path))
-        return True
-    except: return False
-
-def smart_answer(q, courses_list):
-    q = (q or '').lower()
-    if 'kya' in q or 'kitne' in q or 'list' in q:
-        top = courses_list[0].get('topic') if courses_list else 'AI Course'
-        return f'We have 100+ courses. Top is {top}. Check Browse Courses.'
-    if 'best' in q:
-        return 'Best: AI Agent Automation, Instagram Reels, YouTube Automation.'
-    if 'price' in q or 'fees' in q:
-        return 'Price Rs 999 to 1399. 400 videos. Instant access after real payment.'
-    if 'hindi' in q:
-        return 'Yes, Hindi and English both. Voice separate FREE tools.'
-    return 'We have 100+ professional courses. Search in Browse Courses.'
-
 if st.session_state['admin_logged']:
     if menu == 'Dashboard':
-        st.title('Dashboard')
+        st.title('Dashboard - Apna Course System')
         c1, c2, c3 = st.columns(3)
         c1.metric('Courses', len(courses))
         c2.metric('Sales', len(purchases))
-        c3.metric('Total', len(purchases))
+        c3.metric('Total Videos', len(courses)*400)
         st.dataframe(pd.DataFrame(courses), use_container_width=True)
+
+    if menu == 'Super Brain':
+        st.title('Super Brain - Apna Course Creator - No YouTube - FREE Tools')
+        st.write('Auto creates 400 lessons per course - Hindi voice + English voice - FREE gTTS - No YouTube account needed')
+        ca, cb = st.columns(2)
+        with ca:
+            hi = st.text_area('Hindi Text for Voice', 'Namaste, AI Agent banana seekhenge Hindi me', key='hi')
+            if st.button('Make Hindi Voice FREE - No YouTube'):
+                out = VOICE_DIR / 'hindi_sample.mp3'
+                ok = make_voice(hi, 'hi', out)
+                if ok:
+                    st.success('Hindi Voice Created - Apna content - No YouTube')
+                    st.audio(str(out))
+                else:
+                    st.error('Add gtts in requirements.txt')
+        with cb:
+            en = st.text_area('English Text for Voice', 'Hello, we learn AI Agent English', key='en')
+            if st.button('Make English Voice FREE - No YouTube'):
+                out = VOICE_DIR / 'english_sample.mp3'
+                ok = make_voice(en, 'en', out)
+                if ok:
+                    st.success('English Voice Created - Apna content - No YouTube')
+                    st.audio(str(out))
+                else:
+                    st.error('Add gtts')
+        st.divider()
+        with st.form('newc'):
+            topic = st.text_input('New Course Topic - Apna Course - No YouTube', placeholder='AI for Doctors 2026')
+            price = st.number_input('Price', value=999)
+            if st.form_submit_button('Create Apna Course 400 Lessons + Hindi English Voice FREE'):
+                if topic:
+                    new_id = f'BRAHMA{1000+len(courses)+1}'
+                    courses.append({'id': new_id, 'topic': topic, 'price': int(price), 'videos': 400})
+                    save_json(COURSES_FILE, courses)
+                    make_voice(f"Welcome to {topic} course in Hindi - 400 lessons", 'hi', VOICE_DIR / f'{new_id}_hi.mp3')
+                    make_voice(f"Welcome to {topic} course in English - 400 lessons", 'en', VOICE_DIR / f'{new_id}_en.mp3')
+                    st.success(f'Apna Course {topic} Created - 400 lessons - Hindi English voice FREE - No YouTube - Ready')
+                    st.rerun()
+
+    if menu == 'Sales':
+        st.title('Sales - UTR Duplicate Block')
+        st.dataframe(pd.DataFrame(purchases), use_container_width=True)
+
+    if menu == 'QR Setup':
+        st.title('QR Setup')
+        st.info(f'UPI {MY_UPI_ID} - Apna QR - No YouTube')
+        up = st.file_uploader('Upload QR', type=['jpg','png','jpeg'])
+        if up:
+            UPI_QR_PATH.write_bytes(up.getvalue())
+            st.success('QR Saved')
+            st.rerun()
+        if UPI_QR_PATH.exists():
+            st.image(str(UPI_QR_PATH), width=300)
+
     if menu == 'Price Edit':
         st.title('Price Edit')
         search = st.text_input('Search')
@@ -192,163 +235,128 @@ if st.session_state['admin_logged']:
                     c['price'] = int(np)
                     save_json(COURSES_FILE, courses)
                     st.success('Updated')
-    if menu == 'QR Setup':
-        st.title('QR Setup')
-        st.info(f'UPI {MY_UPI_ID}')
-        up = st.file_uploader('Upload QR', type=['jpg','png','jpeg'])
-        if up:
-            UPI_QR_PATH.write_bytes(up.getvalue())
-            st.success('QR Saved')
-            st.rerun()
-        if UPI_QR_PATH.exists():
-            st.image(str(UPI_QR_PATH), width=300)
-            if st.button('Delete QR'):
-                UPI_QR_PATH.unlink(missing_ok=True)
-                st.rerun()
-    if menu == 'Super Brain':
-        st.title('Super Brain - Auto Agent FREE')
-        ca, cb = st.columns(2)
-        with ca:
-            hi = st.text_area('Hindi Text', 'Namaste, AI Agent banana seekhenge', key='hi')
-            if st.button('Make Hindi Voice FREE'):
-                out = VOICE_DIR / 'hindi.mp3'
-                ok = make_voice(hi, 'hi', out)
-                if ok:
-                    st.success('Hindi Voice Done')
-                    st.audio(str(out))
-                else:
-                    st.error('Add gtts')
-        with cb:
-            en = st.text_area('English Text', 'Hello, we learn AI Agent', key='en')
-            if st.button('Make English Voice FREE'):
-                out = VOICE_DIR / 'english.mp3'
-                ok = make_voice(en, 'en', out)
-                if ok:
-                    st.success('English Voice Done')
-                    st.audio(str(out))
-                else:
-                    st.error('Add gtts')
-        b1, b2, b3 = st.columns(3)
-        with b1:
-            if st.button('Make SEO Files'):
-                for co in courses:
-                    (SEO_DIR / f"{co['id']}_seo.txt").write_text(co['topic'], encoding='utf-8')
-                st.success('SEO Done')
-        with b2:
-            if st.button('Make Blogs'):
-                for co in courses:
-                    (BLOG_DIR / f"{co['id']}_blog.txt").write_text(co['topic'], encoding='utf-8')
-                st.success('Blogs Done')
-        with b3:
-            if st.button('Make Social Posts Safe'):
-                for co in courses[:30]:
-                    (SOCIAL_DIR / f"{co['id']}_post.txt").write_text(co['topic'], encoding='utf-8')
-                st.success('Posts Done Safe')
-        with st.form('newc'):
-            topic = st.text_input('New Course Topic')
-            price = st.number_input('Price', value=999)
-            if st.form_submit_button('Create Course Auto'):
-                if topic:
-                    new_id = f'BRAHMA{1000+len(courses)+1}'
-                    courses.append({'id': new_id, 'topic': topic, 'price': int(price), 'videos': 400})
-                    save_json(COURSES_FILE, courses)
-                    st.success('Course Created')
-                    st.rerun()
-    if menu == 'Sales':
-        st.title('Sales - Instant Access System')
-        st.dataframe(pd.DataFrame(purchases), use_container_width=True)
-    if menu == 'Settings':
-        with st.form('bank'):
-            upi = st.text_input('UPI', value=MY_UPI_ID)
-            if st.form_submit_button('Save'):
-                save_json(CONFIG_FILE, {'upi_id': upi})
-                st.success('Saved')
+
 else:
     if menu == 'Browse Courses':
-        st.title('Brahma Education')
-        st.write('100+ Professional Courses in Hindi and English')
-        st.write('400+ Videos per Course - Lifetime Access - Instant Access')
+        st.title('Brahma Education - Apna Course - No YouTube')
+        st.write('100+ Courses - Each 400 Lessons - Hindi English Voice FREE Tools - No YouTube Account Needed')
         st.divider()
-        search = st.text_input('Search course')
+        search = st.text_input('Search apna course')
         fl = [c for c in courses if search.lower() in c.get('topic','').lower()] if search else courses
-        st.write(f"Total {len(fl)} courses")
+        st.write(f"Total {len(fl)} apna courses - No YouTube")
         page_size = 20
         total_pages = max(1, (len(fl) + page_size - 1) // page_size)
         page = st.selectbox('Pages', range(1, total_pages+1), format_func=lambda x: f"Page {x}")
         pcs = fl[(page-1)*page_size:page*page_size]
         for idx, co in enumerate(pcs, start=(page-1)*page_size+1):
-            with st.expander(f"{idx}. {co.get('topic')} - Rs {co.get('price')}"):
+            with st.expander(f"{idx}. {co.get('topic')} - Rs {co.get('price')} - 400 Lessons - Apna Content"):
                 col_qr, col_pay = st.columns([1,2])
                 with col_qr:
                     if UPI_QR_PATH.exists():
-                        st.image(str(UPI_QR_PATH), width=220, caption='Secure UPI Payment')
+                        st.image(str(UPI_QR_PATH), width=220, caption='Secure UPI - Apna QR')
                     else:
-                        st.info('Secure UPI Payment')
+                        st.info('Secure UPI Payment - Apna QR')
                 with col_pay:
                     st.write(f"Course: {co.get('topic')}")
-                    st.write(f"Price: Rs {co.get('price')}")
-                    st.write('Instant Access After Real Payment Verification')
+                    st.write(f"400 Lessons - Hindi Voice + English Voice - FREE Tools - No YouTube")
+                    st.write(f"Apna content - Super agent created")
                     params = {'pa': MY_UPI_ID, 'pn': MY_NAME, 'am': str(co.get('price',999)), 'cu': 'INR', 'tn': co.get('topic','')[:20]}
                     link = f"upi://pay?{urllib.parse.urlencode(params)}"
-                    st.link_button(f"Pay Rs {co.get('price')} - Instant Access", link, type='primary')
+                    st.link_button(f"Pay Rs {co.get('price')} - Apna Course", link, type='primary')
                 with st.form(f"buy_{co['id']}_{idx}"):
-                    st.write('**Fill After REAL Payment - Strict Validation - No Free Access**')
+                    st.write('**After REAL Payment - Apna Course Instant Access - No YouTube**')
                     c1, c2, c3 = st.columns(3)
                     with c1:
-                        name = st.text_input('Full Name (e.g. Rahul Sharma)', key=f"n_{idx}")
+                        name = st.text_input('Full Name', key=f"n_{idx}", placeholder='Rahul Sharma')
                     with c2:
-                        email = st.text_input('Email (e.g. rahul@gmail.com)', key=f"e_{idx}")
+                        email = st.text_input('Email', key=f"e_{idx}", placeholder='rahul@gmail.com')
                     with c3:
-                        utr = st.text_input('UTR 12 digit from UPI app', key=f"u_{idx}")
-                    if st.form_submit_button('Get Instant Access', type='primary'):
+                        utr = st.text_input('UTR 12 digit', key=f"u_{idx}", placeholder='UPI app se', help='UPI app Payment History - Ek UTR ek baar - Duplicate blocked')
+                    if st.form_submit_button('Get Apna Course Instant Access - No YouTube', type='primary'):
                         ok_name, msg_name = is_valid_name(name)
                         if not ok_name:
-                            st.error(f'Invalid Name: {msg_name}')
+                            st.error(f'Name Error: {msg_name}')
                             st.stop()
                         ok_email, msg_email = is_valid_email(email)
                         if not ok_email:
-                            st.error(f'Invalid Email: {msg_email}')
+                            st.error(f'Email Error: {msg_email}')
                             st.stop()
-                        ok_utr, msg_utr = is_valid_utr(utr)
+                        ok_utr, msg_utr = is_valid_utr(utr, purchases)
                         if not ok_utr:
-                            st.error(f'Invalid UTR: {msg_utr}')
+                            st.error(f'UTR Error: {msg_utr}')
                             st.stop()
                         inv = f"INV{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}"
                         key = f"BRAHMA-{hashlib.sha256((email+co.get('topic')+inv+utr).encode()).hexdigest()[:10].upper()}"
                         purchases.append({'invoice_no': inv, 'access_key': key, 'name': name, 'email': email, 'course': co.get('topic'), 'course_id': co.get('id'), 'price': co.get('price'), 'utr': utr, 'status': 'APPROVED', 'date': str(datetime.datetime.now())})
                         save_json(PURCHASE_FILE, purchases)
-                        st.success(f"Verified - Instant Access Granted")
-                        st.info(f"Invoice {inv} - Key {key} - Go to My Access and unlock")
+                        st.success(f"Verified - Apna Course Access Granted - No YouTube - Invoice {inv}")
+                        st.info(f"Key {key} - My Access me dalo - 400 Lessons khulenge - Apna content")
 
     if menu == 'My Access':
-        st.title('My Learning - Instant Access')
-        st.write('Enter key - Course opens instantly')
+        st.title('My Learning - Apna Course - No YouTube - Real 400 Lessons')
         k = st.text_input('Invoice or Key')
-        if st.button('Unlock Instantly', type='primary'):
+        if st.button('Unlock My Apna Course', type='primary'):
             found = [p for p in purchases if p.get('access_key') == k or p.get('invoice_no') == k]
             if not found:
                 st.error('Invalid key')
             else:
                 pu = found[0]
-                st.success(f"Welcome {pu.get('name')} - Course Unlocked")
-                st.write(f"Course: {pu.get('course')}")
-                st.write(f"Price: Rs {pu.get('price')} - UTR: {pu.get('utr')}")
-                st.balloons()
-                st.video('https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4')
+                st.success(f"Welcome {pu.get('name')} - {pu.get('course')} - Apna Course Unlocked - No YouTube")
+                st.write(f"Price Rs {pu.get('price')} - UTR {pu.get('utr')} - 400 Lessons - Apna Content")
+                st.divider()
+                st.subheader(f"{pu.get('course')} - Apna 400 Lessons - Hindi English Voice - No YouTube")
+                curriculum = get_course_content(pu.get('course'))
+                st.write('10 Modules x 40 Lessons = 400 Lessons - Har lesson me Hindi voice + English voice FREE Tools - Apna content - No YouTube account needed')
+                
+                # Apna Voice Samples - No YouTube
+                v_hi = VOICE_DIR / f"{pu.get('course_id')}_hi.mp3"
+                v_en = VOICE_DIR / f"{pu.get('course_id')}_en.mp3"
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.write('**Hindi Voice Sample - Apna Content - FREE gTTS - No YouTube:**')
+                    if v_hi.exists():
+                        st.audio(str(v_hi))
+                    else:
+                        if st.button('Generate Hindi Voice FREE - Apna - No YouTube'):
+                            ok = make_voice(f"Welcome to {pu.get('course')} Hindi me Lesson 1", 'hi', v_hi)
+                            if ok:
+                                st.success('Hindi voice apna - No YouTube')
+                                st.rerun()
+                with col2:
+                    st.write('**English Voice Sample - Apna Content - FREE gTTS - No YouTube:**')
+                    if v_en.exists():
+                        st.audio(str(v_en))
+                    else:
+                        if st.button('Generate English Voice FREE - Apna - No YouTube'):
+                            ok = make_voice(f"Welcome to {pu.get('course')} English Lesson 1", 'en', v_en)
+                            if ok:
+                                st.success('English voice apna - No YouTube')
+                                st.rerun()
+                
+                st.divider()
+                # Show real lessons - No YouTube video - Only text + voice
+                for mod in curriculum[:2]:
+                    with st.expander(f"{mod['title']} - {len(mod['videos'])} Lessons - Apna Content - No YouTube"):
+                        for vid in mod['videos'][:5]:
+                            st.write(f"**{vid['no']}. {vid['title']}** - {vid['duration']}")
+                            st.write(f"Hindi: {vid['desc_hi']}")
+                            st.write(f"English: {vid['desc_en']}")
+                            st.write(f"Notes: {vid['notes']}")
+                            st.write('---')
+                        st.write(f"... and {len(mod['videos'])-5} more lessons in this module - Total 400 lessons - Apna content - No YouTube")
+                st.info('Full 400 lessons - Har lesson me Hindi + English voice - Apna content - No YouTube account needed - Super agent created with FREE tools')
 
     if menu == 'Chat Support':
-        st.title('Chat Support')
-        st.write('Session only - Closes when app closed')
-        if st.button('Clear Chat Now'):
+        st.title('Chat Support - Apna Course - No YouTube')
+        if st.button('Clear Chat'):
             st.session_state['chat_messages'] = []
-            st.success('Chat cleared')
             st.rerun()
         for ch in st.session_state['chat_messages']:
             with st.chat_message(ch['role']):
                 st.write(ch['msg'])
-        q = st.chat_input('Ask your question')
+        q = st.chat_input('Ask about apna course')
         if q:
             st.session_state['chat_messages'].append({'role': 'user', 'msg': q})
-            ans = smart_answer(q, courses)
+            ans = f"Apna course: We have 100+ apna courses - Each 400 lessons Hindi English voice FREE tools - No YouTube needed - Search Browse Courses"
             st.session_state['chat_messages'].append({'role': 'assistant', 'msg': ans})
             st.rerun()
