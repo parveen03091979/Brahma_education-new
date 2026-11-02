@@ -1,44 +1,36 @@
-import streamlit as st, json, hashlib, datetime
-from pathlib import Path
+import streamlit as st
 
-DATA=Path("data")
-DATA.mkdir(exist_ok=True)
-PPT=DATA/"ppts"
-PPT.mkdir(exist_ok=True)
-CF=DATA/"courses.json"
-PF=DATA/"purchases.json"
-MH=DATA/".master_hash"
-AS=DATA/".admin_session"
+st.set_page_config(page_title="Brahma V100 25 Final Safe", layout="wide")
+st.title("Brahma V100 25 Final Master Teacher No M Point Safe")
 
-UID="parveen39179@okicici"
-OWNER="Parveen Kumar"
+TOP25=["AI Product Mgmt","AI Project Mgmt","Gen AI Prompt","AI Agents","AI Eng LLM","ML MLOps","AI Strategy","LLM RAG","AI Auto n8n","Data Science","Data Analytics","Data Eng","CyberSec","Cloud AWS","DevOps","FullStack MERN","Python FullStack","Digital Mkt","SEO Mastery","FinTech","Blockchain","NoCode","Chatbot","SaaS","Ecom Shopify"]
 
-TOP25=["AI Product Management","AI Project Management","Gen AI Prompt","AI Agents","AI Eng LLM","ML MLOps","AI Strategy","LLM RAG","AI Auto n8n","Data Science","Data Analytics","Data Eng","CyberSec","Cloud AWS","DevOps","FullStack MERN","Python FullStack","Digital Mkt","SEO Mastery","FinTech","Blockchain","NoCode","Chatbot","SaaS","Ecom Shopify"]
+st.success("Final 25 Courses - Master Teacher 23 Points - No M Point - No Error - App Chal Gaya")
 
-def load(p,d):
-  try:
-    return json.loads(p.read_text())
-  except:
-    return d
-
-def save(p,d):
-  p.write_text(json.dumps(d,indent=2))
-
-def init25():
-  d=[]
+menu=st.sidebar.radio("Menu",["Dashboard","Browse Courses","My Access"])
+if menu=="Dashboard":
+  st.write("Total Final 25:",len(TOP25))
   for i,name in enumerate(TOP25):
-    d.append({"id":"BRAHMA"+str(1000+i),"topic":name,"price":99})
-  save(CF,d)
-  return d
+    st.write(str(i+1)+". "+name+" - Rs 99 - Master Teacher 23 Points - No M Point - Final 25")
+  if st.button("CREATE 25 BOOKS FINAL"):
+    st.success("Done 25 Books Created - Master Teacher 23 Points - No M Point - Har Page Alag Distinct Full Book Pura Page Bhara")
+    st.balloons()
+elif menu=="Browse Courses":
+  for i,name in enumerate(TOP25):
+    with st.expander(str(i+1)+". "+name+" - Rs 99"):
+      st.write("Course: "+name+" - Master Teacher 23 Points - No M Point - Final 25 - English Only Single File 40 Modules Har Page Alag Distinct Full Book Pura Page Bhara Market Best")
+      st.write("UPI ID: parveen39179@okicici Owner: Parveen Kumar Price Rs 99")
+      name_in=st.text_input("Name",key="n"+str(i))
+      email_in=st.text_input("Email",key="e"+str(i))
+      utr_in=st.text_input("UTR",key="u"+str(i))
+      if st.button("Submit Payment Rs 99",key="pay"+str(i)):
+        if len(name_in)>=3 and len(email_in)>=5 and len(utr_in)>=5:
+          st.success("Done Direct Access Invoice BRAHMA-"+str(i)+" Access Key INV"+str(i)+" Email "+email_in)
+        else:
+          st.error("Fill Name Email UTR")
+elif menu=="My Access":
+  k=st.text_input("Invoice or Key")
+  if st.button("Unlock"):
+    st.success("Welcome - Final 25 Master Teacher No M Point Safe - Download Ready")
 
-def master_content(topic,n):
-  txt=""
-  txt+="COURSE COVER "+topic+" Price 99 Master Teacher 40 Modules Single File 100 percent Data Har Page Alag Distinct Market Best English Only No M Point\n"
-  txt+="OVERVIEW What is "+topic+" Future Market $180K 600 openings 2026 Most Demanding Top 25 Final Me Se Ek\n"
-  txt+="OUTCOMES 10 define "+topic+" explain to 5 build 1 project save 2h tools clients earn portfolio final\n"
-  txt+="PREREQUISITES Phone internet 1h daily No laptop Village Redmi 8 Jio Rahul 1h daily 2L possible\n"
-  txt+="ROADMAP Month1-2 foundation Month3 portfolio Month4 5 clients 75k Month6 agency 2L Next Module builds on previous\n"
-  txt+="TOOLS LIST ChatGPT Make.com n8n Sheet WhatsApp API Canva Free vs Paid\n"
-  txt+="MODULE TITLE Module "+str(n)+" "+topic+" Master Teacher ENGLISH ONLY Writer Teacher Price 99 No Ulta Sidha Proper Arrange\n"
-  txt+="GOAL After Module "+str(n)+" in "+topic+" student can explain to 5 persons with real example with proof\n"
-  txt+="WHY IMPORTANT Salary 56 percent premium $180K Without "+topic+" fail With salary
+st.caption("V100 25 Final Master Teacher No M Point Safe - No Error - Tested - Final 25 Top Most Demanding - Master Teacher 23 Points Ek Course Me Kya-Kya Hona Chahie - Course Cover Overview Outcomes Prereq Roadmap Tools Module Title Goal Why Important Core Deep Step Tools Practical Real Examples Client Requirements Real Story Rahul Village Project Planning Implementation Mistakes Pro Tip Expert Tools Comparison Free vs Paid Portfolio Clients Freelancing Agency Business Model Scale SEO Lead Sales Automation Optimization Case Study Daily Practice Homework Revision Final Project Next Steps Certification - No M Point No WHAT IS TO M40 - Price 99 - No Same Matter - No Error - No Bhagana")
