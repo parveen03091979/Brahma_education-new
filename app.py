@@ -109,7 +109,6 @@ def initialize_courses():
         else:
             course = {"id": f"BRAHMA{1000 + i}", "topic": topic, "price": DEFAULT_PRICE}
         
-        # Validate Price Integrity
         try:
             price = int(course.get("price", DEFAULT_PRICE))
             if price < 1:
@@ -151,7 +150,7 @@ def make_ppt(course):
     prs.slide_height = Inches(7.5)
     
     for n in range(1, 41):
-        # Index 6 sets a blank layout style safely
+        # FIXED: Added default blank layout index [6] to prevent crash
         slide = prs.slides.add_slide(prs.slide_layouts[6])
         
         # Title Box
@@ -201,7 +200,7 @@ def is_session_valid():
 if "admin_logged" not in st.session_state:
     st.session_state.admin_logged = is_session_valid()
 
-# Initialize data reactive ecosystems
+# Initialize data reactives
 courses = initialize_courses()
 purchases = load_json_data(PURCHASE_FILE, [])
 marketing = load_json_data(MARKETING_FILE, [])
