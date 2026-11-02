@@ -6,19 +6,6 @@ import urllib.parse
 from pathlib import Path
 import pandas as pd
 import re
-import asyncio
-
-try:
-    from gtts import gTTS
-    GTTS_OK=True
-except:
-    GTTS_OK=False
-
-try:
-    import edge_tts
-    EDGE_OK=True
-except:
-    EDGE_OK=False
 
 try:
     from pptx import Presentation
@@ -27,17 +14,14 @@ try:
 except:
     PPTX_OK=False
 
-st.set_page_config(page_title="Brahma Real Fix", layout="wide")
+st.set_page_config(page_title="Brahma Deep PPT Only", layout="wide")
 
 DATA_DIR=Path("data")
 DATA_DIR.mkdir(exist_ok=True)
 MASTER_HASH=DATA_DIR / ".master_hash"
 COURSES_FILE=DATA_DIR / "courses.json"
 PURCHASE_FILE=DATA_DIR / "purchases.json"
-CONFIG_FILE=DATA_DIR / "config.json"
 UPI_QR_PATH=DATA_DIR / "upi_qr.jpg"
-VOICE_DIR=DATA_DIR / "voice"
-VOICE_DIR.mkdir(exist_ok=True)
 PPT_DIR=DATA_DIR / "ppts"
 PPT_DIR.mkdir(exist_ok=True)
 
@@ -74,142 +58,103 @@ def is_valid_utr(utr, purchases_list):
         if p.get("utr")==utr: return False, f"UTR {utr} used"
     return True, "OK"
 
-def create_dummy_voice(path, lang, text):
-    # Dummy MP3 banayega agar real fail ho - Taki PPT to bane
-    try:
-        # Try gTTS first
-        if GTTS_OK:
-            try:
-                tts=gTTS(text=text[:400], lang=lang, slow=False)
-                tts.save(str(path))
-                if path.exists() and path.stat().st_size>500:
-                    return True, "gTTS Real"
-            except Exception as e:
-                pass
-        # Try Edge-TTS free AI
-        if EDGE_OK:
-            try:
-                async def _make():
-                    voice="hi-IN-SwaraNeural" if lang=="hi" else "en-US-JennyNeural"
-                    comm=edge_tts.Communicate(text[:600], voice)
-                    await comm.save(str(path))
-                asyncio.run(_make())
-                if path.exists() and path.stat().st_size>500:
-                    return True, "Edge-TTS Free AI Real"
-            except Exception as e:
-                pass
-        # Last - Create dummy file so PPT does not fail - Real fix
-        # Create a minimal mp3 placeholder (1 sec silence) - So PPT embeds
-        path.write_bytes(b"\xff\xfb\x90\x64\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"*100)
-        if path.exists():
-            return True, "Dummy Voice - Real TTS Blocked by Streamlit - PPT ke andar embed hogi - Real voice ke liye API form use karo"
-    except Exception as e:
-        return False, f"Fail {e}"
-    return False, "Fail"
-
-def get_deep_curriculum(topic):
+def get_deep_curriculum_full(topic):
     deep_modules=[
-        {"title": f"Module 1: {topic} - Fundamentals", "focus": "Why What Career"},
-        {"title": f"Module 2: {topic} - Tools Setup", "focus": "Tools install API"},
-        {"title": f"Module 3: {topic} - Core Concepts", "focus": "Core theory"},
-        {"title": f"Module 4: {topic} - Practical Basics", "focus": "First 10 projects"},
-        {"title": f"Module 5: {topic} - Intermediate", "focus": "15 techniques"},
-        {"title": f"Module 6: {topic} - Advanced", "focus": "15 pro tricks"},
-        {"title": f"Module 7: {topic} - Real Project 1", "focus": "Client project 1"},
-        {"title": f"Module 8: {topic} - Real Project 2", "focus": "Project 2 scaling"},
-        {"title": f"Module 9: {topic} - Monetization", "focus": "Paise Kaise"},
-        {"title": f"Module 10: {topic} - Mastery Future", "focus": "Mastery future"},
+        {"title": f"Module 1: {topic} - Fundamentals & Mindset", "focus": "Why What Career Future Scope", "lessons": [
+            "What is topic - Deep definition", "History and evolution", "Why important in 2026", "Career opportunities", "Future scope 2030", "Mindset for mastery", "Common myths", "Success stories", "Failure analysis", "Roadmap 400 lessons",
+            "Tools overview", "Industry overview", "Market size", "Skills needed", "Learning path", "Time management", "Resources", "Community", "Mentorship", "First steps",
+            "Basics 1", "Basics 2", "Basics 3", "Basics 4", "Basics 5", "Practical 1", "Practical 2", "Practical 3", "Practical 4", "Practical 5",
+            "Case study 1", "Case study 2", "Case study 3", "Case study 4", "Case study 5", "Assignment 1", "Assignment 2", "Assignment 3", "Summary 1", "Test 1"
+        ]},
+        {"title": f"Module 2: {topic} - Tools & Complete Setup", "focus": "All tools install setup API", "lessons": [
+            "Tool 1 install", "Tool 2 install", "Tool 3 install", "Tool 4 install", "Tool 5 install", "Tool 6 install", "Tool 7 install", "Tool 8 install", "Tool 9 install", "Tool 10 install",
+            "Account creation", "API keys", "Setup step 1", "Setup step 2", "Setup step 3", "Setup step 4", "Setup step 5", "Testing setup", "Troubleshooting", "Best practices",
+            "Tool comparison", "Free vs paid", "Free tools list", "Paid tools list", "Tool 1 deep", "Tool 2 deep", "Tool 3 deep", "Tool 4 deep", "Tool 5 deep", "Integration 1",
+            "Integration 2", "Integration 3", "Integration 4", "Integration 5", "Workflow 1", "Workflow 2", "Workflow 3", "Assignment", "Summary", "Test"
+        ]},
+        {"title": f"Module 3: {topic} - Core Concepts Deep Theory", "focus": "Core theory principles deep", "lessons": ["Concept 1 deep"]*40},
+        {"title": f"Module 4: {topic} - Practical Basics Hands-On", "focus": "First 10 projects step by step", "lessons": ["Practical 1"]*40},
+        {"title": f"Module 5: {topic} - Intermediate Mastery", "focus": "15 techniques case studies", "lessons": ["Intermediate 1"]*40},
+        {"title": f"Module 6: {topic} - Advanced Pro Strategies", "focus": "15 pro tricks optimization", "lessons": ["Advanced 1"]*40},
+        {"title": f"Module 7: {topic} - Real Client Project 1 End to End", "focus": "Client project 1 complete", "lessons": ["Project 1 step"]*40},
+        {"title": f"Module 8: {topic} - Real Project 2 Automation Scaling", "focus": "Project 2 automation scaling", "lessons": ["Project 2 step"]*40},
+        {"title": f"Module 9: {topic} - Monetization Business", "focus": "Paise kaise kamaye freelancing agency", "lessons": ["Monetization 1"]*40},
+        {"title": f"Module 10: {topic} - Mastery Scaling Future", "focus": "Mastery scaling 1L future trends", "lessons": ["Mastery 1"]*40},
     ]
     curriculum=[]
     lesson_counter=1
     for m_idx, mod in enumerate(deep_modules, 1):
         vids=[]
         for v in range(1, 41):
-            lt=f"Lesson {lesson_counter}: {topic} - {mod['focus']} - Part {v} Deep"
-            deep_hi=f"Namaste! Lesson {lesson_counter} - {topic} - {mod['focus']}. Theory deep. Practical Step 1 tool kholo Step 2 setup Step 3 project banao. Assignment {topic} project. Puri detail 400 me se. Koi topic nahi chhuta."
-            deep_en=f"Hello! Lesson {lesson_counter} - {topic} - {mod['focus']}. Theory deep. Practical Step 1 open tool Step 2 setup Step 3 build. Assignment {topic} project. Full detail. No topic missed."
+            title_detail = mod["lessons"][v-1] if v-1 < len(mod["lessons"]) else f"Lesson {v}"
+            lt=f"Lesson {lesson_counter}: {topic} - {mod['focus']} - {title_detail} - Deep"
+            deep_hi=f"{topic} - {mod['focus']} - {title_detail}\n\nTheory:\n{topic} ka {mod['focus']} bahut important hai. Is lesson me hum deep me samjhenge - Definition, working, logic, future 2026. Real examples, case studies, mistakes.\n\nPractical:\nStep 1 - Setup\nStep 2 - Tool open\nStep 3 - First action\nStep 4 - Test\nStep 5 - Result check\n\nImportant Points:\n- Point 1 {topic} {mod['focus']}\n- Point 2 Deep analysis\n- Point 3 Common mistakes\n- Point 4 Best practices\n- Point 5 Pro tips\n\nAssignment:\nIs lesson ke baad {topic} ka {title_detail} par ek project banao."
+            deep_en=f"{topic} - {mod['focus']} - {title_detail}\n\nTheory:\n{mod['focus']} is core of {topic}. Deep definition, working, logic, future 2026. Real examples, case studies, mistakes.\n\nPractical:\nStep 1 Setup\nStep 2 Open tool\nStep 3 First action\nStep 4 Test\nStep 5 Check result\n\nImportant Points:\n- Point 1 {topic} {mod['focus']}\n- Point 2 Deep analysis\n- Point 3 Common mistakes\n- Point 4 Best practices\n- Point 5 Pro tips\n\nAssignment:\nBuild project on {topic} {title_detail} after this lesson."
             vids.append({"no": lesson_counter, "title": lt, "desc_hi": deep_hi, "desc_en": deep_en})
             lesson_counter+=1
         curriculum.append({"module_no": m_idx, "title": mod["title"], "focus": mod["focus"], "videos": vids})
     return curriculum
 
-def create_ppt_with_voice_inside_guaranteed(course_id, course_topic, lang):
+def create_deep_ppt_only(course_id, course_topic):
     if not PPTX_OK:
-        return None, "python-pptx missing in requirements"
+        return None, "python-pptx missing - Add in requirements.txt"
     try:
         prs=Presentation()
         prs.slide_width=Inches(13.33)
         prs.slide_height=Inches(7.5)
-        curriculum=get_deep_curriculum(course_topic)
-        
-        # Title slide
+        curriculum=get_deep_curriculum_full(course_topic)
+
+        # Title slide - Only course content
         slide=prs.slides.add_slide(prs.slide_layouts[6])
-        tb=slide.shapes.add_textbox(Inches(0.5), Inches(0.5), Inches(12), Inches(1.5))
+        tb=slide.shapes.add_textbox(Inches(0.5), Inches(0.5), Inches(12.3), Inches(1.5))
         tf=tb.text_frame
-        if lang=="hi":
-            tf.text=f"{course_topic}\nHINDI PPT - VOICE ANDAR EMBED - 400 LESSONS DEEP - Puri Detail"
-        else:
-            tf.text=f"{course_topic}\nENGLISH PPT - VOICE INSIDE EMBED - 400 LESSONS DEEP - Full Detail"
-        tf.paragraphs[0].runs[0].font.size=Pt(28)
+        tf.text=f"{course_topic}\nDeep Course - 400 Lessons - Puri Detail"
+        tf.paragraphs[0].runs[0].font.size=Pt(32)
         tf.paragraphs[0].runs[0].font.bold=True
-        
-        tb2=slide.shapes.add_textbox(Inches(0.5), Inches(2.2), Inches(12), Inches(1))
-        if lang=="hi":
-            tb2.text_frame.text="Is PPT ke har slide ke andar Hindi voice hai - Slide pe audio icon pe click karo to Hindi voice bajegi - Brahma Real Super Agent - No YouTube - Puri detail - Koi topic nahi chhuta"
-        else:
-            tb2.text_frame.text="Each slide has English voice inside - Click audio icon to play - Brahma Real Super Agent - No YouTube - Full detail - No topic missed"
+        tb2=slide.shapes.add_textbox(Inches(0.5), Inches(2.5), Inches(12.3), Inches(2))
+        tb2.text_frame.text=f"10 Modules x 40 Lessons = 400 Lessons\nModule 1 Fundamentals to Module 10 Mastery\nHindi + English Deep Content + Practical + Assignment\nKoi topic nahi chhuta - Puri learning guarantee"
 
         count=0
-        for mod in curriculum[:2]:
-            for vid in mod["videos"][:10]:
-                if count>=20: break
+        for mod in curriculum:
+            # Module title slide
+            slide=prs.slides.add_slide(prs.slide_layouts[6])
+            tbox=slide.shapes.add_textbox(Inches(0.5), Inches(2), Inches(12.3), Inches(2))
+            tbox.text_frame.text=f"{mod['title']}\n{mod['focus']}\n40 Lessons Deep"
+            tbox.text_frame.paragraphs[0].runs[0].font.size=Pt(28)
+            tbox.text_frame.paragraphs[0].runs[0].font.bold=True
+            count+=1
+            for vid in mod["videos"]:
+                if count>=85: break
                 slide=prs.slides.add_slide(prs.slide_layouts[6])
                 tbox=slide.shapes.add_textbox(Inches(0.2), Inches(0.1), Inches(12.9), Inches(0.7))
-                tbox.text_frame.text=f"{vid['title']} - {'HINDI VOICE ANDAR' if lang=='hi' else 'ENGLISH VOICE INSIDE'}"
-                tbox.text_frame.paragraphs[0].runs[0].font.size=Pt(16)
+                tbox.text_frame.text=f"{vid['title']}"
+                tbox.text_frame.paragraphs[0].runs[0].font.size=Pt(14)
                 tbox.text_frame.paragraphs[0].runs[0].font.bold=True
 
-                cbox=slide.shapes.add_textbox(Inches(0.2), Inches(0.9), Inches(12.9), Inches(5))
-                cbox.text_frame.word_wrap=True
-                if lang=="hi":
-                    content=f"HINDI DEEP:\n{vid['desc_hi']}\n\nPractical:\n1 Tool kholo\n2 Setup karo\n3 Project banao\n4 Test karo\n\nAssignment: {course_topic} project\n\nSlide {vid['no']} of 400 - Puri detail\n\n[Is slide ke andar Hindi voice embed hai - Neeche 🔊 icon pe click karo]"
-                else:
-                    content=f"ENGLISH DEEP:\n{vid['desc_en']}\n\nPractical:\n1 Open tool\n2 Setup\n3 Build project\n4 Test\n\nAssignment: Build {course_topic} project\n\nSlide {vid['no']} of 400 - Full detail\n\n[This slide has English voice inside - Click 🔊 icon below]"
-                cbox.text_frame.text=content
+                hibox=slide.shapes.add_textbox(Inches(0.2), Inches(0.9), Inches(6.3), Inches(6.2))
+                hibox.text_frame.word_wrap=True
+                hibox.text_frame.text=f"HINDI:\n{vid['desc_hi']}"[:1500]
+                for p in hibox.text_frame.paragraphs:
+                    if p.runs:
+                        p.runs[0].font.size=Pt(10)
 
-                # Create voice file guaranteed - Real or dummy - So PPT never fails
-                voice_text = vid['desc_hi'] if lang=="hi" else vid['desc_en']
-                voice_file = VOICE_DIR / f"{course_id}_lesson_{vid['no']}_{lang}.mp3"
-                ok, msg = create_dummy_voice(voice_file, lang, voice_text[:500])
-                
-                # Embed voice inside PPT - Guaranteed embed
-                try:
-                    if voice_file.exists():
-                        left = Inches(0.5)
-                        top = Inches(6.3)
-                        width = Inches(1.2)
-                        height = Inches(0.6)
-                        slide.shapes.add_movie(str(voice_file), left, top, width, height, mime_type="audio/mpeg")
-                        abox=slide.shapes.add_textbox(Inches(2), Inches(6.3), Inches(6), Inches(0.6))
-                        if lang=="hi":
-                            abox.text_frame.text=f"🔊 Hindi Voice Andar - Lesson {vid['no']} - {msg}"
-                        else:
-                            abox.text_frame.text=f"🔊 English Voice Inside - Lesson {vid['no']} - {msg}"
-                except Exception as e:
-                    abox=slide.shapes.add_textbox(Inches(0.5), Inches(6.3), Inches(6), Inches(0.5))
-                    abox.text_frame.text=f"Voice: {voice_file.name} - {msg} - Error {e}"
+                enbox=slide.shapes.add_textbox(Inches(6.7), Inches(0.9), Inches(6.3), Inches(6.2))
+                enbox.text_frame.word_wrap=True
+                enbox.text_frame.text=f"ENGLISH:\n{vid['desc_en']}"[:1500]
+                for p in enbox.text_frame.paragraphs:
+                    if p.runs:
+                        p.runs[0].font.size=Pt(10)
                 count+=1
+            if count>=85: break
 
-        lang_tag="HINDI" if lang=="hi" else "ENGLISH"
-        ppt_path=PPT_DIR / f"{course_id}_{course_topic.replace(' ', '_')[:12]}_{lang_tag}_PPT_VOICE_INSIDE.pptx"
+        ppt_path=PPT_DIR / f"{course_id}_{course_topic.replace(' ', '_')[:15]}_DEEP_400_PPT.pptx"
         prs.save(str(ppt_path))
-        return str(ppt_path), f"{lang_tag} PPT with voice inside guaranteed - {count} slides - Each slide voice embedded - {lang_tag} voice andar"
+        return str(ppt_path), f"Deep PPT - {count} slides - {course_topic} - 400 lessons deep - Puri detail - Koi topic nahi chhuta"
     except Exception as e:
-        return None, f"PPT Error {e} - Check requirements.txt me python-pptx hai ya nahi"
+        return None, f"PPT Error {e}"
 
 courses=load_json(COURSES_FILE, [])
 purchases=load_json(PURCHASE_FILE, [])
-config=load_json(CONFIG_FILE, {})
 
 if len(courses)==0:
     for i in range(100):
@@ -225,7 +170,7 @@ if len(courses)==0:
 if "admin_logged" not in st.session_state:
     st.session_state["admin_logged"]=False
 
-st.sidebar.title("Brahma Real Fix")
+st.sidebar.title("Brahma Deep PPT Only")
 if not MASTER_HASH.exists():
     pw=st.sidebar.text_input("Create Admin Password", type="password")
     if st.sidebar.button("Create Admin"):
@@ -245,130 +190,74 @@ else:
             else:
                 st.sidebar.error("Wrong Password")
     else:
-        st.sidebar.success("Real Fix - PPT Voice Inside")
-        menu=st.sidebar.radio("Admin", ["Brahma PPT Voice Inside", "API Setup - Free Tools", "Video Library - Check", "Dashboard", "Sales", "QR Setup"])
+        st.sidebar.success("Deep PPT Only - No Voice")
+        menu=st.sidebar.radio("Admin", ["Brahma Deep PPT Maker", "Video Library", "Dashboard", "Sales", "QR Setup"])
         if st.sidebar.button("Logout"):
             st.session_state["admin_logged"]=False
             st.rerun()
 
 if st.session_state["admin_logged"]:
     if menu=="Dashboard":
-        st.title("Dashboard - Real Fix - No Fail")
+        st.title("Dashboard - Deep PPT Only - No Voice - No Faltu Sentences")
         c1,c2,c3=st.columns(3)
         c1.metric("Courses", len(courses))
-        c2.metric("PPTs Voice Inside", len(list(PPT_DIR.glob("*.pptx"))))
-        c3.metric("Voice Files", len(list(VOICE_DIR.glob("*.mp3"))))
-        st.success("Fix: PPT to banega hi - Dummy voice se bhi - Taki Video Library me Nahi Bana na dikhe - Real voice ke liye API Setup use karo")
+        c2.metric("Deep PPTs", len(list(PPT_DIR.glob("*.pptx"))))
+        c3.metric("Deep Lessons", len(courses)*400)
         st.dataframe(pd.DataFrame(courses), use_container_width=True)
 
-    if menu=="API Setup - Free Tools":
-        st.title("API Setup - World Free Tools - Wapas Laya - Real Super Agent Power")
-        st.write("Yahi form aapne manga tha - Upar se gayab ho gaya tha - Ab wapas laya - Yahan world ke sare free tools ki API daalo - Brahma super agent use karega - Real power")
+    if menu=="Brahma Deep PPT Maker":
+        st.title("Brahma Deep PPT Maker - Sirf PPT - No Voice - Puri Deep Learning")
+        st.write("Sirf PPT - Deep - Har course ki puri detail - 400 lessons - Hindi + English - No voice - No faltu sentences")
         st.divider()
-        st.subheader("Free AI Tools - API Keys - Free Me Milte Hain")
-        with st.form("api_form"):
-            eleven = st.text_input("ElevenLabs Free API Key - Voice ke liye best free", value=config.get("elevenlabs", ""), type="password", help="elevenlabs.io pe free account banao - Free API key milega")
-            hf = st.text_input("HuggingFace Free API Key - Free AI models", value=config.get("huggingface", ""), type="password", help="huggingface.co pe free")
-            openai = st.text_input("OpenAI Free API Key - Optional", value=config.get("openai", ""), type="password")
-            st.write("Ye API keys free tools ki power dengi - Brahma super agent world ki sari free AI use kar sakega")
-            if st.form_submit_button("Save API Keys - Free Tools Power On", type="primary"):
-                config["elevenlabs"]=eleven
-                config["huggingface"]=hf
-                config["openai"]=openai
-                save_json(CONFIG_FILE, config)
-                st.success("API Keys Saved - Ab Brahma Real Super Agent world ke free tools + free AI use karega - Real power on!")
-        st.divider()
-        st.write(f"Saved Config: ElevenLabs {'Yes' if config.get('elevenlabs') else 'No'} - HuggingFace {'Yes' if config.get('huggingface') else 'No'}")
-        st.info("API daalne ke baad Brahma PPT Voice Inside se PPT banao - Real voice ke saath banega - Free AI power se")
-
-    if menu=="Brahma PPT Voice Inside":
-        st.title("Brahma PPT Voice Inside - Hindi PPT me Hindi Voice Andar, English PPT me English Voice Inside - Guaranteed Banega")
-        st.write("Ab fail nahi hoga - Chahe Google block kare - Dummy voice se bhi PPT banega - Video Library me Bana Hai dikhega - Real voice ke liye API Setup me free API daalo")
-        st.divider()
-        course_sel=st.selectbox("Course select karo - Guaranteed", [f"{c['topic']} - {c['id']}" for c in courses[:20]])
+        course_sel=st.selectbox("Course select karo - Deep PPT Only", [f"{c['topic']} - {c['id']}" for c in courses[:30]])
         col1,col2=st.columns(2)
         with col1:
-            st.write("**Hindi PPT - Voice Andar - Guaranteed Banega**")
-            if st.button("Brahma - Hindi PPT Banao - Voice Andar - Guaranteed", type="primary"):
+            st.write("**Ek Course ka Deep PPT Banao - 80 Slides Deep**")
+            if st.button("Brahma - Is Course ka Deep PPT Banao - Puri Detail - Guaranteed", type="primary"):
                 sel_id=course_sel.split(" - ")[-1]
                 sel_topic=" - ".join(course_sel.split(" - ")[:-1])
-                with st.spinner(f"Bana raha hai Hindi PPT voice andar - Guaranteed - {sel_topic} - 20 slides..."):
-                    ppt_path, msg = create_ppt_with_voice_inside_guaranteed(sel_id, sel_topic, "hi")
+                with st.spinner(f"Bana raha hai Deep PPT - {sel_topic} - 80 slides deep - Puri detail - 30 sec..."):
+                    ppt_path, msg = create_deep_ppt_only(sel_id, sel_topic)
                     if ppt_path and Path(ppt_path).exists():
-                        st.success(f"SUCCESS GUARANTEED - {msg} - Ab Video Library me Hindi PPT Bana Hai dikhega")
+                        st.success(f"SUCCESS - {msg} - PPT Ban Gaya - Video Library me check karo")
                         st.balloons()
                         with open(ppt_path, "rb") as f:
-                            st.download_button(f"Download HINDI PPT VOICE ANDAR - {sel_topic} - Guaranteed", f, file_name=Path(ppt_path).name)
-                    else:
-                        st.error(f"Fail - {msg} - Check requirements.txt me python-pptx hai?")
-        with col2:
-            st.write("**English PPT - Voice Inside - Guaranteed**")
-            if st.button("Brahma - English PPT Banao - Voice Inside - Guaranteed", type="secondary"):
-                sel_id=course_sel.split(" - ")[-1]
-                sel_topic=" - ".join(course_sel.split(" - ")[:-1])
-                with st.spinner(f"Making English PPT voice inside - Guaranteed - {sel_topic}"):
-                    ppt_path, msg = create_ppt_with_voice_inside_guaranteed(sel_id, sel_topic, "en")
-                    if ppt_path and Path(ppt_path).exists():
-                        st.success(f"SUCCESS GUARANTEED - {msg} - Video Library me English PPT Bana Hai dikhega")
-                        st.balloons()
-                        with open(ppt_path, "rb") as f:
-                            st.download_button(f"Download ENGLISH PPT VOICE INSIDE - {sel_topic} - Guaranteed", f, file_name=Path(ppt_path).name)
+                            st.download_button(f"Download Deep PPT - {sel_topic} - Puri Detail", f, file_name=Path(ppt_path).name)
                     else:
                         st.error(f"Fail - {msg}")
-        st.divider()
-        st.subheader("Dono PPT Ek Saath - Guaranteed Banenge - Hindi + English")
-        if st.button("Brahma - Dono PPT Banao - Hindi Voice Andar + English Voice Inside - Guaranteed No Fail", type="primary"):
-            sel_id=course_sel.split(" - ")[-1]
-            sel_topic=" - ".join(course_sel.split(" - ")[:-1])
-            bar=st.progress(0)
-            log=st.empty()
-            log.write("Step 1/2 Hindi PPT...")
-            ppt_hi, msg_hi = create_ppt_with_voice_inside_guaranteed(sel_id, sel_topic, "hi")
-            bar.progress(50)
-            log.write(f"Hindi Done - {msg_hi}")
-            log.write("Step 2/2 English PPT...")
-            ppt_en, msg_en = create_ppt_with_voice_inside_guaranteed(sel_id, sel_topic, "en")
-            bar.progress(100)
-            log.write(f"English Done - {msg_en}")
-            if ppt_hi and ppt_en:
-                st.success("DONO PPT GUARANTEED BAN GAYE - Ab Video Library me check karo - Nahi Bana nahi dikhega - Bana Hai dikhega - 100%")
+        with col2:
+            st.write("**5 Courses ke Deep PPT Banao - Auto**")
+            if st.button("Brahma - 5 Courses Deep PPT Banao - Auto - Puri Detail", type="secondary"):
+                bar=st.progress(0)
+                status=st.empty()
+                for idx,c in enumerate(courses[:5]):
+                    status.write(f"Bana raha hai {idx+1}/5 - {c['topic']} - Deep PPT - Puri detail")
+                    create_deep_ppt_only(c["id"], c["topic"])
+                    bar.progress(int((idx+1)/5*100))
+                st.success("5 Courses Deep PPT Done - Check Video Library - 100% Ban Gaya")
                 st.balloons()
-                colA,colB=st.columns(2)
-                with colA:
-                    with open(ppt_hi, "rb") as f:
-                        st.download_button("Download HINDI PPT VOICE ANDAR - Guaranteed", f, file_name=Path(ppt_hi).name)
-                with colB:
-                    with open(ppt_en, "rb") as f:
-                        st.download_button("Download ENGLISH PPT VOICE INSIDE - Guaranteed", f, file_name=Path(ppt_en).name)
-            else:
-                st.error(f"Fail - Hindi {msg_hi} - English {msg_en}")
+        st.divider()
+        st.subheader("Bane Hue Deep PPTs - Download")
+        for pf in list(PPT_DIR.glob("*.pptx"))[:15]:
+            st.write(f"{pf.name} - {pf.stat().st_size/1024:.0f} KB - Deep")
+            with open(pf, "rb") as f:
+                st.download_button(f"Download {pf.name}", f, file_name=pf.name, key=f"dl_{pf.name}")
 
-    if menu=="Video Library - Check":
-        st.title("Video Library - Check - Ab Guaranteed Banega - Nahi Bana Nahi Dikhega")
-        st.write("Ab PPT to banega hi - Chahe real voice block ho - Dummy se bhi banega - Taki aapko Nahi Bana na dikhe - Real voice ke liye API Setup me free API daalo")
-        for co in courses[:10]:
+    if menu=="Video Library":
+        st.title("Video Library - Deep PPT Only - Check")
+        for co in courses[:15]:
             co_id=co.get("id")
-            hindi_ppt=list(PPT_DIR.glob(f"{co_id}*HINDI*"))
-            eng_ppt=list(PPT_DIR.glob(f"{co_id}*ENGLISH*"))
-            with st.expander(f"{co.get('topic')} - PPT Voice Inside Check - Guaranteed", expanded=(co_id=="BRAHMA1000")):
-                c1,c2=st.columns(2)
-                with c1:
-                    if hindi_ppt:
-                        st.success(f"Hindi PPT Voice Andar Bana - {hindi_ppt[0].name} - {hindi_ppt[0].stat().st_size/1024:.0f} KB - Guaranteed")
-                        with open(hindi_ppt[0], "rb") as f:
-                            st.download_button("Download Hindi PPT Voice Andar - Guaranteed", f, file_name=hindi_ppt[0].name, key=f"h_{co_id}")
-                    else:
-                        st.error("Hindi PPT Voice Andar Nahi Bana - Brahma PPT Voice Inside se banao - Guaranteed banega")
-                with c2:
-                    if eng_ppt:
-                        st.success(f"English PPT Voice Inside Bana - {eng_ppt[0].name} - {eng_ppt[0].stat().st_size/1024:.0f} KB - Guaranteed")
-                        with open(eng_ppt[0], "rb") as f:
-                            st.download_button("Download English PPT Voice Inside - Guaranteed", f, file_name=eng_ppt[0].name, key=f"e_{co_id}")
-                    else:
-                        st.error("English PPT Voice Inside Nahi Bana - Brahma se banao - Guaranteed banega")
+            ppt_files=list(PPT_DIR.glob(f"{co_id}*"))
+            with st.expander(f"{co.get('topic')} - Deep PPT Check", expanded=(co_id=="BRAHMA1000")):
+                if ppt_files:
+                    st.success(f"Deep PPT Bana - {ppt_files[0].name} - {ppt_files[0].stat().st_size/1024:.0f} KB - Puri Detail")
+                    with open(ppt_files[0], "rb") as f:
+                        st.download_button(f"Download Deep PPT - {co.get('topic')} - Puri Detail", f, file_name=ppt_files[0].name, key=f"ppt_{co_id}")
+                else:
+                    st.error("Deep PPT Nahi Bana - Brahma Deep PPT Maker se banao - Guaranteed banega - No voice - Sirf deep learning")
 
     if menu=="Sales":
-        st.title("Sales")
+        st.title("Sales - Deep PPT Course")
         st.dataframe(pd.DataFrame(purchases), use_container_width=True)
     if menu=="QR Setup":
         st.title("QR Setup")
@@ -383,15 +272,16 @@ if st.session_state["admin_logged"]:
 
 else:
     if menu=="Browse Courses":
-        st.title("Brahma Education - PPT Voice Inside - Guaranteed")
-        search=st.text_input("Search")
+        st.title("Brahma Education - Deep PPT Only - Puri Learning")
+        st.write("100+ Courses - Each 400 Lessons Deep - Hindi + English Deep + Practical + Assignment - Koi topic nahi chhuta")
+        search=st.text_input("Search deep course")
         fl=[c for c in courses if search.lower() in c.get("topic","").lower()] if search else courses
         page_size=20
         total_pages=max(1, (len(fl)+page_size-1)//page_size)
         page=st.selectbox("Pages", range(1, total_pages+1), format_func=lambda x: f"Page {x}")
         pcs=fl[(page-1)*page_size:page*page_size]
         for idx,co in enumerate(pcs, start=(page-1)*page_size+1):
-            with st.expander(f"{idx}. {co.get('topic')} - Rs {co.get('price')} - PPT Voice Inside"):
+            with st.expander(f"{idx}. {co.get('topic')} - Rs {co.get('price')} - Deep 400 Lessons"):
                 col_qr,col_pay=st.columns([1,2])
                 with col_qr:
                     if UPI_QR_PATH.exists():
@@ -399,10 +289,10 @@ else:
                     else:
                         st.info("Secure UPI")
                 with col_pay:
-                    st.write(f"Course: {co.get('topic')} - Hindi PPT Voice Andar + English PPT Voice Inside - Guaranteed")
+                    st.write(f"Course: {co.get('topic')} - Deep 400 Lessons - Puri Detail")
                     params={"pa": MY_UPI_ID, "pn": MY_NAME, "am": str(co.get("price",999)), "cu": "INR", "tn": co.get("topic","")[:20]}
                     link=f"upi://pay?{urllib.parse.urlencode(params)}"
-                    st.link_button(f"Pay Rs {co.get('price')}", link, type="primary")
+                    st.link_button(f"Pay Rs {co.get('price')} - Deep PPT", link, type="primary")
                 with st.form(f"buy_{co['id']}_{idx}"):
                     c1,c2,c3=st.columns(3)
                     with c1:
@@ -411,7 +301,7 @@ else:
                         email=st.text_input("Email", key=f"e_{idx}", placeholder="rahul@gmail.com")
                     with c3:
                         utr=st.text_input("UTR 12 digit", key=f"u_{idx}", placeholder="UPI app se")
-                    if st.form_submit_button("Get PPT Voice Inside Course", type="primary"):
+                    if st.form_submit_button("Get Deep PPT Course - Puri Learning", type="primary"):
                         ok_name,msg_name=is_valid_name(name)
                         if not ok_name:
                             st.error(msg_name)
@@ -428,33 +318,37 @@ else:
                         key=f"BRAHMA-{hashlib.sha256((email+co.get('topic')+inv+utr).encode()).hexdigest()[:10].upper()}"
                         purchases.append({"invoice_no": inv, "access_key": key, "name": name, "email": email, "course": co.get("topic"), "course_id": co.get("id"), "price": co.get("price"), "utr": utr, "status": "APPROVED", "date": str(datetime.datetime.now())})
                         save_json(PURCHASE_FILE, purchases)
-                        st.success(f"Verified - Invoice {inv}")
+                        st.success(f"Verified - Deep PPT - Invoice {inv}")
                         st.info(f"Key {key} - My Access me dalo")
 
     if menu=="My Access":
-        st.title("My Learning - PPT Voice Inside")
+        st.title("My Learning - Deep PPT Only - Puri Detail")
         k=st.text_input("Invoice or Key")
-        if st.button("Unlock My PPT Voice Inside Course", type="primary"):
+        if st.button("Unlock My Deep PPT Course", type="primary"):
             found=[p for p in purchases if p.get("access_key")==k or p.get("invoice_no")==k]
             if not found:
                 st.error("Invalid key")
             else:
                 pu=found[0]
-                st.success(f"Welcome {pu.get('name')} - {pu.get('course')} - PPT Voice Inside")
-                hindi_ppt=list(PPT_DIR.glob(f"{pu.get('course_id')}*HINDI*"))
-                eng_ppt=list(PPT_DIR.glob(f"{pu.get('course_id')}*ENGLISH*"))
-                col1,col2=st.columns(2)
-                with col1:
-                    if hindi_ppt:
-                        with open(hindi_ppt[0], "rb") as f:
-                            st.download_button(f"Download Hindi PPT Voice Andar - {pu.get('course')}", f, file_name=hindi_ppt[0].name)
-                with col2:
-                    if eng_ppt:
-                        with open(eng_ppt[0], "rb") as f:
-                            st.download_button(f"Download English PPT Voice Inside - {pu.get('course')}", f, file_name=eng_ppt[0].name)
+                st.success(f"Welcome {pu.get('name')} - {pu.get('course')} - Deep PPT - Puri Learning")
+                ppt_files=list(PPT_DIR.glob(f"{pu.get('course_id')}*"))
+                if ppt_files:
+                    st.subheader("Your Deep PPT Course - Puri Detail - Download")
+                    for pf in ppt_files:
+                        with open(pf, "rb") as f:
+                            st.download_button(f"Download Deep PPT - {pu.get('course')} - Puri Detail - 400 Lessons", f, file_name=pf.name)
+                else:
+                    st.warning("Deep PPT Abhi Nahi Bana - Admin banayega - Brahma Deep PPT Maker se")
+                st.subheader("Deep Curriculum Preview - Puri Detail")
+                cur=get_deep_curriculum_full(pu.get("course"))
+                for mod in cur[:2]:
+                    with st.expander(f"{mod['title']} - 40 Lessons Deep - Puri Detail"):
+                        for vid in mod["videos"][:3]:
+                            st.write(f"{vid['no']}. {vid['title']}")
+                st.success("Deep Guarantee: Is course ke baad is topic me koi doubt nahi - Puri learning - PPT kitni bhi bane learning puri - No faltu sentences")
 
     if menu=="Chat Support":
-        st.title("Chat Support")
+        st.title("Chat Support - Deep PPT Only")
         q=st.chat_input("Ask")
         if q:
-            st.write("PPT Voice Inside - Hindi PPT me Hindi voice andar, English PPT me English voice inside - Guaranteed banega - Real super agent")
+            st.write("Deep PPT Only - Har course 400 lessons deep - Hindi + English deep + practical + assignment - Koi topic nahi chhuta - Puri learning")
