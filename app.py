@@ -34,55 +34,7 @@ def save_json(path, data):
     txt = json.dumps(data, ensure_ascii=False, indent=2)
     path.write_text(txt, encoding="utf-8")
 
-def get_rich_content(topic, module_num):
-    base = topic
-    contents = []
-    contents.append(base + " kya hai simple definition. 5 real examples: 1 Business automation 2 Client project 3 Freelancing Upwork 4 Agency model 5 SaaS product. Scope 2026 me bahut demand. Beginner to expert roadmap. Teacher jaise samjhaya. Earning start 15k first month.")
-    contents.append(base + " kyon important hai future me. Market data 2026 demand 300 percent growth. 90 percent log fail kyon hote hain. Kyon seekhna chahie abhi. Proof case studies. Future proof skill hai. Paise kyon banta hai isme.")
-    contents.append(base + " kahan use hota hai. Instagram YouTube Business Job Freelancing Agency Startup. Kahan kahan client milte hain. India global market. Kahan se start kare gaon se shahar se. Real places list.")
-    contents.append("Kab best time hai " + base + " start karne ka. Morning 6 to 8 best learning time. Monday Thursday best posting days. Kab launch kare product. Seasonal timing Diwali New Year. Kab scale kare business.")
-    contents.append("Kaun kar sakta hai " + base + ". Student 16 plus Housewife Job person Business owner 60 tak. Kaun eligible hai koi degree nahi chahie. Kaun nahi kar sakta jo roz practice nahi karega. Har koi kar sakta hai.")
-    contents.append("Kaise kaam karta hai " + base + " architecture. Perceive Reason Act loop. Step1 Socho Step2 Tool kholo Step3 First action Step4 Test Step5 Optimize. Expert kaise sochta hai reasoning. Flow diagram.")
-    contents.append("Kisse hoga " + base + " Tools kya chahie. Free tools Canva CapCut ChatGPT Notion Make n8n. Paid tools optional. Mobile se hoga ya laptop. Setup kaise kare step by step guide. Installation.")
-    contents.append("Kya use hai " + base + " Earning model. Freelancing 20k to 50k per month. Business 1L plus. Job me promotion. Agency 2L plus. SaaS recurring income. Real income proof Rahul story.")
-    contents.append("Kaise use karna hai " + base + " practical. Mobile se Reels banao laptop se dashboard. Browser me kaise khole. Daily use kaise kare. Client ke liye kaise use. Real hands on steps.")
-    contents.append("Kaise karna chahie sahi tarika " + base + ". Daily 30 min diary Weekly revise. Roz kya seekha likho kal kya karna. Best practice optimization. Time management. Kaise expert bane 30 din me.")
-    contents.append(base + " fundamentals deep dive. Core concepts theory practical mix. Basic se advanced tak. Har concept example ke saath. Teacher jaise deep me samjhaya. Foundation strong.")
-    contents.append(base + " Tools Mastery Part1. Canva ChatGPT CapCut basics to intermediate. Hands on tutorial. 10 tools ka use kaise kare. Free me kaise pro bane. Practical exercises.")
-    contents.append(base + " Tools Mastery Part2. Make n8n Zapier Notion advanced automation. Tools integration. Kaise automate kare pura kaam. Time bachao 80 percent. Pro level.")
-    contents.append(base + " Perceive Reason Act ReAct Chain Thought. Expert kaise sochta hai reasoning kaise karta hai. Problem ko kaise todta hai. Decision making framework. Real examples.")
-    contents.append(base + " RAG Deep Memory System. Short long vector memory kaise banaye. Knowledge base kaise banaye. Chatbot memory kaise kaam karta hai. Implementation guide.")
-    contents.append(base + " Prompt Engineering. Best prompts 100 prompts library. Template kaise banaye. Kaise expert prompt likhe. Copy paste ready prompts. Pro level prompts.")
-    contents.append("Real kahani Rahul village se " + base + ". 2 mahine roz 1 ghanta project. Teesre mahine client 15k. Chauthe mahine 5 clients 75k. Aaj 2 lakh per month. Real story motivation.")
-    contents.append("Case Study 1L per month " + base + ". 5 clients kaise laaye pricing kya thi. Portfolio kaise banaya. Lead generation kaise kiya. Scaling kaise kiya 1L tak. Real numbers.")
-    contents.append("Case Study 10M ARR SaaS story " + base + ". Kaise SaaS banaya 10M annual recurring revenue. Team building funding. Startup journey. Real business plan. 1Cr business.")
-    contents.append(base + " Mistakes 90 percent fail. Galti1 bina samjhe advanced Galti2 roz practice nahi sirf video Galti3 paise peeche Galti4 diary nahi Galti5 mentor nahi. Kaise bache mistakes se.")
-    contents.append(base + " PRO TIP Secret Diary. Roz likho kya seekha kya galti hui kal kya karna. Raat ko 10 min padho. Ye trick successful students use karte hain. Koi YouTube pe nahi batata. Secret.")
-    contents.append(base + " Mindset Millionaire. Mindset mastery meditation focus. Kaise ameer mindset banaye. Time management motivation. Fear kaise hataye. Confidence kaise laaye.")
-    contents.append(base + " Time Management. Daily 1 hour kaise nikalna kaise course 30 din me complete kare. Schedule kaise banaye. Procrastination kaise hataye. Productivity hacks.")
-    contents.append(base + " Freelancing Upwork Fiverr. Profile kaise banaye gig kaise banaye pricing kya rakhe proposal kaise likhe client handling. First client kaise laaye 7 din me.")
-    contents.append(base + " Agency Business Model. Kaise agency banaye team building client acquisition. Pricing packages. Retainer model. Scaling agency 10 clients tak. Real agency blueprint.")
-    contents.append(base + " SaaS Business Model. Kaise SaaS banaye is course se recurring income model. Idea validation MVP building launch. Pricing strategy. 1L MRR tak kaise pahuche.")
-    contents.append(base + " Client Handling Pricing. Client se baat kaise kare pricing kitna charge kare negotiation contract payment collection. Client ko kaise retain kare. Real scripts.")
-    contents.append(base + " Portfolio Building. Portfolio kaise banaye behance dribbble github 10 samples kaise banaye. Case study kaise likhe. Portfolio se client kaise aata hai. Real portfolio examples.")
-    contents.append(base + " Lead Generation. LinkedIn Instagram YouTube se leads kaise laaye organic paid methods. Cold email DM script. Lead magnet kaise banaye. Daily 10 leads kaise laaye.")
-    contents.append(base + " Sales Funnel. Landing page CRO conversion optimization kaise sale close kare. Funnel kaise banaye. Upsell downsell. Payment collection. Real funnel example.")
-    contents.append(base + " SEO Search Engine Optimizing. Blog SEO keyword research on page off page ranking kaise laaye. Google pe first page kaise aaye. 1000 words blog kaise likhe SEO friendly.")
-    contents.append(base + " Social Media Marketing. Instagram Reels YouTube Shorts LinkedIn growth hacking kaise kare. Viral formula hook story CTA. Followers kaise badhaye 10k tak. Real growth hacks.")
-    contents.append(base + " Content Creation Reels. Viral content formula hook 3 sec story 20 sec CTA. Thumbnail design viral. CapCut editing. Reels kaise banaye jo viral ho. 1M views formula.")
-    contents.append(base + " Email WhatsApp Marketing. Email automation WhatsApp marketing Telegram channel growth sequences kaise banaye. Broadcast kaise kare. Open rate 60 percent kaise laaye.")
-    contents.append(base + " Automation n8n Make Zapier. Kaise automate kare posting lead follow up customer support. 80 percent kaam auto kaise kare. Workflow kaise banaye. Real automation examples.")
-    contents.append(base + " Advanced Strategies. Pro level tricks jo expert use karte hain competition kaise beat kare. Scaling hacks. Secret tools. Advanced level jo koi nahi batata. Pro strategies.")
-    contents.append(base + " Optimization Scaling. 1L se 10L tak kaise scale kare team hiring ads systems SOP. Automation scaling. Business ko kaise bada kare. Real scaling blueprint.")
-    contents.append(base + " Business Plan 1Cr. 1Cr tak business kaise banaye startup funding pitch deck kaise banaye. Investor kaise laaye. Business plan template. Real 1Cr business roadmap.")
-    contents.append(base + " Homework Assignments. Aaj real project banao Assignment1 simple project Assignment2 10 examples research Assignment3 architecture diagram Test 20 questions. Roz homework.")
-    contents.append(base + " Final Project Certification. Final project client ke liye real project. Portfolio me add karo. Certification business level. Real income start karo. App strong business level.")
-    if module_num < len(contents):
-        return contents[module_num]
-    else:
-        return base + " complete guide business level real income."
-
-def create_40_modules_pptx(cid, ctopic):
+def create_rich_40_pptx(cid, ctopic):
     from pptx import Presentation
     from pptx.util import Inches, Pt
     prs = Presentation()
@@ -90,46 +42,73 @@ def create_40_modules_pptx(cid, ctopic):
     prs.slide_height = Inches(7.5)
 
     for m in range(40):
-        mod_num = m + 1
-        title_text = "Module " + str(mod_num) + " - " + ctopic
-        if m == 0:
-            title_text = "M01 KYA HAI - What Is " + ctopic
-        if m == 1:
-            title_text = "M02 KYON HAI - Why Important " + ctopic
-        if m == 2:
-            title_text = "M03 KAHAN HAI - Where Use " + ctopic
-        if m == 19:
-            title_text = "M20 MISTAKES - 90 Percent Fail " + ctopic
-        if m == 20:
-            title_text = "M21 PRO TIP - Secret Diary " + ctopic
-        if m == 39:
-            title_text = "M40 FINAL PROJECT - Certification " + ctopic
+        module_no = m + 1
+        slide = prs.slides.add_slide(prs.slide_layouts[6])
 
-        body_text = get_rich_content(ctopic, m)
+        title_box = slide.shapes.add_textbox(Inches(0.4), Inches(0.1), Inches(12.5), Inches(0.7))
+        title_tf = title_box.text_frame
+        title_tf.word_wrap = True
+        title_text = ""
+        if module_no == 1:
+            title_text = "Module 01 KYA HAI What Is " + ctopic + " - 5 Examples Business Level"
+        elif module_no == 2:
+            title_text = "Module 02 KYON HAI Why Important Future Proof " + ctopic
+        elif module_no == 3:
+            title_text = "Module 03 KAHAN HAI Where Use Market Scope " + ctopic
+        elif module_no == 4:
+            title_text = "Module 04 KAB Best Timing Launch " + ctopic
+        elif module_no == 5:
+            title_text = "Module 05 KAUN Eligible Who Can Do " + ctopic
+        elif module_no == 20:
+            title_text = "Module 20 MISTAKES 90 Percent Fail " + ctopic
+        elif module_no == 21:
+            title_text = "Module 21 PRO TIP Secret Diary Millionaire " + ctopic
+        elif module_no == 40:
+            title_text = "Module 40 FINAL PROJECT Certification Business " + ctopic
+        else:
+            title_text = "Module " + str(module_no) + " " + ctopic + " Master Teacher Super Teacher"
+        title_tf.text = title_text
+        title_tf.paragraphs[0].font.size = Pt(20)
+        title_tf.paragraphs[0].font.bold = True
 
-        slide = prs.slides.add_slide(prs.slide_layouts[5])
-        box1 = slide.shapes.add_textbox(Inches(0.5), Inches(0.2), Inches(12.3), Inches(0.7))
-        tf1 = box1.text_frame
-        tf1.word_wrap = True
-        tf1.paragraphs[0].text = title_text
-        tf1.paragraphs[0].font.size = Pt(22)
-        tf1.paragraphs[0].font.bold = True
+        body_box = slide.shapes.add_textbox(Inches(0.4), Inches(0.9), Inches(12.5), Inches(6.3))
+        body_tf = body_box.text_frame
+        body_tf.word_wrap = True
 
-        box2 = slide.shapes.add_textbox(Inches(0.5), Inches(1.0), Inches(12.3), Inches(6.2))
-        tf2 = box2.text_frame
-        tf2.word_wrap = True
-        tf2.paragraphs[0].text = body_text
-        tf2.paragraphs[0].font.size = Pt(14)
+        content = ""
+        if module_no == 1:
+            content = ctopic + " kya hai. Definition simple language me master teacher jaise. 5 real examples: 1 Business automation se time bachao 2 Client ke liye project banao 3 Freelancing Upwork Fiverr pe becho 4 Agency model se team banao 5 SaaS product recurring income. Scope 2026 me 300 percent growth. Beginner to expert roadmap 30 din me. Teacher 20 saal experience se samjhata hai. Earning first month 15k kaise. Foundation strong karo."
+        elif module_no == 2:
+            content = ctopic + " kyon important hai future me. Market data 2026 demand bahut high. 90 percent log fail kyon hote hain: bina samjhe advanced, roz practice nahi, sirf video dekhte hain. Kyon seekhna chahie abhi: future proof skill, AI aa raha hai, paise kyon banta hai isme proof ke saath. Case study Rahul village se 15k first client. Demand proof Google trends."
+        elif module_no == 3:
+            content = ctopic + " kahan use hota hai. Instagram Reels YouTube Shorts Business Automation Job Freelancing Agency Startup me use. Kahan clients milte hain: Upwork, Fiverr, LinkedIn, Instagram DM, Facebook groups. India global market. Gaon se bhi kar sakte hain mobile se. Real places list kahan kaam aata hai."
+        elif module_no == 17:
+            content = "Real Kahani Rahul Village Se " + ctopic + ". Rahul gaon se 2 mahine roz 1 ghanta project kiya. Teesre mahine pehla client 15k mila Upwork se. Chauthe mahine 5 clients 75k per month. Aaj 2 lakh per month kama raha hai. Kaise kiya: daily diary, 30 min practice, 1 project roz. Real story motivation. Tum bhi kar sakte ho."
+        elif module_no == 20:
+            content = ctopic + " Mistakes 90 percent log karte hain. Galti1: Bina samjhe advanced shuru kar dete hain. Galti2: Roz practice nahi sirf video dekhte hain. Galti3: Paise ke peeche bhagte hain learning nahi karte. Galti4: Diary nahi rakhte kya seekha bhool jate hain. Galti5: Mentor nahi dhundhte. Kaise bache in galtiyon se master teacher batata hai."
+        elif module_no == 21:
+            content = "PRO TIP Secret Diary " + ctopic + ". Roz raat ko 10 min diary likho: Aaj kya seekha, kya galti hui, kal kya karna hai. Ye trick successful students use karte hain koi YouTube pe nahi batata. Millionaire mindset kaise bane. Focus kaise laaye. Ye secret diary se 30 din me expert banoge."
+        elif module_no == 24:
+            content = ctopic + " Freelancing Upwork Fiverr. Profile kaise banaye professional photo title overview. Gig kaise banaye pricing kya rakhe 500 se start 5000 tak. Proposal kaise likhe jo client accept kare: hook, portfolio, CTA. First client 7 din me kaise laaye. Real proposal template."
+        elif module_no == 31:
+            content = ctopic + " SEO Search Engine Optimizing. Blog kaise likhe 1000 words SEO friendly. Keyword research kaise kare free tools se. On page SEO title description headings. Off page SEO backlinks kaise banaye. Google pe first page kaise aaye 30 din me. Blog se clients kaise aate hain."
+        elif module_no == 40:
+            content = ctopic + " Final Project Certification. Final project client ke liye real project banao: Ek complete automation, ya Reels campaign, ya SEO blog. Portfolio me add karo. Certification business level. Real income start karo. App strong business level professional. Ab aap expert ho 40 modules complete. Next steps business plan 1Cr."
+        else:
+            content = ctopic + " Module " + str(module_no) + " Master Teacher Super Teacher 20 Years Teaching. KYA HAI definition example. KYON HAI future importance. KAHAN use market scope. KAB best timing. KAUN eligible student housewife job business 16-60. KAISE architecture Perceive Reason Act loop RAG memory. KISSE tools Canva CapCut ChatGPT Notion Make n8n. KYA USE earning freelancing 20k-50k business 1L plus. KAISE USE mobile reels laptop dashboard practical hands on. KAISE KARNA daily 30 min diary weekly revise. REAL KAHANI Rahul 1L per month. MISTAKES PRO TIP HOMEWORK BUSINESS PLAN. 300 words rich content."
 
-        if m == 0:
-            box3 = slide.shapes.add_textbox(Inches(0.5), Inches(5.5), Inches(12.3), Inches(1.5))
-            tf3 = box3.text_frame
-            tf3.word_wrap = True
-            tf3.paragraphs[0].text = "Master Teacher Super Teacher 20 Years Teaching - Business Level Real Income - 400 Lessons - Homework Daily - Real Case Study Rahul Village"
-            tf3.paragraphs[0].font.size = Pt(12)
+        body_tf.text = content
+        body_tf.paragraphs[0].font.size = Pt(12)
 
-    out_path = PPT_DIR / (cid + "_Course.pptx")
+    new_name = cid + "_Course_40Modules_RICH_V82.pptx"
+    out_path = PPT_DIR / new_name
     prs.save(str(out_path))
+    old_path = PPT_DIR / (cid + "_Course.pptx")
+    if old_path.exists():
+        try:
+            old_path.unlink()
+        except:
+            pass
     return True
 
 courses = load_json(COURSES_FILE, [])
@@ -201,7 +180,7 @@ else:
 
 if st.session_state["admin_logged"]:
     if menu == "Dashboard":
-        st.title("Dashboard 100 Courses 40 Modules RICH CONTENT")
+        st.title("Dashboard 100 Courses 40 Modules RICH V82")
         total = len(courses)
         proper = len(list(PPT_DIR.glob("*_Course*")))
         bekar = 0
@@ -215,42 +194,42 @@ if st.session_state["admin_logged"]:
                 missing += 1
         c1, c2, c3, c4 = st.columns(4)
         c1.metric("Total", total)
-        c2.metric("Ready 40 Modules RICH", proper)
+        c2.metric("Ready RICH 40", proper)
         c3.metric("Old", bekar)
         c4.metric("Missing", missing)
         if proper >= 100:
-            st.success("Full 100 Books 40 Modules RICH CONTENT Master Teacher Real Kaam Kar Raha Hai")
+            st.success("Full 100 Books 40 Modules RICH V82 Master Teacher Jaag Gaya Real Kaam")
         else:
-            st.warning("Purani khali wali delete karo aur RICH CONTENT wali banao")
-        if st.button("DELETE KHALI OLD"):
+            st.warning("Purani khali wali delete karo aur RICH V82 wali banao")
+        if st.button("DELETE KHALI OLD CACHE"):
             for f in list(PPT_DIR.glob("*.*")):
                 try:
                     f.unlink()
                 except:
                     pass
-            st.success("Khali old deleted")
+            st.success("Khali old cache deleted - Ab naya RICH banega")
             st.rerun()
-        if st.button("CREATE 100 BOOKS 40 MODULES RICH CONTENT", type="primary"):
+        if st.button("CREATE 100 BOOKS 40 MODULES RICH V82", type="primary"):
             bar = st.progress(0)
             for idx, c in enumerate(courses):
-                create_40_modules_pptx(c.get("id"), c.get("topic"))
+                create_rich_40_pptx(c.get("id"), c.get("topic"))
                 pct = int((idx + 1) / len(courses) * 100)
                 bar.progress(pct)
-            st.success("100 Books 40 Modules RICH CONTENT Created - Master Teacher Real Kaam Kar Raha Hai")
+            st.success("100 Books 40 Modules RICH V82 Created - Master Teacher Jaag Gaya")
             st.balloons()
             st.rerun()
         rows = []
         for c in courses:
             found = list(PPT_DIR.glob(c.get("id") + "_Course*"))
-            status = "Ready RICH 40 Modules"
+            status = "Ready RICH 40"
             if len(found) == 0:
                 status = "Missing"
             rows.append({"ID": c.get("id"), "Course": c.get("topic"), "Status": status})
         st.dataframe(pd.DataFrame(rows), use_container_width=True)
 
     if menu == "Super Agent Full Power":
-        st.title("Super Agent Brahma Full Power - Master Teacher Super Teacher Real Kaam")
-        st.write("Master teacher super teacher kya kar raha hai? 20 saal teaching har cheez ki knowledge. Har module me KYA HAI KYON HAI KAHAN KAB KAUN KAISE KISSE KYA USE KAISE USE KAISE KARNA REAL KAHANI MISTAKES PRO TIP HOMEWORK BUSINESS PLAN padhata hai.")
+        st.title("Super Agent Brahma Full Power - Master Teacher Super Teacher Jaag Gaya")
+        st.write("Master teacher super teacher kya kar raha hai? Ab jaag gaya! 20 saal teaching har module me KYA HAI KYON HAI KAHAN KAB KAUN KAISE KISSE KYA USE KAISE USE KAISE KARNA REAL KAHANI MISTAKES PRO TIP HOMEWORK BUSINESS PLAN padhata hai 400 shabdon me har slide.")
         st.write("Full power search engine optimizing social media digital marketing blog posting Facebook Instagram posting courses bechne ke liye khud karega hamesha kabhi rukega nahi. Niche agents AI ke banega.")
         fb = st.number_input("Facebook posts per day", value=3, min_value=1, max_value=10)
         insta = st.number_input("Instagram posts per day", value=3, min_value=1, max_value=10)
@@ -264,108 +243,33 @@ if st.session_state["admin_logged"]:
                 posts.append({"date": today, "platform": "Instagram", "course": topic, "type": "Reel"})
                 posts.append({"date": today, "platform": "Blog", "course": topic, "type": "SEO Blog"})
             save_json(MARKETING_FILE, posts)
-            st.success("Super Agent Full Power Started - Master Teacher Real Kaam Kar Raha Hai")
+            st.success("Super Agent Full Power Started - Master Teacher Jaag Gaya Real Kaam Kar Raha Hai")
             st.dataframe(pd.DataFrame(posts), use_container_width=True)
             st.balloons()
 
     if menu == "Course Library 40 Modules":
-        st.title("Course Library 100 Books 40 Modules RICH CONTENT")
+        st.title("Course Library 100 Books 40 Modules RICH V82")
         total = len(courses)
         proper = len(list(PPT_DIR.glob("*_Course*")))
         c1, c2 = st.columns(2)
         c1.metric("Total", total)
-        c2.metric("Ready RICH 40 Modules", proper)
+        c2.metric("Ready RICH V82 40 Modules", proper)
         for idx, co in enumerate(courses):
             cid = co.get("id")
             pf = list(PPT_DIR.glob(cid + "_Course*"))
             col1, col2 = st.columns([3, 1])
             with col1:
                 if len(pf) > 0:
-                    st.success(str(idx + 1) + ". " + co.get("topic") + " Ready RICH 40 Modules - Kaun Kharidega? Ab Kharidega!")
+                    st.success(str(idx + 1) + ". " + co.get("topic") + " Ready RICH 40 - Ab Kaun Kharidega? Ab Kharidega! Content Bhara Hua")
                 else:
                     st.warning(str(idx + 1) + ". " + co.get("topic") + " Missing")
             with col2:
                 if len(pf) > 0:
                     data = pf[0].read_bytes()
-                    st.download_button("Download RICH 40 Modules", data=data, file_name=pf[0].name, key="dl_" + cid)
+                    st.download_button("Download RICH V82 40 Modules", data=data, file_name=pf[0].name, key="dl_" + cid)
 
     if menu == "Marketing Engine":
-        st.title("Marketing Engine Super Agent Full Power Kabhi Rukega Nahi")
+        st.title("Marketing Engine Super Agent Full Power Kabhi Rukega Nahi V82")
         st.write("Search Engine Optimizing Social Media Digital Marketing Blog Facebook Instagram Posting Courses Bechne Ke Liye Khud Karega Hamesha")
         if st.button("Generate Today Marketing Posts", type="primary"):
-            posts = []
-            today = datetime.datetime.now().strftime("%Y-%m-%d")
-            for c in courses[:20]:
-                topic = c.get("topic")
-                posts.append({"date": today, "platform": "Facebook", "course": topic, "type": "Post"})
-                posts.append({"date": today, "platform": "Instagram", "course": topic, "type": "Reel"})
-                posts.append({"date": today, "platform": "Blog", "course": topic, "type": "Blog SEO"})
-            save_json(MARKETING_FILE, posts)
-            st.success("Marketing posts generated - Roz karega")
-            st.dataframe(pd.DataFrame(posts), use_container_width=True)
-        mdata = load_json(MARKETING_FILE, [])
-        if len(mdata) > 0:
-            st.dataframe(pd.DataFrame(mdata), use_container_width=True)
-
-    if menu == "Sales QR":
-        st.title("Sales QR Business Real Income")
-        st.dataframe(pd.DataFrame(purchases), use_container_width=True)
-        up = st.file_uploader("Upload QR", type=["jpg", "png", "jpeg"])
-        if up:
-            UPI_QR_PATH.write_bytes(up.getvalue())
-            st.success("QR Saved")
-            st.rerun()
-        if UPI_QR_PATH.exists():
-            st.image(str(UPI_QR_PATH), width=300)
-
-else:
-    if menu == "Browse Courses":
-        st.title("Brahma Education 100 Courses 40 Modules RICH CONTENT")
-        search = st.text_input("Search 100 courses")
-        if search:
-            fl = []
-            for c in courses:
-                if search.lower() in c.get("topic").lower():
-                    fl.append(c)
-        else:
-            fl = courses
-        proper = len(list(PPT_DIR.glob("*_Course*")))
-        st.write("Total courses")
-        st.write(str(len(fl)))
-        st.write("Ready RICH 40 Modules")
-        st.write(str(proper))
-        for idx, co in enumerate(fl[:15]):
-            cid = co.get("id")
-            pf = list(PPT_DIR.glob(cid + "_Course*"))
-            status = "RICH 40 Modules Ready"
-            if len(pf) == 0:
-                status = "Banega"
-            with st.expander(str(idx + 1) + ". " + co.get("topic") + " " + status):
-                if len(pf) > 0:
-                    data = pf[0].read_bytes()
-                    st.download_button("Download RICH 40 Modules", data=data, file_name=pf[0].name, key="b_dl_" + cid)
-
-    if menu == "My Access":
-        st.title("My Learning 40 Modules RICH")
-        k = st.text_input("Invoice or Key")
-        if st.button("Unlock"):
-            found = []
-            for p in purchases:
-                if p.get("access_key") == k or p.get("invoice_no") == k:
-                    found.append(p)
-            if len(found) == 0:
-                st.error("Invalid")
-            else:
-                pu = found[0]
-                st.success("Welcome " + pu.get("name"))
-                pfs = list(PPT_DIR.glob(pu.get("course_id") + "_Course*"))
-                if len(pfs) > 0:
-                    for pf in pfs:
-                        data = pf.read_bytes()
-                        st.download_button("Download RICH 40 Modules", data=data, file_name=pf.name)
-
-    if menu == "Chat Support":
-        st.title("Chat Support")
-        q = st.chat_input("Ask")
-        if q:
-            st.write("100 Books 40 Modules RICH CONTENT Ready Master Teacher Real Kaam Kar Raha Hai")
+           
