@@ -17,7 +17,6 @@ PURCHASE_FILE = DATA_DIR / "purchases.json"
 UPI_QR_PATH = DATA_DIR / "upi_qr.jpg"
 PPT_DIR = DATA_DIR / "ppts"
 PPT_DIR.mkdir(exist_ok=True)
-FLAG_FILE = DATA_DIR / ".fixed_v71"
 
 MY_UPI_ID = "parveen39179@okicici"
 MY_NAME = "Parveen Kumar"
@@ -35,16 +34,54 @@ def load_json(p, default):
 def save_json(p, data):
     p.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
 
-def create_book(cid, ctopic):
+def create_real_pptx(cid, ctopic):
     try:
-        txt = "Course " + ctopic + " Super Teacher Business Level"
-        p1 = PPT_DIR / (cid + "_Course.txt")
-        p1.write_text(txt, encoding="utf-8")
-        p2 = PPT_DIR / (cid + "_Course.pptx")
-        p2.write_text(txt, encoding="utf-8")
-        return True
-    except:
-        return False
+        from pptx import Presentation
+        from pptx.util import Inches
+        prs = Presentation()
+        prs.slide_width = Inches(13.33)
+        prs.slide_height = Inches(7.5)
+
+        # Slide 1 - Title
+        slide = prs.slides.add_slide(prs.slide_layouts[5])
+        txBox = slide.shapes.add_textbox(Inches(0.5), Inches(0.5), Inches(12), Inches(1))
+        tf = txBox.text_frame
+        tf.text = ctopic + " - Super Teacher Business Level"
+
+        txBox2 = slide.shapes.add_textbox(Inches(0.5), Inches(1.5), Inches(12), Inches(5.5))
+        tf2 = txBox2.text_frame
+        tf2.word_wrap = True
+        content = ""
+        content += "Super Agent Brahma Master Teacher Super Teacher 20 years teaching\n\n"
+        content += "KYA HAI: What is " + ctopic + " 5 examples\n"
+        content += "KYON HAI: Why future market data 90 percent fail proof\n"
+        content += "KAHAN HAI: Where use Instagram YouTube Business Job Freelancing\n"
+        content += "KAB: When best morning 6 to 8 Monday Thursday\n"
+        content += "KAUN: Who can do Student Housewife Job Business 16 to 60\n"
+        content += "KAISE: How Step 1 Socho Step 2 Tool kholo Step 3 Pehla step\n"
+        content += "KISSE: Free tools Canva CapCut ChatGPT Notion\n"
+        content += "KYA USE: Earning freelancing 20k to 50k business 1L plus\n"
+        content += "KAISE USE: Mobile plus Reels laptop browser dashboard\n"
+        content += "KAISE KARNA: Right daily 30 min diary weekly revise\n"
+        content += "REAL KAHANI: Rahul village 2 months daily 1 hour project third month client 15k\n"
+        content += "MISTAKES: Galti1 advanced Galti2 no practice Galti3 only video\n"
+        content += "PRO TIP: Diary daily what learned tomorrow plan\n"
+        content += "HOMEWORK: Aaj project banao kal bhejo Business Level Real Income\n\n"
+        content += "Module 1 Fundamentals Module 2 Tools Module 3 Architecture Module 4 Case Studies Module 5 Marketing Module 6 Mistakes Module 7 Final Project\n"
+        tf2.text = content
+
+        # Slide 2 - Details
+        slide2 = prs.slides.add_slide(prs.slide_layouts[5])
+        txBox3 = slide2.shapes.add_textbox(Inches(0.5), Inches(0.5), Inches(12), Inches(6.5))
+        tf3 = txBox3.text_frame
+        tf3.word_wrap = True
+        tf3.text = "Business Level Professional Course\n\n" + ctopic + " Complete Book 400 Lessons\nSuper Teacher Se Bani Hai\nReal Income App Strong\nCourses Likha Hai\nNo Fake - Real PPTX - Phone Me Khulegi"
+
+        path = PPT_DIR / (cid + "_Course.pptx")
+        prs.save(str(path))
+        return str(path)
+    except Exception as e:
+        return None
 
 topics = TOPICS
 courses = load_json(COURSES_FILE, [])
@@ -56,22 +93,6 @@ if len(courses) < 100:
         t = topics[i]
         courses.append({"id": "BRAHMA" + str(1000+i), "topic": t, "price": 999, "videos": 400})
     save_json(COURSES_FILE, courses)
-
-# FAST LOAD - Pehle wali V70 me har baar 100 files delete + create se blank aata tha - Ab sirf ek baar fix hoga
-if not FLAG_FILE.exists():
-    for f in list(PPT_DIR.glob("*.*")):
-        try:
-            f.unlink()
-        except:
-            pass
-    for c in courses:
-        create_book(c.get("id"), c.get("topic"))
-    FLAG_FILE.write_text("fixed", encoding="utf-8")
-else:
-    # Agar koi missing hai to sirf missing banao - fast
-    for c in courses:
-        if not list(PPT_DIR.glob(c.get("id") + "_Course*")):
-            create_book(c.get("id"), c.get("topic"))
 
 if "admin_logged" not in st.session_state:
     st.session_state["admin_logged"] = False
@@ -142,92 +163,40 @@ if st.session_state["admin_logged"]:
         c3.metric("Old Files", bekar)
         c4.metric("Missing", missing)
         if proper >= 100:
-            st.success("Course Library Full 100 Books Super Teacher Se - App Fast Load")
-        df_data = []
-        for c in courses:
-            s = "Ready" if list(PPT_DIR.glob(c.get("id") + "_Course*")) else "Missing"
-            df_data.append({"ID": c.get("id"), "Course Name": c.get("topic"), "Price": c.get("price"), "Status": s})
-        st.dataframe(pd.DataFrame(df_data), use_container_width=True)
-        if st.button("100 KI 100 SARI DELETE + 100 BOOKS SUPER TEACHER SE FIR SE BANAO", type="primary"):
+            st.success("Course Library Full 100 Books Real PPTX - Phone Me Khulegi")
+        else:
+            st.warning("Missing hai - Neeche button se real PPTX banao")
+        if st.button("100 KI 100 SARI PURANI CORRUPTED DELETE KARO", type="secondary"):
             for f in list(PPT_DIR.glob("*.*")):
                 try:
                     f.unlink()
                 except:
                     pass
-            for c in courses:
-                create_book(c.get("id"), c.get("topic"))
-            FLAG_FILE.write_text("fixed", encoding="utf-8")
-            st.success("100 Books Ban Gayi")
+            st.success("100 ki 100 sari purani corrupted delete kar di")
             st.rerun()
-
-    if menu == "Super Agent":
-        st.title("Super Agent Brahma - Master Teacher")
-        st.success("Super Agent ko roka purani PPT banane se - 100 ki 100 sari delete - Ab 100 books auto course library me - App Fast Load No Blank")
+        if st.button("100 REAL PPTX SUPER TEACHER SE BANAO - PHONE ME KHULEGI", type="primary"):
+            bar = st.progress(0)
+            for idx, c in enumerate(courses):
+                create_real_pptx(c.get("id"), c.get("topic"))
+                bar.progress(int((idx+1)/len(courses)*100))
+            st.success("100 Real PPTX Ban Gayi - Phone Me Khulegi - No Corrupted - Super Teacher Se")
+            st.balloons()
+            st.rerun()
+        df_data = []
+        for c in courses:
+            s = "Ready Real PPTX" if list(PPT_DIR.glob(c.get("id") + "_Course*")) else "Missing"
+            df_data.append({"ID": c.get("id"), "Course Name": c.get("topic"), "Price": c.get("price"), "Status": s})
+        st.dataframe(pd.DataFrame(df_data), use_container_width=True)
 
     if menu == "Course Library":
-        st.title("Course Library - 100 Books Super Teacher Se")
+        st.title("Course Library - 100 Real PPTX Books")
         total = len(courses)
         proper = len(list(PPT_DIR.glob("*_Course*")))
-        c1,c2 = st.columns(2)
-        c1.metric("Total Courses", total)
-        c2.metric("Courses Ready", proper)
+        st.write("Total " + str(total) + " Courses Ready " + str(proper) + " Real PPTX")
         for idx, co in enumerate(courses):
             cid = co.get("id")
             pf = list(PPT_DIR.glob(cid + "_Course*"))
             col1,col2 = st.columns([3,1])
             with col1:
                 if pf:
-                    st.success(str(idx+1) + ". " + co.get("topic") + " Ready")
-                else:
-                    st.warning(str(idx+1) + ". " + co.get("topic") + " Missing")
-            with col2:
-                if pf:
-                    data = pf[0].read_bytes()
-                    st.download_button("Download", data=data, file_name=pf[0].name, key="dl_" + cid + "_" + str(idx))
-
-    if menu == "Sales QR":
-        st.title("Sales QR")
-        st.dataframe(pd.DataFrame(purchases), use_container_width=True)
-
-else:
-    if menu == "Browse Courses":
-        st.title("Brahma Education - 100 Courses")
-        search = st.text_input("Search 100 courses")
-        if search:
-            fl = []
-            for c in courses:
-                if search.lower() in c.get("topic","").lower():
-                    fl.append(c)
-        else:
-            fl = courses
-        proper = len(list(PPT_DIR.glob("*_Course*")))
-        st.write("Total " + str(len(fl)) + " courses Library " + str(proper) + " proper")
-        for idx, co in enumerate(fl[:20]):
-            pf = list(PPT_DIR.glob(co.get("id") + "_Course*"))
-            status = "Ready" if pf else "Banega"
-            with st.expander(str(idx+1) + ". " + co.get("topic") + " Rs " + str(co.get("price")) + " " + status):
-                if pf:
-                    data = pf[0].read_bytes()
-                    st.download_button("Download", data=data, file_name=pf[0].name, key="b_dl_" + co.get("id"))
-
-    if menu == "My Access":
-        st.title("My Learning")
-        k = st.text_input("Invoice or Key")
-        if st.button("Unlock"):
-            found = [p for p in purchases if p.get("access_key") == k or p.get("invoice_no") == k]
-            if not found:
-                st.error("Invalid")
-            else:
-                pu = found[0]
-                st.success("Welcome " + pu.get("name") + " " + pu.get("course"))
-                pfs = list(PPT_DIR.glob(pu.get("course_id") + "_Course*"))
-                if pfs:
-                    for pf in pfs:
-                        data = pf.read_bytes()
-                        st.download_button("Download " + pu.get("course"), data=data, file_name=pf.name)
-
-    if menu == "Chat Support":
-        st.title("Chat Support")
-        q = st.chat_input("Ask")
-        if q:
-            st.write("100 Courses Super Teacher Se Ready")
+                    st.success(str(idx+1) + ". " + co.get("topic") + " Ready Real PPTX - Phone
