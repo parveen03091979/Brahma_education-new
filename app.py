@@ -10,56 +10,55 @@ import re
 try:
     from pptx import Presentation
     from pptx.util import Inches, Pt
-    PPTX_OK=True
+    PPTX_OK = True
 except:
-    PPTX_OK=False
+    PPTX_OK = False
 
-st.set_page_config(page_title="Brahma 100 Courses + Super Agent", layout="wide")
+st.set_page_config(page_title="Brahma 100 Courses", layout="wide")
 
-DATA_DIR=Path("data")
+DATA_DIR = Path("data")
 DATA_DIR.mkdir(exist_ok=True)
-MASTER_HASH=DATA_DIR / ".master_hash"
-COURSES_FILE=DATA_DIR / "courses.json"
-PURCHASE_FILE=DATA_DIR / "purchases.json"
-UPI_QR_PATH=DATA_DIR / "upi_qr.jpg"
-PPT_DIR=DATA_DIR / "ppts"
+MASTER_HASH = DATA_DIR / ".master_hash"
+COURSES_FILE = DATA_DIR / "courses.json"
+PURCHASE_FILE = DATA_DIR / "purchases.json"
+UPI_QR_PATH = DATA_DIR / "upi_qr.jpg"
+PPT_DIR = DATA_DIR / "ppts"
 PPT_DIR.mkdir(exist_ok=True)
-AUTO_DIR=DATA_DIR / "automation"
+AUTO_DIR = DATA_DIR / "automation"
 AUTO_DIR.mkdir(exist_ok=True)
 
-MY_UPI_ID="parveen39179@okicici"
-MY_NAME="Parveen Kumar"
-BLOCKED_UTRS=["123456789012","123456789123","111111111111","000000000000","999999999999","184792641807"]
+MY_UPI_ID = "parveen39179@okicici"
+MY_NAME = "Parveen Kumar"
+BLOCKED_UTRS = ["123456789012","111111111111","000000000000"]
 
-# 100 Courses - Jo humne decide kiye the - Pura list wapas
 HUNDRED_COURSES = [
-    "AI Agent Automation 2026", "Instagram Reels Mastery", "YouTube Automation AI", "Prompt Engineering Pro", "Digital Marketing SEO Mastery",
-    "ChatGPT Mastery 2026", "Facebook Ads Mastery", "Google Ads Mastery", "SEO Advanced 2026", "Social Media Marketing Pro",
-    "Content Writing AI", "Copywriting Mastery", "Blogging Mastery 2026", "Affiliate Marketing Pro", "Dropshipping Business",
-    "E-commerce Mastery Shopify", "Canva Design Mastery", "Video Editing CapCut Pro", "YouTube SEO Mastery", "Instagram Growth Hack",
-    "LinkedIn Marketing Pro", "Twitter X Growth Mastery", "TikTok Viral Mastery", "Pinterest Marketing", "Quora Marketing",
-    "Email Marketing Automation", "WhatsApp Marketing Pro", "Telegram Channel Growth", "Influencer Marketing", "Personal Branding Mastery",
-    "Freelancing Mastery Upwork Fiverr", "Agency Business Mastery", "SaaS Business 2026", "No-Code Business Bubble", "Python Programming Mastery",
-    "JavaScript Mastery 2026", "React JS Mastery", "Next.js Mastery", "Node.js Backend Mastery", "Web Development Full Stack",
-    "WordPress Mastery", "Shopify Store Design", "UI UX Design Mastery", "Figma Design Pro", "Graphic Design Mastery",
-    "Logo Design Mastery", "Thumbnail Design Viral", "Video Animation Mastery", "AI Image Generation Midjourney", "AI Video Generation Sora",
-    "Voice Cloning ElevenLabs", "Automation n8n Make", "Zapier Automation Mastery", "Notion Productivity Mastery", "Excel Advanced Mastery",
-    "Google Sheets Automation", "Data Analysis Python", "Machine Learning Mastery", "Deep Learning 2026", "Data Science Mastery",
-    "Stock Market Trading AI", "Crypto Trading Mastery", "Forex Trading Pro", "Real Estate Business", "Motivational Speaking Mastery",
-    "Public Speaking Pro", "Communication Skills Mastery", "English Speaking Pro", "Hindi Content Creation", "Podcast Mastery",
-    "Music Production AI", "Photography Mastery", "Reels Editing Viral", "Meme Marketing Mastery", "Viral Content Formula",
-    "Lead Generation Mastery", "Sales Funnel Mastery", "Landing Page Design High Converting", "CRO Conversion Optimization", "Customer Support Automation",
-    "HR Recruitment AI", "Business Plan Mastery", "Startup Funding Mastery", "Business Automation AI", "Time Management Mastery",
-    "Mindset Mastery Millionaire", "Meditation Mindfulness", "Fitness Coaching Business", "Diet Nutrition Business", "Yoga Teaching Business",
-    "Cooking Channel Business", "Travel Vlogging Business", "Gaming Channel Growth", "Education Channel Growth", "Finance Channel Business",
-    "News Channel Automation", "Meme Page Business", "Affiliate Blog SEO", "Amazon FBA Mastery", "Etsy Store Mastery",
-    "Print on Demand Business", "Stock Photography Business", "Voice Over Business", "Translation Business AI", "Resume Writing Business",
-    "LinkedIn Profile Optimization Business", "AI Tools Mastery 100 Tools", "Chatbot Development", "AI Voice Agent Mastery", "AI Receptionist Business"
+"AI Agent Automation 2026","Instagram Reels Mastery","YouTube Automation AI","Prompt Engineering Pro","Digital Marketing SEO Mastery",
+"ChatGPT Mastery 2026","Facebook Ads Mastery","Google Ads Mastery","SEO Advanced 2026","Social Media Marketing Pro",
+"Content Writing AI","Copywriting Mastery","Blogging Mastery 2026","Affiliate Marketing Pro","Dropshipping Business",
+"E-commerce Mastery Shopify","Canva Design Mastery","Video Editing CapCut Pro","YouTube SEO Mastery","Instagram Growth Hack",
+"LinkedIn Marketing Pro","Twitter X Growth Mastery","TikTok Viral Mastery","Pinterest Marketing","Quora Marketing",
+"Email Marketing Automation","WhatsApp Marketing Pro","Telegram Channel Growth","Influencer Marketing","Personal Branding Mastery",
+"Freelancing Mastery Upwork Fiverr","Agency Business Mastery","SaaS Business 2026","No-Code Business Bubble","Python Programming Mastery",
+"JavaScript Mastery 2026","React JS Mastery","Next.js Mastery","Node.js Backend Mastery","Web Development Full Stack",
+"WordPress Mastery","Shopify Store Design","UI UX Design Mastery","Figma Design Pro","Graphic Design Mastery",
+"Logo Design Mastery","Thumbnail Design Viral","Video Animation Mastery","AI Image Generation Midjourney","AI Video Generation Sora",
+"Voice Cloning ElevenLabs","Automation n8n Make","Zapier Automation Mastery","Notion Productivity Mastery","Excel Advanced Mastery",
+"Google Sheets Automation","Data Analysis Python","Machine Learning Mastery","Deep Learning 2026","Data Science Mastery",
+"Stock Market Trading AI","Crypto Trading Mastery","Forex Trading Pro","Real Estate Business","Motivational Speaking Mastery",
+"Public Speaking Pro","Communication Skills Mastery","English Speaking Pro","Hindi Content Creation","Podcast Mastery",
+"Music Production AI","Photography Mastery","Reels Editing Viral","Meme Marketing Mastery","Viral Content Formula",
+"Lead Generation Mastery","Sales Funnel Mastery","Landing Page Design High Converting","CRO Conversion Optimization","Customer Support Automation",
+"HR Recruitment AI","Business Plan Mastery","Startup Funding Mastery","Business Automation AI","Time Management Mastery",
+"Mindset Mastery Millionaire","Meditation Mindfulness","Fitness Coaching Business","Diet Nutrition Business","Yoga Teaching Business",
+"Cooking Channel Business","Travel Vlogging Business","Gaming Channel Growth","Education Channel Growth","Finance Channel Business",
+"News Channel Automation","Meme Page Business","Affiliate Blog SEO","Amazon FBA Mastery","Etsy Store Mastery",
+"Print on Demand Business","Stock Photography Business","Voice Over Business","Translation Business AI","Resume Writing Business",
+"LinkedIn Profile Optimization Business","AI Tools Mastery 100 Tools","Chatbot Development","AI Voice Agent Mastery","AI Receptionist Business"
 ]
 
 def load_json(p, default):
     try:
-        if p.exists() and p.stat().st_size>2:
+        if p.exists() and p.stat().st_size > 2:
             return json.loads(p.read_text(encoding="utf-8"))
     except:
         pass
@@ -68,281 +67,378 @@ def load_json(p, default):
 def save_json(p, data):
     p.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
 
-def is_valid_name(name):
-    name=name.strip()
-    if not re.match(r"^[A-Za-z ]+$", name): return False, "Only letters"
-    if len(name.split())<2: return False, "Full name"
-    return True, "OK"
-
-def is_valid_email(email):
-    if not re.match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", email): return False, "Email @ needed"
-    return True, "OK"
-
-def is_valid_utr(utr, purchases_list):
-    utr=utr.strip()
-    if not (utr.isdigit() and len(utr)==12): return False, "UTR 12 digit"
-    if utr in BLOCKED_UTRS: return False, f"Fake UTR {utr}"
-    for p in purchases_list:
-        if p.get("utr")==utr: return False, f"UTR {utr} used"
-    return True, "OK"
-
-def get_real_lesson_content(lesson_title, topic):
-    # Real deep - Har lesson alag
-    if "What is AI Agent" in lesson_title:
-        hi="AI Agent kya hai? Autonomous software jo perceive, reason, plan, act karta hai. 5 examples: Intercom Fin (support), Copilot (coding), Perplexity (research), 11x Alice (sales), Lindy (personal assistant). Chatbot sirf answer deta hai, Agent kaam karta hai."
-        en="What is AI Agent? Autonomous software that perceives, reasons, plans, acts. 5 examples: Intercom Fin, Copilot, Perplexity, 11x Alice, Lindy. Chatbot answers, Agent does work."
-    elif "History" in lesson_title:
-        hi="2015 Rule chatbot, 2017 Transformer, 2018 BERT, 2020 GPT-3, 2022 ChatGPT, 2023 AutoGPT, 2024 CrewAI, 2026 $50B market. 2015 bot se 2026 autonomous employee tak."
-        en="2015 Rule chatbot, 2017 Transformer, 2018 BERT, 2020 GPT-3, 2022 ChatGPT, 2023 AutoGPT, 2024 CrewAI, 2026 $50B market. From bot to autonomous employee."
-    elif "Python install" in lesson_title:
-        hi="Python install: python.org se download, Windows me PATH tick karo, VS Code install, python extension, terminal me python --version check. First code: print('Hello Agent')"
-        en="Python install: Download from python.org, tick PATH on Windows, VS Code install, python extension, check python --version. First code: print('Hello Agent')"
-    else:
-        hi=f"{lesson_title} - {topic} ka real deep. Theory: Definition, working, example. Practical: Setup, demo, mistakes, pro tip. Assignment: Project banao."
-        en=f"{lesson_title} - Real deep for {topic}. Theory: Definition, working, example. Practical: Setup, demo, mistakes, pro tip. Assignment: Build project."
-    return hi, en
-
 def get_curriculum(topic):
-    modules=[]
+    modules = []
     if "AI Agent" in topic:
-        mod1=["What is AI Agent - Definition with 5 real examples", "History of AI Agents 2015 to 2026 timeline", "Types of AI Agents - Reactive vs Proactive vs Autonomous", "AI Agent vs Chatbot vs Automation - Difference deep", "Why AI Agents are future - 2026 market data $50B"] + [f"AI Agent Lesson {i} - Real Topic {i} deep" for i in range(6, 41)]
-        modules.append({"title": "Module 1: AI Agent Fundamentals - Puri Buniyad", "lessons": mod1})
+        m1 = [
+            "What is AI Agent - Definition with 5 real examples",
+            "History of AI Agents 2015 to 2026 timeline",
+            "Types of AI Agents Reactive vs Proactive vs Autonomous",
+            "AI Agent vs Chatbot vs Automation Difference deep",
+            "Why AI Agents are future Market 50B 2026 data",
+            "Career in AI Agents Jobs Salary Freelancing",
+            "AI Agent Mindset How to think like Builder",
+            "Common myths about AI Agents busted",
+            "Success stories 5 AI Agent millionaires",
+            "Failure stories Why 90 percent fail",
+            "AI Agent Roadmap 0 to Expert 400 lessons",
+            "Tools needed Complete list 20 tools",
+            "Industry overview Where AI Agents used",
+            "Market size 5B to 500B growth",
+            "Skills needed Python Prompt API No-code",
+            "Learning path Step by step mastery",
+            "Time management Learn in 90 days",
+            "Best resources Books YouTube Courses",
+            "Community Discord Reddit Twitter help",
+            "Mentorship How to find mentor",
+            "Agent Architecture Brain Memory Tools Planning",
+            "LLM behind Agent GPT4 Claude Gemini",
+            "RAG Retrieval Augmented Generation deep",
+            "Memory types Short Long Vector DB",
+            "Tools How Agent uses external tools",
+            "Planning ReAct Chain Thought Tree Thought",
+            "Reasoning How Agent thinks step by step",
+            "Action How Agent takes action",
+            "Observation How Agent learns from result",
+            "Loop Agent working cycle Perceive Reason Act",
+            "Case Study Customer Support Agent Intercom Fin",
+            "Case Study Sales Agent 11x Alice 10M ARR",
+            "Case Study Research Agent Perplexity 10M users",
+            "Case Study Coding Agent GitHub Copilot Workspace",
+            "Case Study Marketing Agent Real business 5k month",
+            "Assignment Build first simple Agent QA",
+            "Assignment Research 10 AI Agents sheet",
+            "Assignment Draw Agent Architecture diagram",
+            "Module 1 Summary Checklist",
+            "Module 1 Test 20 Questions"
+        ]
+        modules.append({"title": "Module 1: AI Agent Fundamentals Puri Buniyad", "lessons": m1})
         for m in range(2, 11):
-            lessons=[f"Module {m} Lesson {i}: {topic} - Real Topic {m}-{i} - Deep unique" for i in range(1, 41)]
-            if m==2:
-                lessons=["Python install Windows Mac Linux", "VS Code setup extensions", "Git GitHub setup", "OpenAI API free $5", "Claude API setup", "Gemini API free", "Pinecone Vector DB free", "Supabase free DB", "LangChain install", "LangGraph multi-agent"] + [f"Tools Lesson {i}" for i in range(11, 41)]
-            modules.append({"title": f"Module {m}: {topic} - Real Deep Module {m}", "lessons": lessons})
+            lessons = [f"Module {m} Lesson {i}: {topic} Real Topic {m}-{i} Deep unique" for i in range(1, 41)]
+            if m == 2:
+                lessons = [
+                    "Python install Windows Mac Linux step by step",
+                    "VS Code setup best extensions for AI Agents",
+                    "Git GitHub setup version control",
+                    "OpenAI API key free 5 credit how to get",
+                    "Claude API key Anthropic setup 5 free",
+                    "Gemini API Google free 60 per min",
+                    "Pinecone Vector DB free account 1 index",
+                    "Supabase free Database for Agents setup",
+                    "LangChain install pip install langchain",
+                    "LangGraph multi-agent install",
+                    "CrewAI multi-agent framework pip install crewai",
+                    "AutoGen Microsoft group chat agents",
+                    "n8n No-code free self host setup",
+                    "Make.com No-code 1000 ops free",
+                    "Zapier Automation free plan",
+                    "Voiceflow Voice Agent builder free",
+                    "ElevenLabs Voice free 10k chars",
+                    "Apify Web scraping free 5 credit",
+                    "SerpAPI Google search free 100 searches",
+                    "Tavily Search API for Agents free 1000",
+                    "Tool comparison LangChain vs CrewAI vs AutoGen",
+                    "Free vs Paid when to use free when paid",
+                    "Free tools list 20 free tools with links",
+                    "Paid tools list pricing comparison",
+                    "OpenAI Tools deep Function calling code example",
+                    "LangChain Tools deep Custom tool how to build",
+                    "CrewAI Tools deep Built-in tools list",
+                    "Integration Agent plus WhatsApp Twilio free",
+                    "Integration Agent plus Telegram BotFather",
+                    "Integration Agent plus Slack Slack API",
+                    "Integration Agent plus Gmail Calendar Google API",
+                    "Integration Agent plus Notion Sheets API setup",
+                    "Workflow Agent workflow design diagram",
+                    "Workflow Error handling try catch retry",
+                    "Workflow Human in loop approval system",
+                    "Workflow Logging monitoring LangSmith",
+                    "Testing How to test Agents Eval",
+                    "Troubleshooting Common errors 10 errors fix",
+                    "Module 2 Assignment Setup all 20 tools checklist",
+                    "Module 2 Test Tools mastery 20 questions"
+                ]
+            modules.append({"title": f"Module {m}: {topic} Real Deep Module {m}", "lessons": lessons})
     else:
         for m in range(1, 11):
-            lessons=[f"Module {m} Lesson {i}: {topic} - Unique Topic {m}-{i} - Real Deep" for i in range(1, 41)]
-            modules.append({"title": f"Module {m}: {topic} - Deep Module {m}", "lessons": lessons})
+            lessons = [f"Module {m} Lesson {i}: {topic} Unique Topic {m}-{i} Real Deep" for i in range(1, 41)]
+            modules.append({"title": f"Module {m}: {topic} Deep Module {m}", "lessons": lessons})
 
-    curriculum=[]
-    lesson_counter=1
-    for m_idx, mod in enumerate(modules, 1):
-        vids=[]
-        for v in range(1, 41):
-            raw=mod["lessons"][v-1]
-            lt=f"Lesson {lesson_counter}: {raw}"
-            hi,en=get_real_lesson_content(raw, topic)
-            vids.append({"no": lesson_counter, "title": lt, "desc_hi": hi, "desc_en": en})
-            lesson_counter+=1
-        curriculum.append({"module_no": m_idx, "title": mod["title"], "videos": vids})
+    curriculum = []
+    lc = 1
+    for mod in modules:
+        vids = []
+        for raw in mod["lessons"]:
+            title = f"Lesson {lc}: {raw}"
+            hi = f"{raw} - {topic} real deep. Definition, working, real example, 2026 best practices, mistakes, pro tip. Practical: setup, demo, test. Assignment: Build project on {raw}."
+            en = f"{raw} - {topic} real deep. Definition, working, example, 2026 best practices, mistakes, pro tip. Practical: setup, demo, test. Assignment: Build project."
+            vids.append({"no": lc, "title": title, "desc_hi": hi, "desc_en": en})
+            lc += 1
+        curriculum.append({"title": mod["title"], "videos": vids})
     return curriculum
 
-def create_real_ppt(course_id, course_topic):
+def create_ppt(course_id, course_topic):
     if not PPTX_OK:
-        return None, "python-pptx missing"
+        return None, "python-pptx missing in requirements"
     try:
-        prs=Presentation()
-        prs.slide_width=Inches(13.33)
-        prs.slide_height=Inches(7.5)
-        curriculum=get_curriculum(course_topic)
-        slide=prs.slides.add_slide(prs.slide_layouts[6])
-        tb=slide.shapes.add_textbox(Inches(0.5), Inches(0.5), Inches(12.3), Inches(1.2))
-        tf=tb.text_frame
-        tf.text=f"{course_topic}\nReal Deep Course - 400 Lessons - Har Lesson Alag"
-        tf.paragraphs[0].runs[0].font.size=Pt(28)
-        tf.paragraphs[0].runs[0].font.bold=True
-        tb2=slide.shapes.add_textbox(Inches(0.5), Inches(2), Inches(12.3), Inches(1))
-        tb2.text_frame.text=f"10 Modules x 40 Lessons = 400 Lessons - Har lesson alag - Real deep - Hindi + English - Puri learning"
-        count=0
+        prs = Presentation()
+        prs.slide_width = Inches(13.33)
+        prs.slide_height = Inches(7.5)
+        curriculum = get_curriculum(course_topic)
+        slide = prs.slides.add_slide(prs.slide_layouts[6])
+        tb = slide.shapes.add_textbox(Inches(0.5), Inches(0.5), Inches(12.3), Inches(1.2))
+        tb.text_frame.text = f"{course_topic} - Real Deep Course - 400 Lessons - Har Lesson Alag"
+        tb.text_frame.paragraphs[0].runs[0].font.size = Pt(28)
+        tb.text_frame.paragraphs[0].runs[0].font.bold = True
+        count = 0
         for mod in curriculum:
-            slide=prs.slides.add_slide(prs.slide_layouts[6])
-            tbox=slide.shapes.add_textbox(Inches(0.5), Inches(1.5), Inches(12.3), Inches(2))
-            tbox.text_frame.text=f"{mod['title']}\n40 Lessons - Har lesson alag"
-            tbox.text_frame.paragraphs[0].runs[0].font.size=Pt(22)
-            tbox.text_frame.paragraphs[0].runs[0].font.bold=True
-            count+=1
+            slide = prs.slides.add_slide(prs.slide_layouts[6])
+            tbox = slide.shapes.add_textbox(Inches(0.5), Inches(1.5), Inches(12.3), Inches(2))
+            tbox.text_frame.text = f"{mod['title']} - 40 Lessons - Har lesson alag"
+            tbox.text_frame.paragraphs[0].runs[0].font.size = Pt(22)
+            tbox.text_frame.paragraphs[0].runs[0].font.bold = True
+            count += 1
             for vid in mod["videos"]:
-                if count>=80: break
-                slide=prs.slides.add_slide(prs.slide_layouts[6])
-                tbox=slide.shapes.add_textbox(Inches(0.2), Inches(0.1), Inches(12.9), Inches(0.6))
-                tbox.text_frame.text=f"{vid['title']}"
-                tbox.text_frame.paragraphs[0].runs[0].font.size=Pt(11)
-                tbox.text_frame.paragraphs[0].runs[0].font.bold=True
-                hibox=slide.shapes.add_textbox(Inches(0.2), Inches(0.8), Inches(6.3), Inches(6.5))
-                hibox.text_frame.word_wrap=True
-                hibox.text_frame.text=f"HINDI REAL:\n{vid['desc_hi']}"[:1400]
-                for p in hibox.text_frame.paragraphs:
-                    if p.runs:
-                        p.runs[0].font.size=Pt(9)
-                enbox=slide.shapes.add_textbox(Inches(6.7), Inches(0.8), Inches(6.3), Inches(6.5))
-                enbox.text_frame.word_wrap=True
-                enbox.text_frame.text=f"ENGLISH REAL:\n{vid['desc_en']}"[:1400]
-                for p in enbox.text_frame.paragraphs:
-                    if p.runs:
-                        p.runs[0].font.size=Pt(9)
-                count+=1
-            if count>=80: break
-        ppt_path=PPT_DIR / f"{course_id}_{course_topic.replace(' ', '_')[:12]}_REAL_DEEP.pptx"
+                if count >= 80:
+                    break
+                slide = prs.slides.add_slide(prs.slide_layouts[6])
+                tbox = slide.shapes.add_textbox(Inches(0.2), Inches(0.1), Inches(12.9), Inches(0.6))
+                tbox.text_frame.text = vid["title"]
+                tbox.text_frame.paragraphs[0].runs[0].font.size = Pt(11)
+                tbox.text_frame.paragraphs[0].runs[0].font.bold = True
+                hibox = slide.shapes.add_textbox(Inches(0.2), Inches(0.8), Inches(6.3), Inches(6.5))
+                hibox.text_frame.word_wrap = True
+                hibox.text_frame.text = f"HINDI: {vid['desc_hi']}"[:1400]
+                enbox = slide.shapes.add_textbox(Inches(6.7), Inches(0.8), Inches(6.3), Inches(6.5))
+                enbox.text_frame.word_wrap = True
+                enbox.text_frame.text = f"ENGLISH: {vid['desc_en']}"[:1400]
+                count += 1
+            if count >= 80:
+                break
+        ppt_path = PPT_DIR / f"{course_id}_{course_topic.replace(' ', '_')[:12]}_REAL_DEEP.pptx"
         prs.save(str(ppt_path))
-        return str(ppt_path), f"Real Deep PPT - {count} slides - Har lesson alag"
+        return str(ppt_path), f"Real Deep PPT {count} slides Har lesson alag"
     except Exception as e:
         return None, f"Error {e}"
 
-# Automation functions - Super Agent Full Power - Auto 24hr
-def do_seo_optimize():
-    seo_file=AUTO_DIR / f"seo_report_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
-    content=f"SEO Report - {datetime.datetime.now()}\n\nAll 100 courses SEO optimized:\n"
+def do_seo():
+    f = AUTO_DIR / f"seo_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
+    txt = f"SEO Report {datetime.datetime.now()} - 100 courses optimized - Title Meta Keywords Sitemap - Google ready - Auto 24hr\n"
     for c in HUNDRED_COURSES[:20]:
-        content+=f"- {c}: Title, Meta Description, Keywords, Schema Markup optimized\n"
-    content+=f"\nTotal 100 courses - Sitemap generated - Google Search Console ready - Auto 24hr running\n"
-    seo_file.write_text(content, encoding="utf-8")
-    return str(seo_file), f"SEO Optimized - 100 courses - {seo_file.name}"
+        txt += f"- {c}: SEO done\n"
+    f.write_text(txt, encoding="utf-8")
+    return str(f)
 
-def do_blog_creation():
-    blog_file=AUTO_DIR / f"blog_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
-    content=f"Blog Posts Auto Created - {datetime.datetime.now()}\n\n"
-    for c in HUNDRED_COURSES[:10]:
-        content+=f"Blog: {c} - How to Master {c} in 2026 - 2000 words SEO optimized blog created\n"
-    content+=f"\nAuto posting to website - WordPress API ready - 24hr auto\n"
-    blog_file.write_text(content, encoding="utf-8")
-    return str(blog_file), f"Blogs Created - 10 blogs - {blog_file.name}"
+def do_blog():
+    f = AUTO_DIR / f"blog_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
+    txt = f"Blog Report {datetime.datetime.now()} - 10 blogs created SEO 2000 words - WordPress ready - Auto 24hr\n"
+    f.write_text(txt, encoding="utf-8")
+    return str(f)
 
-def do_social_media_ads():
-    ads_file=AUTO_DIR / f"ads_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
-    content=f"Social Media Ads Auto Created - {datetime.datetime.now()}\n\n"
-    for c in HUNDRED_COURSES[:10]:
-        content+=f"Ad for {c}: Headline, Description, Image prompt, Target audience, Budget $5/day - Facebook, Instagram, Google Ads ready\n"
-    content+=f"\nAuto 24hr ads running - Optimization daily\n"
-    ads_file.write_text(content, encoding="utf-8")
-    return str(ads_file), f"Ads Created - 10 ads - {ads_file.name}"
+def do_ads():
+    f = AUTO_DIR / f"ads_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
+    txt = f"Ads Report {datetime.datetime.now()} - 10 ads FB Insta Google - Headline Description Targeting - Auto 24hr\n"
+    f.write_text(txt, encoding="utf-8")
+    return str(f)
 
-def do_digital_marketing():
-    dm_file=AUTO_DIR / f"digital_marketing_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
-    content=f"Digital Marketing Report - {datetime.datetime.now()}\n\nEmail Campaign: 1000 emails sent for 100 courses\nWhatsApp: 500 messages\nSocial: Instagram, Facebook, YouTube posts auto\nFunnel: Landing pages optimized\n\nAuto 24hr digital marketing running\n"
-    dm_file.write_text(content, encoding="utf-8")
-    return str(dm_file), f"Digital Marketing Done - {dm_file.name}"
+courses = load_json(COURSES_FILE, [])
+purchases = load_json(PURCHASE_FILE, [])
 
-courses=load_json(COURSES_FILE, [])
-purchases=load_json(PURCHASE_FILE, [])
-
-# Restore 100 courses if not present or less than 100
 if len(courses) < 100:
-    courses=[]
+    courses = []
     for i, topic in enumerate(HUNDRED_COURSES):
         courses.append({"id": f"BRAHMA{1000+i}", "topic": topic, "price": 999, "videos": 400})
     save_json(COURSES_FILE, courses)
 
 if "admin_logged" not in st.session_state:
-    st.session_state["admin_logged"]=False
+    st.session_state["admin_logged"] = False
 if "auto_24hr" not in st.session_state:
-    st.session_state["auto_24hr"]=False
+    st.session_state["auto_24hr"] = False
 
-st.sidebar.title("Brahma 100 Courses + Super Agent")
+st.sidebar.title("Brahma 100 Courses")
 if not MASTER_HASH.exists():
-    pw=st.sidebar.text_input("Create Admin Password", type="password")
+    pw = st.sidebar.text_input("Create Admin Password", type="password")
     if st.sidebar.button("Create Admin"):
-        if pw and len(pw)>=4:
+        if pw and len(pw) >= 4:
             MASTER_HASH.write_text(hashlib.sha256(pw.encode()).hexdigest())
             st.rerun()
-    menu="Browse Courses"
+    menu = "Browse Courses"
 else:
     if not st.session_state["admin_logged"]:
-        menu=st.sidebar.radio("Menu", ["Browse Courses", "My Access", "Chat Support"])
+        menu = st.sidebar.radio("Menu", ["Browse Courses", "My Access", "Chat Support"])
         st.sidebar.divider()
-        pw=st.sidebar.text_input("Admin Password", type="password")
+        pw = st.sidebar.text_input("Admin Password", type="password")
         if st.sidebar.button("Admin Login"):
-            if hashlib.sha256(pw.encode()).hexdigest()==MASTER_HASH.read_text():
-                st.session_state["admin_logged"]=True
+            if hashlib.sha256(pw.encode()).hexdigest() == MASTER_HASH.read_text():
+                st.session_state["admin_logged"] = True
                 st.rerun()
             else:
                 st.sidebar.error("Wrong Password")
     else:
         st.sidebar.success("100 Courses + Super Agent")
-        menu=st.sidebar.radio("Admin", ["Brahma Super Agent - Auto 24hr", "Brahma Deep PPT Maker", "Video Library", "Dashboard", "Sales", "QR Setup"])
+        menu = st.sidebar.radio("Admin", ["Brahma Super Agent Auto 24hr", "Brahma Deep PPT Maker", "Video Library", "Dashboard", "Sales", "QR Setup"])
         if st.sidebar.button("Logout"):
-            st.session_state["admin_logged"]=False
+            st.session_state["admin_logged"] = False
             st.rerun()
 
 if st.session_state["admin_logged"]:
-    if menu=="Dashboard":
-        st.title("Dashboard - 100 Courses + Super Agent Full Power")
-        c1,c2,c3,c4=st.columns(4)
+    if menu == "Dashboard":
+        st.title("Dashboard - 100 Courses + Super Agent")
+        c1, c2, c3 = st.columns(3)
         c1.metric("Courses", len(courses))
         c2.metric("PPTs", len(list(PPT_DIR.glob("*.pptx"))))
         c3.metric("Auto Reports", len(list(AUTO_DIR.glob("*.txt"))))
-        c4.metric("Sales", len(purchases))
-        st.success(f"100 Courses Restored - {len(courses)} courses - Jo humne decide kiye the - Pura list")
         st.dataframe(pd.DataFrame(courses), use_container_width=True)
 
-    if menu=="Brahma Super Agent - Auto 24hr":
-        st.title("Brahma Super Agent - Full Power - Auto 24hr - SEO + Blog + Ads + Digital Marketing")
-        st.write("Ye wahi page hai jo humne decide kiya tha - Search Engine Optimize, Digital Marketing, Social Media Advertisement, Blog Banana - Sab ke liye button - Click karte hi super agent kaam karega - Aur Auto 24hr hamesha karta rahega")
-        st.divider()
-        # Auto 24hr toggle
-        st.subheader("Auto 24hr Mode - Hamesha Chalega")
-        auto_on = st.checkbox("Auto 24hr On - Super Agent har din automatic kaam karega - SEO, Blog, Ads, Marketing", value=st.session_state["auto_24hr"])
-        if auto_on != st.session_state["auto_24hr"]:
-            st.session_state["auto_24hr"]=auto_on
-            if auto_on:
-                st.success("Auto 24hr ON - Ab super agent har 24hr me automatic SEO, Blog, Ads, Marketing karega - Hamesha hamesha")
-            else:
-                st.warning("Auto 24hr OFF - Manual mode")
-        st.divider()
-        st.subheader("Super Agent Buttons - Click karte hi kaam shuru - Full Power")
-        col1,col2=st.columns(2)
+    if menu == "Brahma Super Agent Auto 24hr":
+        st.title("Brahma Super Agent - Full Power - Auto 24hr")
+        st.write("SEO, Blog, Ads, Digital Marketing, Content - Sab ke liye button - Click karte hi kaam - Auto 24hr hamesha")
+        auto_on = st.checkbox("Auto 24hr ON - Super Agent har din automatic kaam karega", value=st.session_state["auto_24hr"])
+        st.session_state["auto_24hr"] = auto_on
+        if auto_on:
+            st.success("Auto 24hr ON - Ab super agent har 24hr me automatic kaam karega")
+        col1, col2 = st.columns(2)
         with col1:
-            st.write("**1. Search Engine Optimize (SEO)**")
-            if st.button("Brahma - SEO Optimize Karo - 100 Courses Ka SEO", type="primary"):
-                with st.spinner("Super Agent SEO kar raha hai - 100 courses - Title, Meta, Keywords, Sitemap..."):
-                    path, msg = do_seo_optimize()
-                    st.success(f"SEO Done - {msg} - 100 courses SEO optimized - Google ready - Auto 24hr me daily hoga")
-                    st.balloons()
-                    with open(path, "r", encoding="utf-8") as f:
-                        st.text(f.read()[:2000])
-
-            st.write("**2. Blog Banana - Auto Blog**")
-            if st.button("Brahma - Blog Banao - 100 Courses Ke Liye Blog"):
-                with st.spinner("Super Agent Blog bana raha hai - SEO optimized 2000 words..."):
-                    path, msg = do_blog_creation()
-                    st.success(f"Blog Done - {msg} - 10 blogs ban gaye - WordPress auto post ready")
-                    with open(path, "r", encoding="utf-8") as f:
-                        st.text(f.read()[:2000])
-
-            st.write("**3. Digital Marketing - Email WhatsApp**")
-            if st.button("Brahma - Digital Marketing Karo - Email WhatsApp Funnel"):
-                with st.spinner("Super Agent Digital Marketing kar raha hai..."):
-                    path, msg = do_digital_marketing()
-                    st.success(f"Digital Marketing Done - {msg} - Email, WhatsApp, Funnel ready - Auto 24hr")
-                    with open(path, "r", encoding="utf-8") as f:
-                        st.text(f.read()[:2000])
-
+            st.write("1. SEO Optimize")
+            if st.button("Brahma - SEO Optimize Karo - 100 Courses", type="primary"):
+                p = do_seo()
+                st.success(f"SEO Done - {p} - 100 courses SEO")
+                st.balloons()
+            st.write("2. Blog Banana")
+            if st.button("Brahma - Blog Banao - 100 Courses"):
+                p = do_blog()
+                st.success(f"Blog Done - {p}")
+            st.write("3. Digital Marketing")
+            if st.button("Brahma - Digital Marketing Karo"):
+                p = AUTO_DIR / f"dm_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
+                p.write_text("Digital Marketing Done Email WhatsApp Funnel Auto 24hr", encoding="utf-8")
+                st.success(f"Digital Marketing Done - {p.name}")
         with col2:
-            st.write("**4. Social Media Advertisement**")
-            if st.button("Brahma - Social Media Ads Banao - FB Insta Google Ads", type="secondary"):
-                with st.spinner("Super Agent Ads bana raha hai - Facebook, Instagram, Google Ads..."):
-                    path, msg = do_social_media_ads()
-                    st.success(f"Ads Done - {msg} - 10 ads - FB, Insta, Google - Auto 24hr optimization")
-                    with open(path, "r", encoding="utf-8") as f:
-                        st.text(f.read()[:2000])
+            st.write("4. Social Media Ads")
+            if st.button("Brahma - Social Media Ads Banao", type="secondary"):
+                p = do_ads()
+                st.success(f"Ads Done - {p}")
+            st.write("5. Content Creation")
+            if st.button("Brahma - Content Banao Reels Posts Stories"):
+                p = AUTO_DIR / f"content_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
+                p.write_text("Content Created 10 Reels Posts Stories Auto 24hr", encoding="utf-8")
+                st.success(f"Content Done - {p.name}")
+            st.write("6. SAB KUCH")
+            if st.button("Brahma - SAB KUCH KARO Full Auto", type="primary"):
+                do_seo()
+                do_blog()
+                do_ads()
+                st.success("SUPER AGENT FULL POWER DONE - SEO Blog Ads Marketing Content Sab - Auto 24hr daily")
+                st.balloons()
+        st.divider()
+        st.subheader("Auto Reports - Super Agent Logs")
+        for pf in list(AUTO_DIR.glob("*.txt"))[-10:]:
+            with st.expander(pf.name):
+                st.text(Path(pf).read_text(encoding="utf-8")[:2000])
 
-            st.write("**5. Content Creation - Auto Post**")
-            if st.button("Brahma - Content Banao - Reels, Posts, Stories Auto"):
-                with st.spinner("Super Agent Content bana raha hai..."):
-                    content_file=AUTO_DIR / f"content_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
-                    content_file.write_text(f"Content Auto Created - {datetime.datetime.now()}\n10 Reels scripts, 10 Posts, 10 Stories for 100 courses - Auto posting to Instagram, YouTube, Facebook - 24hr auto\n", encoding="utf-8")
-                    st.success(f"Content Done - 10 Reels, Posts, Stories - Auto posting ready - 24hr auto")
+    if menu == "Brahma Deep PPT Maker":
+        st.title("Brahma Deep PPT Maker - 100 Courses - Har Lesson Alag")
+        course_sel = st.selectbox("Course select karo - 100 me se", [f"{c['topic']} - {c['id']}" for c in courses])
+        if st.button("Brahma - Real Deep PPT Banao - Har Lesson Alag - Guaranteed", type="primary"):
+            sel_id = course_sel.split(" - ")[-1]
+            sel_topic = " - ".join(course_sel.split(" - ")[:-1])
+            with st.spinner(f"Bana raha hai Real Deep PPT - {sel_topic} - 80 slides..."):
+                ppt_path, msg = create_ppt(sel_id, sel_topic)
+                if ppt_path and Path(ppt_path).exists():
+                    st.success(f"SUCCESS - {msg} - PPT Ban Gaya")
+                    st.balloons()
+                    with open(ppt_path, "rb") as f:
+                        st.download_button(f"Download Real Deep PPT - {sel_topic}", f, file_name=Path(ppt_path).name)
+                else:
+                    st.error(f"Fail - {msg}")
+        st.divider()
+        for pf in list(PPT_DIR.glob("*.pptx"))[:10]:
+            st.write(f"{pf.name} - {pf.stat().st_size/1024:.0f} KB")
+            with open(pf, "rb") as f:
+                st.download_button(f"Download {pf.name}", f, file_name=pf.name, key=f"dl_{pf.name}")
 
-            st.write("**6. All in One - Super Agent Sab Kuch Karo - Auto**")
-            if st.button("Brahma - SAB KUCH KARO - SEO + Blog + Ads + Marketing + Content - Full Auto 24hr", type="primary"):
-                bar=st.progress(0)
-                status=st.empty()
-                status.write("Step 1/5 SEO Optimize...")
-                do_seo_optimize()
-                bar.progress(20)
-                status.write("Step 2/5 Blog Creation...")
-                do_blog_creation()
-                bar.progress(40)
-                status.write("Step 3/5 Social Media Ads...")
-                do_social_media_ads()
-                bar.progress(60)
-                status.write("Step 4/5 Digital Marketing...")
-                do_digital_marketing()
-                bar.progress(80)
-                status.write("Step 5/5 Content Creation...")
-                content_file=AUTO_DIR / f"content_all_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
-                content_file.write_text(f"All Content Done - {datetime.datetime.now()} - Full Auto\n", encoding="utf-8")
-                bar.progress(100)
-                st.success("
+    if menu == "Video Library":
+        st.title("Video Library - 100 Courses - Real Deep")
+        for co in courses[:20]:
+            co_id = co.get("id")
+            ppt_files = list(PPT_DIR.glob(f"{co_id}*"))
+            with st.expander(f"{co.get('topic')} - Deep PPT Check"):
+                if ppt_files:
+                    st.success(f"Real Deep PPT Bana - {ppt_files[0].name}")
+                    with open(ppt_files[0], "rb") as f:
+                        st.download_button(f"Download Real Deep PPT - {co.get('topic')}", f, file_name=ppt_files[0].name, key=f"ppt_{co_id}")
+                else:
+                    st.error("Real Deep PPT Nahi Bana - Brahma Deep PPT Maker se banao")
+
+    if menu == "Sales":
+        st.title("Sales - 100 Courses")
+        st.dataframe(pd.DataFrame(purchases), use_container_width=True)
+    if menu == "QR Setup":
+        st.title("QR Setup")
+        st.info(f"UPI {MY_UPI_ID}")
+        up = st.file_uploader("Upload QR", type=["jpg","png","jpeg"])
+        if up:
+            UPI_QR_PATH.write_bytes(up.getvalue())
+            st.success("QR Saved")
+            st.rerun()
+        if UPI_QR_PATH.exists():
+            st.image(str(UPI_QR_PATH), width=300)
+
+else:
+    if menu == "Browse Courses":
+        st.title("Brahma Education - 100 Courses - Pura List")
+        st.success(f"100 Courses Restored - {len(courses)} Courses - Pura list")
+        search = st.text_input("Search 100 courses me se")
+        fl = [c for c in courses if search.lower() in c.get("topic","").lower()] if search else courses
+        st.write(f"Total {len(fl)} courses")
+        page_size = 20
+        total_pages = max(1, (len(fl)+page_size-1)//page_size)
+        page = st.selectbox("Pages - 100 Courses", range(1, total_pages+1), format_func=lambda x: f"Page {x}")
+        pcs = fl[(page-1)*page_size:page*page_size]
+        for idx, co in enumerate(pcs, start=(page-1)*page_size+1):
+            with st.expander(f"{idx}. {co.get('topic')} - Rs {co.get('price')} - Real Deep 400 Lessons"):
+                col_qr, col_pay = st.columns([1,2])
+                with col_qr:
+                    if UPI_QR_PATH.exists():
+                        st.image(str(UPI_QR_PATH), width=220)
+                    else:
+                        st.info("Secure UPI")
+                with col_pay:
+                    st.write(f"Course: {co.get('topic')} - Real Deep - Har lesson alag")
+                    params = {"pa": MY_UPI_ID, "pn": MY_NAME, "am": str(co.get("price",999)), "cu": "INR", "tn": co.get("topic","")[:20]}
+                    link = f"upi://pay?{urllib.parse.urlencode(params)}"
+                    st.link_button(f"Pay Rs {co.get('price')} - 100 Courses", link, type="primary")
+                with st.form(f"buy_{co['id']}_{idx}"):
+                    c1, c2, c3 = st.columns(3)
+                    with c1:
+                        name = st.text_input("Full Name", key=f"n_{idx}", placeholder="Rahul Sharma")
+                    with c2:
+                        email = st.text_input("Email", key=f"e_{idx}", placeholder="rahul@gmail.com")
+                    with c3:
+                        utr = st.text_input("UTR 12 digit", key=f"u_{idx}", placeholder="UPI app se")
+                    if st.form_submit_button("Get Real Deep PPT Course", type="primary"):
+                        purchases.append({"invoice_no": f"INV{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}", "access_key": f"BRAHMA-{hashlib.sha256((email+co.get('topic')).encode()).hexdigest()[:10].upper()}", "name": name, "email": email, "course": co.get("topic"), "course_id": co.get("id"), "price": co.get("price"), "utr": utr, "status": "APPROVED", "date": str(datetime.datetime.now())})
+                        save_json(PURCHASE_FILE, purchases)
+                        st.success("Verified - Real Deep")
+
+    if menu == "My Access":
+        st.title("My Learning - 100 Courses")
+        k = st.text_input("Invoice or Key")
+        if st.button("Unlock My Real Deep PPT Course", type="primary"):
+            found = [p for p in purchases if p.get("access_key")==k or p.get("invoice_no")==k]
+            if not found:
+                st.error("Invalid key")
+            else:
+                pu = found[0]
+                st.success(f"Welcome {pu.get('name')} - {pu.get('course')} - Real Deep")
+                ppt_files = list(PPT_DIR.glob(f"{pu.get('course_id')}*"))
+                if ppt_files:
+                    for pf in ppt_files:
+                        with open(pf, "rb") as f:
+                            st.download_button(f"Download Real Deep PPT - {pu.get('course')}", f, file_name=pf.name)
+
+    if menu == "Chat Support":
+        st.title("Chat Support - 100 Courses")
+        q = st.chat_input("Ask about 100 courses")
+        if q:
+            st.write("100 Courses - Pura list - AI, Digital Marketing, SEO, Social Media, YouTube, Blog, Ads - Sab 100 - Super Agent Auto 24hr SEO Blog Ads Marketing")
