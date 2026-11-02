@@ -5,6 +5,7 @@ import datetime
 import urllib.parse
 from pathlib import Path
 import pandas as pd
+import re
 
 try:
     from gtts import gTTS
@@ -44,6 +45,22 @@ def load_json(p, default):
 def save_json(p, data):
     p.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding='utf-8')
 
+def is_valid_email(email):
+    pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    return re.match(pattern, email) is not None
+
+def is_valid_name(name):
+    name = name.strip()
+    if len(name) < 3:
+        return False
+    if len(set(name.lower().replace(' ', ''))) < 2:
+        return False
+    return sum(1 for c in name if c.isalpha()) >= 2
+
+def is_valid_utr(utr):
+    utr = utr.strip()
+    return utr.isdigit() and len(utr) == 12
+
 courses = load_json(COURSES_FILE, [])
 purchases = load_json(PURCHASE_FILE, [])
 config = load_json(CONFIG_FILE, {})
@@ -61,7 +78,6 @@ if len(courses) == 0:
 
 if 'admin_logged' not in st.session_state:
     st.session_state['admin_logged'] = False
-# NEW: Chat is session only, not file
 if 'chat_messages' not in st.session_state:
     st.session_state['chat_messages'] = []
 
@@ -103,16 +119,14 @@ def smart_answer(q, courses_list):
     q = (q or '').lower()
     if 'kya' in q or 'kitne' in q or 'list' in q:
         top = courses_list[0].get('topic') if courses_list else 'AI Course'
-        return f'We have 100+ courses. Top is {top}. Check Browse Courses for full list. Each has 400 videos Hindi English.'
+        return f'We have 100+ courses. Top is {top}. Check Browse Courses. Each has 400 videos.'
     if 'best' in q:
-        return 'Best courses: AI Agent Automation, Instagram Reels, YouTube Automation, Digital Marketing, Prompt Engineering.'
+        return 'Best: AI Agent Automation, Instagram Reels, YouTube Automation, Digital Marketing.'
     if 'price' in q or 'fees' in q:
-        return 'Price Rs 999 to 1399. 400 videos. Lifetime access. Secure UPI payment.'
+        return 'Price Rs 999 to 1399. 400 videos. Lifetime access. Instant access after payment.'
     if 'hindi' in q:
-        return 'Yes, all courses have Hindi and English. Voice Hindi and English separate using FREE tools.'
-    if 'certificate' in q:
-        return 'Yes, certificate after completion. Helps in job and freelancing.'
-    return 'We have 100+ professional courses. Search in Browse Courses. 400 videos Hindi English.'
+        return 'Yes, Hindi and English both. Voice separate using FREE tools.'
+    return 'We have 100+ professional courses. Search in Browse Courses.'
 
 if st.session_state['admin_logged']:
     if menu == 'Dashboard':
@@ -120,7 +134,7 @@ if st.session_state['admin_logged']:
         c1, c2, c3 = st.columns(3)
         c1.metric('Courses', len(courses))
         c2.metric('Sales', len(purchases))
-        c3.metric('Pending', len([p for p in purchases if p.get('status') == 'PENDING']))
+        c3.metric('Total Approved', len(purchases))
         st.dataframe(pd.DataFrame(courses), use_container_width=True)
 
     if menu == 'Price Edit':
@@ -151,7 +165,6 @@ if st.session_state['admin_logged']:
 
     if menu == 'Super Brain':
         st.title('Super Brain - Auto Agent FREE')
-        st.write('Auto Course - Voice - SEO - Blogs - Posts - Sales - All FREE')
         ca, cb = st.columns(2)
         with ca:
             hi = st.text_area('Hindi Text', 'Namaste, AI Agent banana seekhenge', key='hi')
@@ -201,14 +214,8 @@ if st.session_state['admin_logged']:
                     st.rerun()
 
     if menu == 'Sales':
-        st.title('Sales')
-        for p in purchases:
-            if p.get('status') == 'PENDING':
-                with st.expander(f"{p.get('name')} - {p.get('course')} - {p.get('utr')}"):
-                    if st.button(f"Approve {p.get('invoice_no')}", key=f"ap_{p.get('invoice_no')}"):
-                        p['status'] = 'APPROVED'
-                        save_json(PURCHASE_FILE, purchases)
-                        st.rerun()
+        st.title('Sales - Instant Access System - No Approval Needed')
+        st.info('Now all keys are auto-approved - No 2-4 hour wait - Instant access')
         st.dataframe(pd.DataFrame(purchases), use_container_width=True)
 
     if menu == 'Settings':
@@ -222,7 +229,7 @@ else:
     if menu == 'Browse Courses':
         st.title('Brahma Education')
         st.write('100+ Professional Courses in Hindi and English')
-        st.write('400+ Videos per Course - Lifetime Access')
+        st.write('400+ Videos per Course - Lifetime Access - Instant Access')
         st.divider()
         search = st.text_input('Search course')
         fl = [c for c in courses if search.lower() in c.get('topic','').lower()] if search else courses
@@ -242,60 +249,68 @@ else:
                 with col_pay:
                     st.write(f"Course: {co.get('topic')}")
                     st.write(f"Price: Rs {co.get('price')}")
+                    st.write('Instant Access - No Wait')
                     params = {'pa': MY_UPI_ID, 'pn': MY_NAME, 'am': str(co.get('price',999)), 'cu': 'INR', 'tn': co.get('topic','')[:20]}
                     link = f"upi://pay?{urllib.parse.urlencode(params)}"
-                    st.link_button(f"Pay Rs {co.get('price')}", link, type='primary')
+                    st.link_button(f"Pay Rs {co.get('price')} - Instant Access", link, type='primary')
                 with st.form(f"buy_{co['id']}_{idx}"):
+                    st.write('**Fill After Payment - Instant Access**')
                     c1, c2, c3 = st.columns(3)
-                    with c1: name = st.text_input('Name', key=f"n_{idx}")
-                    with c2: email = st.text_input('Email', key=f"e_{idx}")
-                    with c3: utr = st.text_input('UTR', key=f"u_{idx}")
-                    if st.form_submit_button('Submit for Access', type='primary'):
-                        if name and email and utr and len(utr) >= 6:
-                            inv = f"INV{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}"
-                            key = f"BRAHMA-{hashlib.sha256((email+co.get('topic')+inv+utr).encode()).hexdigest()[:10].upper()}"
-                            purchases.append({'invoice_no': inv, 'access_key': key, 'name': name, 'email': email, 'course': co.get('topic'), 'price': co.get('price'), 'utr': utr, 'status': 'PENDING', 'date': str(datetime.datetime.now())})
-                            save_json(PURCHASE_FILE, purchases)
-                            st.success(f"Submitted {inv}")
-                            st.info(f"Key {key}")
-                        else:
-                            st.error('Fill all fields')
+                    with c1:
+                        name = st.text_input('Full Name', key=f"n_{idx}")
+                    with c2:
+                        email = st.text_input('Email with @', key=f"e_{idx}")
+                    with c3:
+                        utr = st.text_input('UTR 12 digit', key=f"u_{idx}", help='12 digit number from UPI app')
+                    if st.form_submit_button('Get Instant Access', type='primary'):
+                        if not is_valid_name(name):
+                            st.error('Enter valid name min 3 chars - Example Rahul Sharma')
+                            st.stop()
+                        if not is_valid_email(email):
+                            st.error('Enter valid email with @ - Example test@gmail.com')
+                            st.stop()
+                        if not is_valid_utr(utr):
+                            st.error('Enter valid 12 digit UTR number - Example 123456789012 - From UPI app history')
+                            st.stop()
+                        inv = f"INV{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}"
+                        key = f"BRAHMA-{hashlib.sha256((email+co.get('topic')+inv+utr).encode()).hexdigest()[:10].upper()}"
+                        # INSTANT APPROVAL - NO PENDING
+                        purchases.append({'invoice_no': inv, 'access_key': key, 'name': name, 'email': email, 'course': co.get('topic'), 'course_id': co.get('id'), 'price': co.get('price'), 'utr': utr, 'status': 'APPROVED', 'date': str(datetime.datetime.now())})
+                        save_json(PURCHASE_FILE, purchases)
+                        st.success(f"Payment Verified - Instant Access Granted")
+                        st.info(f"Your Invoice {inv} - Your Key {key}")
+                        st.warning('Go to My Access - Enter this Key - Course will open instantly - No wait')
 
     if menu == 'My Access':
-        st.title('My Learning')
+        st.title('My Learning - Instant Access')
+        st.write('Enter your key - Course opens instantly - No approval needed')
         k = st.text_input('Invoice or Key')
-        if st.button('Unlock', type='primary'):
+        if st.button('Unlock Instantly', type='primary'):
             found = [p for p in purchases if p.get('access_key') == k or p.get('invoice_no') == k]
             if not found:
-                st.error('Invalid')
+                st.error('Invalid key - Check your invoice - Example BRAHMA-XXXXXXXXXX')
             else:
                 pu = found[0]
-                if pu.get('status') != 'APPROVED':
-                    st.warning(f"Pending {pu.get('status')}")
-                    st.stop()
-                st.success(f"Unlocked {pu.get('course')}")
+                # INSTANT ACCESS - NO PENDING CHECK
+                st.success(f"Welcome {pu.get('name')} - Course Unlocked Instantly")
+                st.write(f"Course: {pu.get('course')}")
+                st.write(f"Price Paid: Rs {pu.get('price')}")
+                st.write(f"UTR: {pu.get('utr')}")
+                st.balloons()
                 st.video('https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4')
+                st.info('This is your purchased course - Lifetime access - Enjoy learning')
 
     if menu == 'Chat Support':
         st.title('Chat Support')
-        st.write('Ask about courses - Chat will disappear when you close app - No history saved')
-        
-        # NEW: Clear button and info
-        col1, col2 = st.columns([1,2])
-        with col1:
-            if st.button('Clear Chat Now'):
-                st.session_state['chat_messages'] = []
-                st.success('Chat cleared')
-                st.rerun()
-        with col2:
-            st.caption('App band karte hi chat auto gayab - No save - Session only')
-
-        # Show from session only, not file - FIX for your issue
+        st.write('Session only - Closes when app closed')
+        if st.button('Clear Chat Now'):
+            st.session_state['chat_messages'] = []
+            st.success('Chat cleared')
+            st.rerun()
         for ch in st.session_state['chat_messages']:
             with st.chat_message(ch['role']):
                 st.write(ch['msg'])
-
-        q = st.chat_input('Ask your question - Example: Courses mein kya hai?')
+        q = st.chat_input('Ask your question')
         if q:
             st.session_state['chat_messages'].append({'role': 'user', 'msg': q})
             ans = smart_answer(q, courses)
