@@ -3,7 +3,7 @@ import json, hashlib, datetime, urllib.parse
 from pathlib import Path
 import pandas as pd
 
-st.set_page_config(page_title="Brahma Education V97 Full Restore", layout="wide")
+st.set_page_config(page_title="Brahma Education V98 Ultra Safe", layout="wide")
 
 DATA_DIR = Path("data")
 DATA_DIR.mkdir(exist_ok=True)
@@ -26,39 +26,4 @@ TOPICS = TOPICS_STR.split("|")
 def load_json(p,d):
     if p.exists():
         t=p.read_text(encoding="utf-8")
-        if len(t)>2:
-            try: return json.loads(t)
-            except: return d
-    return d
-
-def save_json(p,d):
-    p.write_text(json.dumps(d,ensure_ascii=False,indent=2),encoding="utf-8")
-
-class MasterTeacherAI:
-    def title(self, topic, n):
-        titles={
-            1:"M01 WHAT IS "+topic,
-            2:"M02 WHY IMPORTANT "+topic,
-            3:"M03 WHERE USE "+topic,
-            4:"M04 WHEN TIMING "+topic,
-            5:"M05 WHO ELIGIBLE "+topic,
-            6:"M06 HOW ARCHITECTURE "+topic,
-            7:"M07 WITH WHAT TOOLS "+topic,
-            8:"M08 WHAT USE EARNING "+topic,
-            9:"M09 HOW TO USE PRACTICAL "+topic,
-            10:"M10 HOW TO DO RIGHT WAY "+topic,
-            11:"M11 FUNDAMENTALS "+topic,
-            12:"M12 TOOLS PART1 "+topic,
-            13:"M13 TOOLS PART2 "+topic,
-            14:"M14 PERCEIVE REASON ACT "+topic,
-            15:"M15 RAG MEMORY "+topic,
-            16:"M16 PROMPT ENGINEERING "+topic,
-            17:"M17 REAL STORY RAHUL VILLAGE "+topic,
-            18:"M18 CASE STUDY 1L MONTH "+topic,
-            19:"M19 CASE STUDY 10M ARR "+topic,
-            20:"M20 MISTAKES 90 FAIL "+topic,
-            21:"M21 PRO TIP SECRET DIARY "+topic,
-            22:"M22 MINDSET MILLIONAIRE "+topic,
-            23:"M23 TIME MANAGEMENT 30 DAYS "+topic,
-            24:"M24 FREELANCING UPWORK FIVERR "+topic,
-            
+        if len(t)>
