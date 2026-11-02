@@ -149,9 +149,21 @@ def make_ppt(course):
     prs.slide_width = Inches(13.33)
     prs.slide_height = Inches(7.5)
     
+    # FIXED PPT LAYOUT BUG: Safely extracting dynamic slide structure
+    try:
+        layout = prs.slide_layouts[6]
+    except Exception:
+        try:
+            layout = prs.slide_layouts[0]
+        except Exception:
+            layout = None
+            
     for n in range(1, 41):
-        # FIXED CRITICAL BUG: Explicitly targeting index 6 (Blank Slide Layout)
-        slide = prs.slides.add_slide(prs.slide_layouts[6])
+        if layout is not None:
+            slide = prs.slides.add_slide(layout)
+        else:
+            # Fallback template if presentation template initialization fails completely
+            slide = prs.slides.add_slide(prs.slide_layouts[0])
         
         # Title Box
         title_box = slide.shapes.add_textbox(Inches(0.3), Inches(0.2), Inches(12.7), Inches(0.9))
@@ -200,18 +212,10 @@ def is_session_valid():
 if "admin_logged" not in st.session_state:
     st.session_state.admin_logged = is_session_valid()
 
-# Initialize data reactives
+# Initialize data reactive pipelines
 courses = initialize_courses()
 purchases = load_json_data(PURCHASE_FILE, [])
 marketing = load_json_data(MARKETING_FILE, [])
 api_keys = load_json_data(API_FILE, {})
 
 # Sidebar Navigation System
-st.sidebar.title("Brahma Education V100")
-
-if not MASTER_HASH.exists():
-    pw = st.sidebar.text_input("Create Admin Password", type="password", key="create_pw_field")
-    if st.sidebar.button("Create Admin Account"):
-        if pw and len(pw) >= 4:
-            MASTER_HASH.write_text(make_password_hash(pw), encoding="utf-8")
-            st.success("Admin Profile Configured!")
