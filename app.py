@@ -36,17 +36,72 @@ def save_json(p, data):
 
 def create_book(cid, ctopic):
     try:
-        content = ""
-        content += "Course: " + ctopic + "\n"
-        content += "Super Agent Brahma Master Teacher Super Teacher 20 years teaching\n"
-        content += "KYA HAI What is " + ctopic + " 5 examples\n"
-        content += "KYON HAI Why future market data proof\n"
-        content += "KAHAN HAI Where use Instagram YouTube Business Job Freelancing\n"
-        content += "KAB Best time morning 6 to 8 Monday Thursday\n"
-        content += "KAUN Who Student Housewife Job Business 16 to 60\n"
-        content += "KAISE Step 1 Socho Step 2 Tool kholo Step 3 Pehla step\n"
-        content += "KISSE Free tools Canva CapCut ChatGPT Notion\n"
-        content += "KYA USE Earning freelancing 20k to 50k business 1L plus job\n"
-        content += "KAISE USE Mobile plus Reels laptop browser dashboard\n"
-        content += "KAISE KARNA Right daily 30 min diary weekly revise\n"
-        content += "REAL KAHANI Rahul village 2 months daily 1 hour project third month client
+        txt = "Course " + ctopic + " Super Teacher Business Level"
+        p1 = PPT_DIR / (cid + "_Course.txt")
+        p1.write_text(txt, encoding="utf-8")
+        p2 = PPT_DIR / (cid + "_Course.pptx")
+        p2.write_text(txt, encoding="utf-8")
+        return str(p2)
+    except:
+        return None
+
+topics = TOPICS
+courses = load_json(COURSES_FILE, [])
+purchases = load_json(PURCHASE_FILE, [])
+
+if len(courses) < 100:
+    courses = []
+    for i in range(len(topics)):
+        t = topics[i]
+        courses.append({"id": "BRAHMA" + str(1000+i), "topic": t, "price": 999, "videos": 400})
+    save_json(COURSES_FILE, courses)
+
+for f in list(PPT_DIR.glob("*.*")):
+    try:
+        f.unlink()
+    except:
+        pass
+
+for c in courses:
+    create_book(c.get("id"), c.get("topic"))
+
+if "admin_logged" not in st.session_state:
+    st.session_state["admin_logged"] = False
+
+def check_persist():
+    try:
+        if ADMIN_SESSION.exists():
+            d = json.loads(ADMIN_SESSION.read_text(encoding="utf-8"))
+            exp = datetime.datetime.fromisoformat(d.get("expiry"))
+            if datetime.datetime.now() < exp:
+                return True
+            else:
+                ADMIN_SESSION.unlink(missing_ok=True)
+    except:
+        pass
+    return False
+
+if check_persist():
+    st.session_state["admin_logged"] = True
+
+st.sidebar.title("Brahma Education")
+if not MASTER_HASH.exists():
+    pw = st.sidebar.text_input("Create Admin Password", type="password")
+    if st.sidebar.button("Create Admin"):
+        if pw and len(pw) >= 4:
+            MASTER_HASH.write_text(hashlib.sha256(pw.encode()).hexdigest())
+            st.rerun()
+    menu = "Browse Courses"
+else:
+    if not st.session_state["admin_logged"]:
+        menu = st.sidebar.radio("Menu", ["Browse Courses", "My Access", "Chat Support"])
+        st.sidebar.divider()
+        pw = st.sidebar.text_input("Admin Password", type="password")
+        rem = st.sidebar.checkbox("Yaad Rakho 7 din", value=True)
+        if st.sidebar.button("Admin Login"):
+            if hashlib.sha256(pw.encode()).hexdigest() == MASTER_HASH.read_text():
+                st.session_state["admin_logged"] = True
+                if rem:
+                    exp = datetime.datetime.now() + datetime.timedelta(days=7)
+                    save_json(ADMIN_SESSION, {"expiry": exp.isoformat()})
+                st.r
