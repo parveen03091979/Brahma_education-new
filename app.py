@@ -38,11 +38,11 @@ def init():
 courses=init()
 purchases=load(PF,[])
 MODS=[f"M{i}" for i in range(1,41)]
-def en(t,n):
+def english_txt(t,n):
  return f"{t} M{n} ENGLISH\nGOAL Master M{n}\nWHY Important\nSTEP1 Define\nSTEP2 Example\nSTEP3 Tool\nSTEP4 Practice\nSTEP5 Diary"
-def hi(t,n):
+def hindi_txt(t,n):
  return f"{t} M{n} HINDI Translation\nLAKSHYA M{n} seekhna\nKYU Zaruri\nKADAM1 Paribhasha\nKADAM2 Udaharan\nKADAM3 Tool\nKADAM4 Abhyas\nKADAM5 Diary"
-def make(c):
+def make_bilingual(c):
  from pptx import Presentation
  from pptx.util import Inches, Pt
  cid=c["id"]
@@ -63,7 +63,7 @@ def make(c):
   bb=s.shapes.add_textbox(Inches(0.3), Inches(1.2), Inches(12.7), Inches(6.1))
   bf=bb.text_frame
   bf.word_wrap=True
-  bf.text=en(top,n)
+  bf.text=english_txt(top,n)
   bf.paragraphs[0].font.size=Pt(11)
  prs.save(str(en_p))
  prs2=Presentation()
@@ -80,7 +80,7 @@ def make(c):
   bb=s.shapes.add_textbox(Inches(0.3), Inches(1.2), Inches(12.7), Inches(6.1))
   bf=bb.text_frame
   bf.word_wrap=True
-  bf.text=hi(top,n)
+  bf.text=hindi_txt(top,n)
   bf.paragraphs[0].font.size=Pt(11)
  prs2.save(str(hi_p))
  return en_p,hi_p
@@ -106,7 +106,7 @@ def sess_valid():
   return False
 if "admin_logged" not in st.session_state:
  st.session_state.admin_logged=sess_valid()
-st.sidebar.title("Brahma V106 Tiny")
+st.sidebar.title("Brahma V106 Fix")
 if not MH.exists():
  pw=st.sidebar.text_input("Create Password", type="password")
  if st.sidebar.button("Create Admin"):
@@ -128,7 +128,7 @@ else:
    else:
     st.sidebar.error("Wrong")
  else:
-  st.sidebar.success("Admin OK Bilingual Tiny")
+  st.sidebar.success("Admin OK Bilingual Fixed")
   menu=st.sidebar.radio("Admin",["Dashboard","Price Manager 99","Deep Maker Bilingual","Course Library Bilingual","UPI QR Setup","Sales"])
   if st.sidebar.button("Logout"):
    st.session_state.admin_logged=False
@@ -136,15 +136,15 @@ else:
    st.rerun()
 if st.session_state.admin_logged:
  if menu=="Dashboard":
-  st.title("Dashboard Bilingual Tiny Fix")
-  st.success("Har Course 2 Files English+Hindi No Cut No Error")
+  st.title("Dashboard Bilingual Fixed TypeError")
+  st.success("Har Course 2 Files English+Hindi No TypeError Now")
   total=len(courses)
-  en=len(list(PPT_DIR.glob("*ENGLISH*")))
-  hi=len(list(PPT_DIR.glob("*HINDI*")))
+  en_c=len(list(PPT_DIR.glob("*ENGLISH*")))
+  hi_c=len(list(PPT_DIR.glob("*HINDI*")))
   c1,c2,c3=st.columns(3)
   c1.metric("Total",total)
-  c2.metric("English",en)
-  c3.metric("Hindi",hi)
+  c2.metric("English",en_c)
+  c3.metric("Hindi",hi_c)
   if st.button("DELETE OLD"):
    for f in PPT_DIR.glob("*.*"):
     try:
@@ -156,9 +156,9 @@ if st.session_state.admin_logged:
   if st.button("CREATE 100 BOOKS BILINGUAL", type="primary"):
    bar=st.progress(0)
    for idx,c in enumerate(courses):
-    make(c)
+    make_bilingual(c)
     bar.progress(int((idx+1)/len(courses)*100))
-   st.success("Done")
+   st.success("Done - 2 Files Per Course Fixed")
    st.balloons()
    st.rerun()
  elif menu=="Price Manager 99":
@@ -177,7 +177,7 @@ if st.session_state.admin_logged:
    st.success("Done")
    st.rerun()
  elif menu=="Deep Maker Bilingual":
-  st.title("Deep Maker Bilingual Tiny")
+  st.title("Deep Maker Bilingual Fixed")
   with st.form("add_new"):
    nt=st.text_input("New Course Name English")
    npr=st.number_input("New Price", value=99, min_value=1, max_value=10000, step=1)
@@ -189,29 +189,29 @@ if st.session_state.admin_logged:
      nid=f"BRAHMA{1000+len(courses)}"
      courses.append({"id":nid,"topic":nt,"price":int(npr)})
      save(CF,courses)
-     make({"id":nid,"topic":nt})
+     make_bilingual({"id":nid,"topic":nt})
      st.success("Done")
      st.rerun()
   sel=st.selectbox("Select For PPT", [c["topic"]+" - "+c["id"] for c in courses])
   if st.button("Make Bilingual PPT", type="primary"):
    sid=sel.split(" - ")[-1]
    stopic=" - ".join(sel.split(" - ")[:-1])
-   en,hi=make({"id":sid,"topic":stopic})
-   st.success("Done")
-   st.download_button("Download English", data=en.read_bytes(), file_name=en.name)
-   st.download_button("Download Hindi", data=hi.read_bytes(), file_name=hi.name)
+   en_f,hi_f=make_bilingual({"id":sid,"topic":stopic})
+   st.success("Done - English + Hindi Fixed")
+   st.download_button("Download English", data=en_f.read_bytes(), file_name=en_f.name)
+   st.download_button("Download Hindi", data=hi_f.read_bytes(), file_name=hi_f.name)
  elif menu=="Course Library Bilingual":
-  st.title("Course Library Bilingual")
+  st.title("Course Library Bilingual Fixed")
   for idx,co in enumerate(courses[:20]):
-   en=list(PPT_DIR.glob(co["id"]+"*ENGLISH*"))
-   hi=list(PPT_DIR.glob(co["id"]+"*HINDI*"))
-   if en and hi:
+   en_files=list(PPT_DIR.glob(co["id"]+"*ENGLISH*"))
+   hi_files=list(PPT_DIR.glob(co["id"]+"*HINDI*"))
+   if en_files and hi_files:
     st.success(f"{idx+1}. {co['topic']} - Rs {co.get('price',99)} - 2 Files")
     col1,col2=st.columns(2)
     with col1:
-     st.download_button("English", data=en[0].read_bytes(), file_name=en[0].name, key=f"en{idx}")
+     st.download_button("English", data=en_files[0].read_bytes(), file_name=en_files[0].name, key=f"en{idx}")
     with col2:
-     st.download_button("Hindi", data=hi[0].read_bytes(), file_name=hi[0].name, key=f"hi{idx}")
+     st.download_button("Hindi", data=hi_files[0].read_bytes(), file_name=hi_files[0].name, key=f"hi{idx}")
  elif menu=="UPI QR Setup":
   st.title("UPI QR Setup")
   st.write("UPI ID: "+UID)
@@ -239,8 +239,8 @@ if st.session_state.admin_logged:
       st.rerun()
 else:
  if menu=="Browse Courses":
-  st.title("Brahma Bilingual English+Hindi Tiny Fix")
-  st.success("Har Course 2 Files English+Hindi Price 99 No Cut No Error")
+  st.title("Brahma Bilingual English+Hindi Fixed")
+  st.success("Har Course 2 Files English+Hindi Price 99 No TypeError")
   for i,course in enumerate(courses[:15]):
    with st.expander(course["topic"]+" - Rs "+str(course["price"])+" - English+Hindi"):
     params={"pa":UID,"pn":OWNER,"am":str(course["price"]),"cu":"INR","tn":course["topic"][:20]}
@@ -267,10 +267,10 @@ else:
    else:
     pu=found[0]
     st.success("Welcome "+pu.get("name","Student"))
-    en=list(PPT_DIR.glob(pu.get("course_id","")+"*ENGLISH*"))
-    hi=list(PPT_DIR.glob(pu.get("course_id","")+"*HINDI*"))
-    if en:
-     st.download_button("DOWNLOAD ENGLISH FILE", data=en[0].read_bytes(), file_name=en[0].name, type="primary")
-    if hi:
-     st.download_button("DOWNLOAD HINDI FILE", data=hi[0].read_bytes(), file_name=hi[0].name, type="secondary")
-st.caption("Brahma V106 Tiny 1.5KB | Bilingual English+Hindi | No MODS_HI Cut | No GOAL Lea Cut | No Admin Logged Cut | Stable")
+    en_files=list(PPT_DIR.glob(pu.get("course_id","")+"*ENGLISH*"))
+    hi_files=list(PPT_DIR.glob(pu.get("course_id","")+"*HINDI*"))
+    if en_files:
+     st.download_button("DOWNLOAD ENGLISH FILE", data=en_files[0].read_bytes(), file_name=en_files[0].name, type="primary")
+    if hi_files:
+     st.download_button("DOWNLOAD HINDI FILE", data=hi_files[0].read_bytes(), file_name=hi_files[0].name, type="secondary")
+st.caption("Brahma V106 Fix | Bilingual English+Hindi | No TypeError List Not Callable | No Cut | Stable 1.6KB")
