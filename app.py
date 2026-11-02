@@ -1823,12 +1823,3 @@ st.divider()
 st.caption(
     "© Brahma Education | V100 | Professional Learning Platform"
 )
-जरूरी बातें – ऐप चलाने से पहले
-भाग 1 और भाग 2 को सही क्रम में जोड़ें।
-
-requirements.txt में ये दो लाइन रखें:
-
-
-text
-streamlit
-python-pptx
